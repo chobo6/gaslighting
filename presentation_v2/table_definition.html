@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE 테이블 정의서</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:14px 20px;gap:10px}
+.head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-title{font-family:"Courier New",monospace;font-size:13px;font-weight:900;letter-spacing:1px}
+.head-sub{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.nav{display:flex;gap:0;flex-wrap:wrap}
+.nav-btn{font-family:"Courier New",monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 14px 5px;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-1px;white-space:nowrap}
+.nav-btn:hover{color:var(--text2);border-bottom-color:var(--line-hi)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.scene{display:none;flex:1;min-height:0;gap:14px}.scene.active{display:flex}
+.tbl-wrap{flex:1;overflow:auto}.tbl-wrap::-webkit-scrollbar{width:3px}.tbl-wrap::-webkit-scrollbar-thumb{background:var(--line2)}
+/* Table def */
+.tdef{display:flex;flex-direction:column;gap:0}
+.tdef-head{background:var(--panel2);border:1px solid var(--line2);padding:12px 16px;display:flex;align-items:center;gap:14px;position:sticky;top:0;z-index:1}
+.tdef-name{font-family:"Courier New",monospace;font-size:14px;font-weight:900;color:var(--accent)}
+.tdef-desc{font-size:13px;color:var(--text2)}
+.tdef-count{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-left:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{padding:8px 10px;text-align:left;font-family:"Courier New",monospace;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:var(--panel2);border:1px solid var(--line2);white-space:nowrap;opacity:.8}
+tbody td{padding:8px 10px;border:1px solid var(--line);color:var(--text2);vertical-align:top;line-height:1.5;font-size:12px}
+tbody tr:hover td{background:rgba(0,255,204,.025)}
+.col-name{font-family:"Courier New",monospace;font-size:12px;font-weight:700;color:var(--info)}
+.col-type{font-family:"Courier New",monospace;font-size:11px;color:var(--warn)}
+.badge{display:inline-block;font-family:"Courier New",monospace;font-size:9px;font-weight:700;padding:2px 6px;white-space:nowrap}
+.b-pk{background:rgba(0,255,204,.1);color:var(--accent);border:1px solid rgba(0,255,204,.25)}
+.b-fk{background:rgba(0,204,255,.1);color:var(--info);border:1px solid rgba(0,204,255,.25)}
+.b-nn{background:rgba(255,170,0,.07);color:var(--warn);border:1px solid rgba(255,170,0,.2)}
+/* ERD */
+.erd{flex:1;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--line);position:relative;overflow:auto;min-height:0}
+.erd-canvas{position:relative;width:900px;height:520px;flex-shrink:0}
+.erd-table{position:absolute;background:var(--panel2);border:1px solid var(--line2);min-width:160px}
+.erd-table::before{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)}
+.erd-thead{background:var(--panel);border-bottom:1px solid var(--line2);padding:7px 10px}
+.erd-tname{font-family:"Courier New",monospace;font-size:11px;font-weight:900;color:var(--accent)}
+.erd-row{padding:4px 10px;font-family:"Courier New",monospace;font-size:10px;color:var(--text2);display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(22,50,85,.5)}
+.erd-row:last-child{border-bottom:none}
+.erd-row.pk{color:var(--accent)}
+.erd-row.fk{color:var(--info)}
+.erd-icon{font-size:9px;opacity:.5;flex-shrink:0;width:12px}
+/* SVG lines */
+.erd-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="head-title">// G-SAFE — 테이블 정의서 & ERD</div>
+      <div class="head-sub">TABLE DEFINITION · 5 TABLES · ERD</div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="show('T1',this)">gas_scenarios</button>
+      <button class="nav-btn" onclick="show('T2',this)">gas_readings</button>
+      <button class="nav-btn" onclick="show('T3',this)">risk_predictions</button>
+      <button class="nav-btn" onclick="show('T4',this)">cutoff_events</button>
+      <button class="nav-btn" onclick="show('T5',this)">model_metrics</button>
+      <button class="nav-btn" onclick="show('ERD',this)">ERD</button>
+    </div>
+  </div>
+
+  <!-- gas_scenarios -->
+  <div id="T1" class="scene active">
+    <div class="tbl-wrap">
+      <div class="tdef">
+        <div class="tdef-head">
+          <div class="tdef-name">gas_scenarios</div>
+          <div class="tdef-desc">시뮬레이션 시나리오 기본 정보 — 공간 종류, 가스 종류, threshold</div>
+          <div class="tdef-count">7 COLUMNS</div>
+        </div>
+        <table>
+          <thead><tr><th>컬럼명</th><th>데이터 타입</th><th>제약</th><th>설명</th><th>예시값</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name">scenario_id</td><td class="col-type">INTEGER</td><td><span class="badge b-pk">PK</span> <span class="badge b-nn">NOT NULL</span></td><td>시나리오 고유 식별자 (AUTO)</td><td>1</td></tr>
+            <tr><td class="col-name">scenario_name</td><td class="col-type">VARCHAR(100)</td><td><span class="badge b-nn">NOT NULL</span></td><td>시나리오 이름</td><td>연구소_수소누출</td></tr>
+            <tr><td class="col-name">location_type</td><td class="col-type">VARCHAR(50)</td><td><span class="badge b-nn">NOT NULL</span></td><td>공간 유형 (연구소/개발실/배관실)</td><td>연구소</td></tr>
+            <tr><td class="col-name">gas_type</td><td class="col-type">VARCHAR(50)</td><td><span class="badge b-nn">NOT NULL</span></td><td>가스 종류 (수소/메탄/프로판)</td><td>메탄</td></tr>
+            <tr><td class="col-name">threshold</td><td class="col-type">FLOAT</td><td><span class="badge b-nn">NOT NULL</span></td><td>자동차단 기준 위험률 (0~100)</td><td>75.0</td></tr>
+            <tr><td class="col-name">description</td><td class="col-type">TEXT</td><td></td><td>시나리오 설명</td><td>연구소 수소 배관 누출 데모</td></tr>
+            <tr><td class="col-name">created_at</td><td class="col-type">DATETIME</td><td><span class="badge b-nn">NOT NULL</span></td><td>생성 일시 (DEFAULT NOW)</td><td>2026-06-30 10:00:00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- gas_readings -->
+  <div id="T2" class="scene">
+    <div class="tbl-wrap">
+      <div class="tdef">
+        <div class="tdef-head">
+          <div class="tdef-name">gas_readings</div>
+          <div class="tdef-desc">시뮬레이션 중 시간별 센서 측정값 로그</div>
+          <div class="tdef-count">7 COLUMNS</div>
+        </div>
+        <table>
+          <thead><tr><th>컬럼명</th><th>데이터 타입</th><th>제약</th><th>설명</th><th>예시값</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name">reading_id</td><td class="col-type">INTEGER</td><td><span class="badge b-pk">PK</span> <span class="badge b-nn">NOT NULL</span></td><td>측정값 고유 식별자 (AUTO)</td><td>1001</td></tr>
+            <tr><td class="col-name">scenario_id</td><td class="col-type">INTEGER</td><td><span class="badge b-fk">FK</span> <span class="badge b-nn">NOT NULL</span></td><td>→ gas_scenarios.scenario_id</td><td>1</td></tr>
+            <tr><td class="col-name">timestamp</td><td class="col-type">DATETIME</td><td><span class="badge b-nn">NOT NULL</span></td><td>측정 시각</td><td>2026-07-01 14:32:05</td></tr>
+            <tr><td class="col-name">elapsed_sec</td><td class="col-type">INTEGER</td><td></td><td>시뮬레이션 시작 후 경과 초</td><td>45</td></tr>
+            <tr><td class="col-name">sensor_values</td><td class="col-type">JSON / TEXT</td><td></td><td>16개 센서 반응값 (key-value)</td><td>{"s1":0.12,"s2":0.87,...}</td></tr>
+            <tr><td class="col-name">concentration</td><td class="col-type">FLOAT</td><td></td><td>추정 가스 농도 (ppm)</td><td>250.5</td></tr>
+            <tr><td class="col-name">gas_type</td><td class="col-type">VARCHAR(50)</td><td></td><td>측정 시점 가스 종류</td><td>메탄</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- risk_predictions -->
+  <div id="T3" class="scene">
+    <div class="tbl-wrap">
+      <div class="tdef">
+        <div class="tdef-head">
+          <div class="tdef-name">risk_predictions</div>
+          <div class="tdef-desc">ML 모델이 예측한 위험률 결과 저장</div>
+          <div class="tdef-count">7 COLUMNS</div>
+        </div>
+        <table>
+          <thead><tr><th>컬럼명</th><th>데이터 타입</th><th>제약</th><th>설명</th><th>예시값</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name">prediction_id</td><td class="col-type">INTEGER</td><td><span class="badge b-pk">PK</span> <span class="badge b-nn">NOT NULL</span></td><td>예측 고유 식별자 (AUTO)</td><td>5001</td></tr>
+            <tr><td class="col-name">reading_id</td><td class="col-type">INTEGER</td><td><span class="badge b-fk">FK</span> <span class="badge b-nn">NOT NULL</span></td><td>→ gas_readings.reading_id</td><td>1001</td></tr>
+            <tr><td class="col-name">scenario_id</td><td class="col-type">INTEGER</td><td><span class="badge b-fk">FK</span></td><td>→ gas_scenarios.scenario_id</td><td>1</td></tr>
+            <tr><td class="col-name">risk_score</td><td class="col-type">FLOAT</td><td><span class="badge b-nn">NOT NULL</span></td><td>예측된 위험률 (0~100)</td><td>68.3</td></tr>
+            <tr><td class="col-name">risk_level</td><td class="col-type">VARCHAR(20)</td><td></td><td>위험 등급 (safe/warn/danger/cutoff)</td><td>danger</td></tr>
+            <tr><td class="col-name">model_name</td><td class="col-type">VARCHAR(50)</td><td></td><td>예측에 사용된 모델명</td><td>RandomForestRegressor</td></tr>
+            <tr><td class="col-name">predicted_at</td><td class="col-type">DATETIME</td><td><span class="badge b-nn">NOT NULL</span></td><td>예측 시각</td><td>2026-07-01 14:32:05</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- cutoff_events -->
+  <div id="T4" class="scene">
+    <div class="tbl-wrap">
+      <div class="tdef">
+        <div class="tdef-head">
+          <div class="tdef-name">cutoff_events</div>
+          <div class="tdef-desc">자동차단 발생 이벤트 기록</div>
+          <div class="tdef-count">8 COLUMNS</div>
+        </div>
+        <table>
+          <thead><tr><th>컬럼명</th><th>데이터 타입</th><th>제약</th><th>설명</th><th>예시값</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name">event_id</td><td class="col-type">INTEGER</td><td><span class="badge b-pk">PK</span> <span class="badge b-nn">NOT NULL</span></td><td>차단 이벤트 고유 식별자 (AUTO)</td><td>101</td></tr>
+            <tr><td class="col-name">scenario_id</td><td class="col-type">INTEGER</td><td><span class="badge b-fk">FK</span> <span class="badge b-nn">NOT NULL</span></td><td>→ gas_scenarios.scenario_id</td><td>1</td></tr>
+            <tr><td class="col-name">prediction_id</td><td class="col-type">INTEGER</td><td><span class="badge b-fk">FK</span></td><td>→ risk_predictions.prediction_id (차단 트리거 예측)</td><td>5001</td></tr>
+            <tr><td class="col-name">cutoff_time</td><td class="col-type">DATETIME</td><td><span class="badge b-nn">NOT NULL</span></td><td>자동차단 발생 시각</td><td>2026-07-01 14:32:50</td></tr>
+            <tr><td class="col-name">risk_at_cutoff</td><td class="col-type">FLOAT</td><td></td><td>차단 시점 위험률</td><td>76.2</td></tr>
+            <tr><td class="col-name">valve_status</td><td class="col-type">VARCHAR(20)</td><td></td><td>밸브 상태 (OPEN/CLOSED)</td><td>CLOSED</td></tr>
+            <tr><td class="col-name">alarm_status</td><td class="col-type">VARCHAR(10)</td><td></td><td>경보 상태 (ON/OFF)</td><td>ON</td></tr>
+            <tr><td class="col-name">ventilation_status</td><td class="col-type">VARCHAR(10)</td><td></td><td>환기팬 상태 (ON/OFF)</td><td>ON</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- model_metrics -->
+  <div id="T5" class="scene">
+    <div class="tbl-wrap">
+      <div class="tdef">
+        <div class="tdef-head">
+          <div class="tdef-name">model_metrics</div>
+          <div class="tdef-desc">ML 모델 학습 결과 및 성능 지표 기록</div>
+          <div class="tdef-count">8 COLUMNS</div>
+        </div>
+        <table>
+          <thead><tr><th>컬럼명</th><th>데이터 타입</th><th>제약</th><th>설명</th><th>예시값</th></tr></thead>
+          <tbody>
+            <tr><td class="col-name">metric_id</td><td class="col-type">INTEGER</td><td><span class="badge b-pk">PK</span> <span class="badge b-nn">NOT NULL</span></td><td>메트릭 고유 식별자 (AUTO)</td><td>1</td></tr>
+            <tr><td class="col-name">model_name</td><td class="col-type">VARCHAR(100)</td><td><span class="badge b-nn">NOT NULL</span></td><td>모델명</td><td>RandomForestRegressor</td></tr>
+            <tr><td class="col-name">trained_at</td><td class="col-type">DATETIME</td><td></td><td>학습 완료 시각</td><td>2026-07-02 09:30:00</td></tr>
+            <tr><td class="col-name">mae</td><td class="col-type">FLOAT</td><td></td><td>Mean Absolute Error</td><td>3.21</td></tr>
+            <tr><td class="col-name">rmse</td><td class="col-type">FLOAT</td><td></td><td>Root Mean Squared Error</td><td>4.87</td></tr>
+            <tr><td class="col-name">r2_score</td><td class="col-type">FLOAT</td><td></td><td>R² 결정계수 (0~1)</td><td>0.94</td></tr>
+            <tr><td class="col-name">threshold_used</td><td class="col-type">FLOAT</td><td></td><td>최적 threshold 값</td><td>75.0</td></tr>
+            <tr><td class="col-name">params</td><td class="col-type">JSON / TEXT</td><td></td><td>학습 하이퍼파라미터 (JSON)</td><td>{"n_estimators":200,"max_depth":10}</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ERD -->
+  <div id="ERD" class="scene">
+    <div class="erd">
+      <div class="erd-canvas">
+        <svg class="erd-svg" xmlns="http://www.w3.org/2000/svg">
+          <!-- gas_scenarios → gas_readings -->
+          <line x1="200" y1="130" x2="380" y2="140" stroke="rgba(30,69,117,.8)" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- gas_scenarios → cutoff_events -->
+          <line x1="200" y1="140" x2="380" y2="360" stroke="rgba(30,69,117,.8)" stroke-width="1.5"/>
+          <!-- gas_readings → risk_predictions -->
+          <line x1="570" y1="155" x2="650" y2="155" stroke="rgba(30,69,117,.8)" stroke-width="1.5" marker-end="url(#arr)"/>
+          <!-- risk_predictions → cutoff_events -->
+          <line x1="700" y1="230" x2="570" y2="360" stroke="rgba(30,69,117,.8)" stroke-width="1.5"/>
+          <!-- model_metrics standalone -->
+          <defs>
+            <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <path d="M0,0 L0,6 L6,3 z" fill="rgba(42,106,170,.8)"/>
+            </marker>
+          </defs>
+          <text x="280" y="128" font-family="Courier New" font-size="9" fill="rgba(0,255,204,.4)">1:N</text>
+          <text x="290" y="255" font-family="Courier New" font-size="9" fill="rgba(0,255,204,.4)">1:N</text>
+          <text x="600" y="145" font-family="Courier New" font-size="9" fill="rgba(0,255,204,.4)">1:N</text>
+        </svg>
+
+        <!-- gas_scenarios -->
+        <div class="erd-table" style="top:60px;left:20px;width:170px">
+          <div class="erd-thead"><div class="erd-tname">gas_scenarios</div></div>
+          <div class="erd-row pk"><div class="erd-icon">🔑</div>scenario_id PK</div>
+          <div class="erd-row"><div class="erd-icon"></div>scenario_name</div>
+          <div class="erd-row"><div class="erd-icon"></div>location_type</div>
+          <div class="erd-row"><div class="erd-icon"></div>gas_type</div>
+          <div class="erd-row"><div class="erd-icon"></div>threshold</div>
+          <div class="erd-row"><div class="erd-icon"></div>created_at</div>
+        </div>
+
+        <!-- gas_readings -->
+        <div class="erd-table" style="top:90px;left:380px;width:165px">
+          <div class="erd-thead"><div class="erd-tname">gas_readings</div></div>
+          <div class="erd-row pk"><div class="erd-icon">🔑</div>reading_id PK</div>
+          <div class="erd-row fk"><div class="erd-icon">🔗</div>scenario_id FK</div>
+          <div class="erd-row"><div class="erd-icon"></div>timestamp</div>
+          <div class="erd-row"><div class="erd-icon"></div>elapsed_sec</div>
+          <div class="erd-row"><div class="erd-icon"></div>sensor_values</div>
+          <div class="erd-row"><div class="erd-icon"></div>concentration</div>
+        </div>
+
+        <!-- risk_predictions -->
+        <div class="erd-table" style="top:90px;left:650px;width:175px">
+          <div class="erd-thead"><div class="erd-tname">risk_predictions</div></div>
+          <div class="erd-row pk"><div class="erd-icon">🔑</div>prediction_id PK</div>
+          <div class="erd-row fk"><div class="erd-icon">🔗</div>reading_id FK</div>
+          <div class="erd-row fk"><div class="erd-icon">🔗</div>scenario_id FK</div>
+          <div class="erd-row"><div class="erd-icon"></div>risk_score</div>
+          <div class="erd-row"><div class="erd-icon"></div>risk_level</div>
+          <div class="erd-row"><div class="erd-icon"></div>model_name</div>
+        </div>
+
+        <!-- cutoff_events -->
+        <div class="erd-table" style="top:320px;left:380px;width:175px">
+          <div class="erd-thead"><div class="erd-tname">cutoff_events</div></div>
+          <div class="erd-row pk"><div class="erd-icon">🔑</div>event_id PK</div>
+          <div class="erd-row fk"><div class="erd-icon">🔗</div>scenario_id FK</div>
+          <div class="erd-row fk"><div class="erd-icon">🔗</div>prediction_id FK</div>
+          <div class="erd-row"><div class="erd-icon"></div>cutoff_time</div>
+          <div class="erd-row"><div class="erd-icon"></div>risk_at_cutoff</div>
+          <div class="erd-row"><div class="erd-icon"></div>valve_status</div>
+        </div>
+
+        <!-- model_metrics -->
+        <div class="erd-table" style="top:320px;left:660px;width:175px">
+          <div class="erd-thead"><div class="erd-tname">model_metrics</div></div>
+          <div class="erd-row pk"><div class="erd-icon">🔑</div>metric_id PK</div>
+          <div class="erd-row"><div class="erd-icon"></div>model_name</div>
+          <div class="erd-row"><div class="erd-icon"></div>mae / rmse / r2</div>
+          <div class="erd-row"><div class="erd-icon"></div>threshold_used</div>
+          <div class="erd-row"><div class="erd-icon"></div>params (JSON)</div>
+          <div class="erd-row"><div class="erd-icon"></div>trained_at</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>function show(id,btn){document.querySelectorAll('.scene').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}</script>
+</body>
+</html>

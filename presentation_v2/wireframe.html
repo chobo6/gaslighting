@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE 와이어프레임</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:14px 20px;gap:10px}
+.head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-title{font-family:"Courier New",monospace;font-size:13px;font-weight:900;letter-spacing:1px}
+.head-sub{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.nav{display:flex;gap:0}
+.nav-btn{font-family:"Courier New",monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px 6px;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.nav-btn:hover{color:var(--text2);border-bottom-color:var(--line-hi)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.scene{display:none;flex:1;min-height:0;gap:14px}.scene.active{display:flex}
+/* Image panel */
+.img-panel{flex:0 0 62%;background:var(--panel);border:1px solid var(--line);padding:12px;display:flex;align-items:center;justify-content:center;min-height:0;position:relative}
+.img-panel::before{content:"";position:absolute;top:0;left:0;width:14px;height:14px;border-top:1px solid var(--accent);border-left:1px solid var(--accent);opacity:.5}
+.img-panel::after{content:"";position:absolute;bottom:0;right:0;width:14px;height:14px;border-bottom:1px solid var(--accent);border-right:1px solid var(--accent);opacity:.5}
+.img-panel img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.img-placeholder{display:flex;flex-direction:column;align-items:center;gap:10px;font-family:"Courier New",monospace;font-size:12px;color:var(--muted);text-align:center}
+.img-placeholder .ph-icon{font-size:48px;opacity:.3}
+/* Desc panel */
+.desc-panel{flex:1;display:flex;flex-direction:column;gap:8px;overflow:auto}
+.desc-panel::-webkit-scrollbar{width:3px}.desc-panel::-webkit-scrollbar-thumb{background:var(--line2)}
+.desc-item{background:var(--panel);border:1px solid var(--line);padding:14px 16px;transition:border-color .12s;position:relative}
+.desc-item:hover{border-color:var(--line-hi)}
+.desc-item::before{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent);opacity:.4}
+.desc-num{font-family:"Courier New",monospace;font-size:10px;font-weight:700;color:var(--info);margin-bottom:6px;letter-spacing:1px}
+.desc-title{font-size:14px;font-weight:800;margin-bottom:6px}
+.desc-text{font-size:12.5px;color:var(--text2);line-height:1.65}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="head-title">// G-SAFE — 화면 와이어프레임</div>
+      <div class="head-sub">WIREFRAME · Unity Main Simulation / Result Detail</div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="show('W1',this)">시뮬레이션 화면</button>
+      <button class="nav-btn" onclick="show('W2',this)">결과 상세 화면</button>
+    </div>
+  </div>
+
+  <div id="W1" class="scene active">
+    <div class="img-panel">
+      <img src="assets/dashboard.png" alt="시뮬레이션 메인 화면" onerror="this.style.display='none';document.getElementById('ph1').style.display='flex'">
+      <div class="img-placeholder" id="ph1" style="display:none">
+        <div class="ph-icon">🖥️</div>
+        <div>assets/dashboard.png</div>
+        <div style="font-size:10px;opacity:.5">시뮬레이션 메인 화면 와이어프레임</div>
+      </div>
+    </div>
+    <div class="desc-panel">
+      <div class="desc-item">
+        <div class="desc-num">ZONE 01</div>
+        <div class="desc-title">좌측 네비게이션 메뉴</div>
+        <div class="desc-text">대시보드 · 시나리오 · 시뮬레이션 · 분석 · 이력 화면 간 이동. 현재 활성 메뉴 하이라이트. 프로젝트 로고 상단 배치.</div>
+      </div>
+      <div class="desc-item">
+        <div class="desc-num">ZONE 02</div>
+        <div class="desc-title">3D 연구소/개발실 뷰</div>
+        <div class="desc-text">Unity 3D 씬 렌더링 영역. 가스 배관, 누출 지점, 밸브, 환기팬 오브젝트 표시. Particle System으로 가스 확산 시각화. 시점 조작 가능.</div>
+      </div>
+      <div class="desc-item">
+        <div class="desc-num">ZONE 03</div>
+        <div class="desc-title">위험률 HUD 패널</div>
+        <div class="desc-text">현재 risk_score 수치 · threshold 기준선 · 위험 등급 배지(정상/주의/위험/차단) · 밸브/경보/환기 상태 아이콘. 1초 단위 갱신.</div>
+      </div>
+      <div class="desc-item">
+        <div class="desc-num">ZONE 04</div>
+        <div class="desc-title">위험률 시계열 그래프</div>
+        <div class="desc-text">시간(x축) vs 위험률(y축) 곡선. 점선으로 threshold 기준선 표시. 곡선이 기준선 교차 시 차단 이벤트 마커(◆) 표시. 최근 60초 구간 표시.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="W2" class="scene">
+    <div class="img-panel">
+      <img src="assets/detail.png" alt="결과 상세 화면" onerror="this.style.display='none';document.getElementById('ph2').style.display='flex'">
+      <div class="img-placeholder" id="ph2" style="display:none">
+        <div class="ph-icon">📊</div>
+        <div>assets/detail.png</div>
+        <div style="font-size:10px;opacity:.5">결과 상세 화면 와이어프레임</div>
+      </div>
+    </div>
+    <div class="desc-panel">
+      <div class="desc-item">
+        <div class="desc-num">ZONE 01</div>
+        <div class="desc-title">결과 KPI 카드</div>
+        <div class="desc-text">최대 위험률(max_risk) · 차단 발생 시점(cutoff_time) · 가스 종류 · 최종 상태(차단완료/미차단) 4개 핵심 수치. 상단 가로 배치.</div>
+      </div>
+      <div class="desc-item">
+        <div class="desc-num">ZONE 02</div>
+        <div class="desc-title">이벤트 타임라인</div>
+        <div class="desc-text">정상 → 누출 감지 → 주의 단계 → 자동차단 → 환기 완료 순서를 시간축으로 시각화. 각 이벤트별 발생 시각 표시.</div>
+      </div>
+      <div class="desc-item">
+        <div class="desc-num">ZONE 03</div>
+        <div class="desc-title">위험 요인 분석 패널</div>
+        <div class="desc-text">농도 수준 · 증가 속도 · 지속 시간 · 환기 상태 — 4가지 위험 요인별 기여도 바 차트 표시. ML 모델 feature importance 기반.</div>
+      </div>
+      <div class="desc-item">
+        <div class="desc-num">ZONE 04</div>
+        <div class="desc-title">액션 버튼</div>
+        <div class="desc-text">[다시 실행] — 동일 시나리오로 재시작. [이력 보기] — 이력 화면으로 이동. [그래프 전체 보기] — 전체 시계열 상세 분석.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>function show(id,btn){document.querySelectorAll('.scene').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}</script>
+</body>
+</html>

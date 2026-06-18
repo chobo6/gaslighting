@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE 트러블슈팅 & 회고</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:14px 20px;gap:10px}
+.head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-title{font-family:"Courier New",monospace;font-size:13px;font-weight:900;letter-spacing:1px}
+.head-sub{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.nav{display:flex;gap:0}
+.nav-btn{font-family:"Courier New",monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px 6px;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.nav-btn:hover{color:var(--text2);border-bottom-color:var(--line-hi)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.scene{display:none;flex:1;min-height:0;flex-direction:column;gap:10px}.scene.active{display:flex}
+.scroll{flex:1;overflow:auto}.scroll::-webkit-scrollbar{width:3px}.scroll::-webkit-scrollbar-thumb{background:var(--line2)}
+/* Notice */
+.notice{background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,204,255,.4);padding:10px 16px;font-size:13px;color:var(--muted);line-height:1.7;flex-shrink:0}
+.notice b{color:var(--info)}
+/* TS cards */
+.ts-grid{display:flex;flex-direction:column;gap:10px}
+.ts-card{display:grid;grid-template-columns:3fr 4fr;border:1px solid var(--line);border-left-width:2px;position:relative;overflow:hidden}
+.ts-card::before{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid currentColor;border-left:1px solid currentColor;opacity:.25}
+.ts-w{border-left-color:var(--warn)}.ts-d{border-left-color:var(--danger)}.ts-i{border-left-color:var(--info)}
+.ts-prob{padding:16px;border-right:1px solid var(--line)}
+.ts-sol{padding:16px;background:var(--panel2)}
+.ts-label{font-family:"Courier New",monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:700}
+.ts-w .ts-label.prob{color:var(--warn)}.ts-d .ts-label.prob{color:var(--danger)}.ts-i .ts-label.prob{color:var(--info)}
+.ts-label.sol{color:var(--safe)}
+.ts-title{font-size:14px;font-weight:800;margin-bottom:8px;line-height:1.3}
+.ts-desc{font-size:12.5px;color:var(--text2);line-height:1.7}
+/* Ref grid */
+.ref-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;flex:1}
+.ref-card{background:var(--panel);border:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:10px;position:relative}
+.ref-card::before{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent);opacity:.4}
+.ref-card:hover{border-color:var(--line-hi)}
+.ref-name{font-size:15px;font-weight:900}
+.ref-role{display:inline-block;font-family:"Courier New",monospace;font-size:9px;font-weight:700;padding:2px 8px;background:rgba(0,204,255,.06);border:1px solid rgba(0,204,255,.2);color:var(--info);letter-spacing:.5px;margin-top:3px}
+.ref-text{font-size:12.5px;color:var(--text2);line-height:1.75;flex:1}
+.ref-area{border:1px solid var(--line);padding:10px 12px;font-size:11.5px;color:var(--muted);background:var(--panel2);min-height:64px;line-height:1.65;font-style:italic}
+.ref-area-label{font-family:"Courier New",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="head-title">// G-SAFE — 트러블슈팅 & 팀원 회고</div>
+      <div class="head-sub">TROUBLESHOOTING · RETROSPECTIVE · 기획 단계 예상 이슈 4건</div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="show('TS',this)">트러블슈팅 (4)</button>
+      <button class="nav-btn" onclick="show('REF',this)">팀원 회고 (5)</button>
+    </div>
+  </div>
+
+  <div id="TS" class="scene active">
+    <div class="notice"><b>기획 단계 예상 이슈</b> — 개발 진행 중 실제 트러블슈팅 내용이 추가됩니다. (최종 발표: 2026.07.13)</div>
+    <div class="scroll">
+      <div class="ts-grid">
+        <div class="ts-card ts-w">
+          <div class="ts-prob">
+            <div class="ts-label prob">예상 이슈 · 데이터</div>
+            <div class="ts-title">UCI 데이터셋의 risk_score 라벨 기준 불명확</div>
+            <div class="ts-desc">가스 센서 원본 데이터에는 위험률이 명시되어 있지 않아, 농도·속도·지속시간 기반으로 직접 라벨을 생성해야 함. 라벨 설계 기준이 불명확하면 모델 학습 품질에 영향을 미침.</div>
+          </div>
+          <div class="ts-sol">
+            <div class="ts-label sol">대응 방향</div>
+            <div class="ts-desc">① 농도(ppm) 임계값 기반 1차 점수 산출 → ② 증가 속도(slope) 가중치 부여 → ③ 지속 시간 패널티 적용 방식으로 rule-based 라벨 생성. 라벨 생성 함수를 명시적으로 문서화하여 재현성 확보.</div>
+          </div>
+        </div>
+        <div class="ts-card ts-d">
+          <div class="ts-prob">
+            <div class="ts-label prob">예상 이슈 · ML</div>
+            <div class="ts-title">Threshold 탐색 시 오탐률과 차단 시점 오차 트레이드오프</div>
+            <div class="ts-desc">threshold를 낮추면 조기 차단(오탐 증가), 높이면 늦은 차단(위험 누락). 발표용 시연에서 설득력 있는 threshold를 선정해야 함.</div>
+          </div>
+          <div class="ts-sol">
+            <div class="ts-label sol">대응 방향</div>
+            <div class="ts-desc">F2-score(Recall 가중) 기준으로 threshold 후보(60~95 범위) 스캔. 오탐률 &lt;10%, Recall &gt;0.9 조건을 만족하는 구간에서 차단 시점 오차 최소값 선택. 선정 근거를 모델 성능 화면에 시각화.</div>
+          </div>
+        </div>
+        <div class="ts-card ts-i">
+          <div class="ts-prob">
+            <div class="ts-label prob">예상 이슈 · Unity-API 연동</div>
+            <div class="ts-title">Unity C#에서 FastAPI 비동기 호출 시 HUD 동기화 지연</div>
+            <div class="ts-desc">1초 단위 HUD 갱신 요건에서, API 응답 지연 발생 시 위험률 표시가 실제 시뮬레이션 타임스텝과 어긋날 수 있음.</div>
+          </div>
+          <div class="ts-sol">
+            <div class="ts-label sol">대응 방향</div>
+            <div class="ts-desc">UnityWebRequest 비동기 코루틴으로 API 호출. 응답 실패 시 이전 risk_score 유지(fallback). 발표용 데모 모드에서는 로컬 모델 직접 호출로 API 의존성 제거 가능.</div>
+          </div>
+        </div>
+        <div class="ts-card ts-w">
+          <div class="ts-prob">
+            <div class="ts-label prob">예상 이슈 · Unity</div>
+            <div class="ts-title">Particle System 성능 저하로 시뮬레이션 프레임 드랍</div>
+            <div class="ts-desc">가스 확산 파티클 수가 많아지면 3D 씬 렌더링 성능이 저하되어 HUD 갱신 주기에 영향을 줄 수 있음.</div>
+          </div>
+          <div class="ts-sol">
+            <div class="ts-label sol">대응 방향</div>
+            <div class="ts-desc">Max Particles 제한 설정 + LOD 적용. 발표용 데모에서는 파티클 품질을 중간으로 고정하여 안정적인 30fps 이상 유지. 발표 환경에서 사전 테스트 필수.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="REF" class="scene">
+    <div class="notice"><b>팀원 느낀점</b> — 기획 발표 후 작성 예정. 아래는 각 담당 영역 기준 초안입니다.</div>
+    <div class="ref-grid">
+      <div class="ref-card">
+        <div>
+          <div class="ref-name">김응석</div>
+          <div class="ref-role">Data / ML</div>
+        </div>
+        <div class="ref-area-label">느낀점</div>
+        <div class="ref-area">기획 단계에서 데이터 라벨 설계와 모델 선택 방향을 먼저 정의하는 것이 이후 개발 효율성을 높이는 핵심임을 느꼈다.</div>
+      </div>
+      <div class="ref-card">
+        <div>
+          <div class="ref-name">홍제규</div>
+          <div class="ref-role">Backend / API</div>
+        </div>
+        <div class="ref-area-label">느낀점</div>
+        <div class="ref-area">Unity와 FastAPI 연동 구조를 기획 단계에서 명확히 정의해두면 실제 개발 시 인터페이스 충돌을 줄일 수 있다는 점을 배웠다.</div>
+      </div>
+      <div class="ref-card">
+        <div>
+          <div class="ref-name">장영재</div>
+          <div class="ref-role">UI / DB</div>
+        </div>
+        <div class="ref-area-label">느낀점</div>
+        <div class="ref-area">ERD와 와이어프레임을 함께 설계하면서 데이터 구조와 화면 흐름이 자연스럽게 연결되는 경험을 했다.</div>
+      </div>
+      <div class="ref-card">
+        <div>
+          <div class="ref-name">안세웅</div>
+          <div class="ref-role">Unity Simulation</div>
+        </div>
+        <div class="ref-area-label">느낀점</div>
+        <div class="ref-area">스토리보드를 먼저 작성한 덕분에 Unity 씬 구성과 오브젝트 배치 순서를 명확히 정할 수 있었다.</div>
+      </div>
+      <div class="ref-card">
+        <div>
+          <div class="ref-name">이성룡</div>
+          <div class="ref-role">Test / Demo</div>
+        </div>
+        <div class="ref-area-label">느낀점</div>
+        <div class="ref-area">테스트 케이스를 기획 단계에서 미리 정의하면 개발 완료 후 무엇을 검증해야 하는지 기준이 명확해진다는 점을 느꼈다.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>function show(id,btn){document.querySelectorAll('.scene').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}</script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE 스토리보드</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:14px 20px;gap:10px}
+.head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-title{font-family:"Courier New",monospace;font-size:13px;font-weight:900;letter-spacing:1px}
+.head-sub{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+/* Scene tabs */
+.scene-nav{display:flex;gap:0;flex-shrink:0;border-bottom:1px solid var(--line)}
+.sn-btn{font-family:"Courier New",monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 16px 6px;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-1px;white-space:nowrap}
+.sn-btn:hover{color:var(--text2);border-bottom-color:var(--line-hi)}
+.sn-btn.s0.active{color:var(--safe);border-bottom-color:var(--safe)}
+.sn-btn.s1.active{color:var(--warn);border-bottom-color:var(--warn)}
+.sn-btn.s2.active{color:var(--warn);border-bottom-color:var(--warn)}
+.sn-btn.s3.active{color:var(--danger);border-bottom-color:var(--danger)}
+.sn-btn.s4.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* Board layout */
+.board{display:none;flex:1;min-height:0;gap:14px}.board.active{display:flex}
+/* Scene box */
+.scene-box{flex:0 0 340px;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.scene-box::before{content:"";position:absolute;top:0;left:0;width:14px;height:14px;border-top:1px solid var(--line-hi);border-left:1px solid var(--line-hi)}
+.scene-box::after{content:"";position:absolute;bottom:0;right:0;width:14px;height:14px;border-bottom:1px solid var(--line-hi);border-right:1px solid var(--line-hi)}
+.scene-header{padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.scene-header-label{font-family:"Courier New",monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;opacity:.8}
+.scene-header-title{font-size:16px;font-weight:900}
+.scene-header-time{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px}
+/* Visual mock */
+.scene-visual{flex:1;padding:14px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.sv-area{flex:1;background:var(--panel2);border:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-size:26px;min-height:80px}
+.sv-label{font-family:"Courier New",monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
+.sv-hud{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.sv-hud-cell{background:var(--panel);border:1px solid var(--line);padding:5px 8px;font-family:"Courier New",monospace;font-size:10px}
+.sv-hud-cell span{display:block;font-size:13px;font-weight:900;margin-top:2px}
+/* Side panel */
+.side-panel{flex:1;display:flex;flex-direction:column;gap:12px;overflow:auto}
+.side-panel::-webkit-scrollbar{width:3px}.side-panel::-webkit-scrollbar-thumb{background:var(--line2)}
+.info-block{background:var(--panel);border:1px solid var(--line);padding:16px}
+.ib-label{font-family:"Courier New",monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.ib-title{font-size:14px;font-weight:800;margin-bottom:8px}
+.ib-text{font-size:13px;color:var(--text2);line-height:1.75}
+.ib-list{display:flex;flex-direction:column;gap:4px}
+.ib-list li{font-size:12.5px;color:var(--text2);list-style:none;display:flex;align-items:flex-start;gap:8px;line-height:1.55}
+.ib-list li::before{content:"▸";color:var(--dim);flex-shrink:0}
+.state-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.chip{font-family:"Courier New",monospace;font-size:10px;font-weight:700;padding:3px 10px;border:1px solid currentColor;opacity:.85}
+.ch-s{color:var(--safe)}.ch-w{color:var(--warn)}.ch-d{color:var(--danger)}.ch-i{color:var(--info)}.ch-a{color:var(--accent)}
+/* flow arrow between scenes in timeline */
+.timeline-flow{display:flex;align-items:center;gap:6px;flex-shrink:0;padding:8px 0;overflow-x:auto}
+.tf-step{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:4px 8px;border:1px solid var(--line);background:var(--panel);transition:border-color .12s}
+.tf-step:hover{border-color:var(--line-hi)}
+.tf-step.s0.active-tf{border-color:var(--safe)}.tf-step.s1.active-tf{border-color:var(--warn)}.tf-step.s2.active-tf{border-color:var(--warn)}.tf-step.s3.active-tf{border-color:var(--danger)}.tf-step.s4.active-tf{border-color:var(--accent)}
+.tf-icon{font-size:20px}.tf-label{font-family:"Courier New",monospace;font-size:9px;letter-spacing:.5px;color:var(--muted);text-align:center}
+.tf-arrow{color:var(--line2);font-size:16px;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="head-title">// G-SAFE — 스토리보드</div>
+      <div class="head-sub">STORYBOARD · 5 SCENES · 정상 → 누출 → 주의 → 자동차단 → 결과</div>
+    </div>
+  </div>
+
+  <!-- 타임라인 플로우 -->
+  <div class="timeline-flow" id="tflow">
+    <div class="tf-step s0 active-tf" onclick="showScene(0)"><div class="tf-icon">🟢</div><div class="tf-label">SCENE 1<br>정상 운영</div></div>
+    <div class="tf-arrow">▶</div>
+    <div class="tf-step s1" onclick="showScene(1)"><div class="tf-icon">💨</div><div class="tf-label">SCENE 2<br>가스 누출</div></div>
+    <div class="tf-arrow">▶</div>
+    <div class="tf-step s2" onclick="showScene(2)"><div class="tf-icon">⚠️</div><div class="tf-label">SCENE 3<br>위험 주의</div></div>
+    <div class="tf-arrow">▶</div>
+    <div class="tf-step s3" onclick="showScene(3)"><div class="tf-icon">🔒</div><div class="tf-label">SCENE 4<br>자동차단</div></div>
+    <div class="tf-arrow">▶</div>
+    <div class="tf-step s4" onclick="showScene(4)"><div class="tf-icon">📊</div><div class="tf-label">SCENE 5<br>결과 요약</div></div>
+  </div>
+
+  <!-- Scene 1 -->
+  <div class="board active" id="sc0">
+    <div class="scene-box">
+      <div class="scene-header">
+        <div class="scene-header-label" style="color:var(--safe)">SCENE 01 · 정상 운영</div>
+        <div class="scene-header-title">연구소 — 시스템 정상 가동</div>
+        <div class="scene-header-time">T = 0s ~ 30s (시뮬레이션 시작)</div>
+      </div>
+      <div class="scene-visual">
+        <div class="sv-area">🏢<div class="sv-label">연구소 3D 씬 · 정상 상태</div></div>
+        <div class="sv-hud">
+          <div class="sv-hud-cell">RISK<span style="color:var(--safe)">12%</span></div>
+          <div class="sv-hud-cell">STATUS<span style="color:var(--safe)">SAFE</span></div>
+          <div class="sv-hud-cell">VALVE<span style="color:var(--safe)">OPEN</span></div>
+          <div class="sv-hud-cell">ALARM<span style="color:var(--muted)">OFF</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="info-block">
+        <div class="ib-label">씬 설명</div>
+        <div class="ib-title">시뮬레이션 시작 — 정상 운영 상태</div>
+        <div class="ib-text">연구소/개발실 씬이 로드됩니다. 배관, 밸브, 환기팬이 정상 운영 중이며 위험률이 낮은 수준을 유지합니다.</div>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">화면 구성</div>
+        <ul class="ib-list">
+          <li>Unity 3D 연구소 씬 전체 뷰</li>
+          <li>위험률 HUD — risk_score: ~10~20%</li>
+          <li>상태 = 정상(GREEN), 밸브 OPEN</li>
+          <li>센서값 시계열 그래프 (낮은 수치 유지)</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">시스템 상태</div>
+        <div class="state-chips"><span class="chip ch-s">SAFE</span><span class="chip ch-s">VALVE: OPEN</span><span class="chip ch-i">SENSOR: LOW</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 2 -->
+  <div class="board" id="sc1">
+    <div class="scene-box">
+      <div class="scene-header">
+        <div class="scene-header-label" style="color:var(--warn)">SCENE 02 · 가스 누출 발생</div>
+        <div class="scene-header-title">배관 누출 — Particle 시작</div>
+        <div class="scene-header-time">T = 30s ~ 90s (농도 급증 시작)</div>
+      </div>
+      <div class="scene-visual">
+        <div class="sv-area" style="border-color:rgba(255,170,0,.25)">💨<div class="sv-label">가스 확산 Particle System 활성화</div></div>
+        <div class="sv-hud">
+          <div class="sv-hud-cell">RISK<span style="color:var(--warn)">45%</span></div>
+          <div class="sv-hud-cell">STATUS<span style="color:var(--warn)">WARN</span></div>
+          <div class="sv-hud-cell">VALVE<span style="color:var(--safe)">OPEN</span></div>
+          <div class="sv-hud-cell">ALARM<span style="color:var(--muted)">OFF</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="info-block">
+        <div class="ib-label">씬 설명</div>
+        <div class="ib-title">배관 누출 발생 — 가스 확산 시작</div>
+        <div class="ib-text">지정된 배관 지점에서 가스 누출이 시작됩니다. Particle System이 활성화되어 가스 확산이 시각화됩니다. 센서값이 빠르게 증가하고 위험률이 주의 수준으로 상승합니다.</div>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">화면 구성</div>
+        <ul class="ib-list">
+          <li>누출 지점에 Particle 효과 표시</li>
+          <li>risk_score 40~60%로 상승 중</li>
+          <li>상태 = 주의(YELLOW)</li>
+          <li>그래프에서 위험률 곡선 상승 표시</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">시스템 상태</div>
+        <div class="state-chips"><span class="chip ch-w">WARN</span><span class="chip ch-s">VALVE: OPEN</span><span class="chip ch-w">SENSOR: RISING</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 3 -->
+  <div class="board" id="sc2">
+    <div class="scene-box">
+      <div class="scene-header">
+        <div class="scene-header-label" style="color:var(--warn)">SCENE 03 · 위험 주의 단계</div>
+        <div class="scene-header-title">위험률 임계 접근 — 경보 대기</div>
+        <div class="scene-header-time">T = 90s ~ 150s (threshold 접근)</div>
+      </div>
+      <div class="scene-visual">
+        <div class="sv-area" style="border-color:rgba(255,170,0,.35)">⚠️<div class="sv-label">위험 주의 — Threshold 70% 접근 중</div></div>
+        <div class="sv-hud">
+          <div class="sv-hud-cell">RISK<span style="color:var(--warn)">68%</span></div>
+          <div class="sv-hud-cell">STATUS<span style="color:var(--warn)">DANGER</span></div>
+          <div class="sv-hud-cell">VALVE<span style="color:var(--safe)">OPEN</span></div>
+          <div class="sv-hud-cell">ALARM<span style="color:var(--warn)">STANDBY</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="info-block">
+        <div class="ib-label">씬 설명</div>
+        <div class="ib-title">위험률 임계점 접근 — 차단 직전</div>
+        <div class="ib-text">위험률이 threshold에 근접합니다. 경보가 대기 상태로 전환되고 HUD가 빨간색으로 변경됩니다. 그래프에서 위험률 곡선이 threshold 기준선에 가까워집니다.</div>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">화면 구성</div>
+        <ul class="ib-list">
+          <li>HUD 전체가 위험(RED) 색상으로 전환</li>
+          <li>risk_score 60~80% 범위</li>
+          <li>그래프 곡선이 threshold 기준선 접근</li>
+          <li>경보등 점멸 시작 (STANDBY)</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">시스템 상태</div>
+        <div class="state-chips"><span class="chip ch-d">HIGH RISK</span><span class="chip ch-s">VALVE: OPEN</span><span class="chip ch-w">ALARM: STANDBY</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 4 -->
+  <div class="board" id="sc3">
+    <div class="scene-box">
+      <div class="scene-header">
+        <div class="scene-header-label" style="color:var(--danger)">SCENE 04 · 자동차단 발동</div>
+        <div class="scene-header-title">Threshold 초과 — 자동 밸브 차단</div>
+        <div class="scene-header-time">T = 150s ~ 180s (차단 완료)</div>
+      </div>
+      <div class="scene-visual">
+        <div class="sv-area" style="border-color:rgba(255,51,51,.4)">🔒<div class="sv-label">밸브 CLOSED · 경보 ON · 환기팬 ON</div></div>
+        <div class="sv-hud">
+          <div class="sv-hud-cell">RISK<span style="color:var(--danger)">82%</span></div>
+          <div class="sv-hud-cell">STATUS<span style="color:var(--danger)">CUTOFF</span></div>
+          <div class="sv-hud-cell">VALVE<span style="color:var(--danger)">CLOSED</span></div>
+          <div class="sv-hud-cell">ALARM<span style="color:var(--danger)">ON</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="info-block">
+        <div class="ib-label">씬 설명</div>
+        <div class="ib-title">자동차단 발동 — 시스템 대응 완료</div>
+        <div class="ib-text">risk_score가 threshold를 초과하는 순간 밸브가 자동으로 닫힙니다. 경보등이 켜지고 환기팬이 작동합니다. 차단 이벤트가 DB에 저장됩니다.</div>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">화면 구성</div>
+        <ul class="ib-list">
+          <li>밸브 닫힘 애니메이션 재생</li>
+          <li>경보등 빨간색 점등, 사이렌 효과</li>
+          <li>환기팬 회전 시작</li>
+          <li>그래프에서 차단 마커(◆) 표시</li>
+          <li>HUD: CUTOFF 상태, cutoff_time 기록</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">시스템 상태</div>
+        <div class="state-chips"><span class="chip ch-d">CUTOFF</span><span class="chip ch-d">VALVE: CLOSED</span><span class="chip ch-d">ALARM: ON</span><span class="chip ch-w">VENT: ON</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scene 5 -->
+  <div class="board" id="sc4">
+    <div class="scene-box">
+      <div class="scene-header">
+        <div class="scene-header-label" style="color:var(--accent)">SCENE 05 · 결과 요약</div>
+        <div class="scene-header-title">시뮬레이션 종료 — 결과 분석</div>
+        <div class="scene-header-time">T = 180s~ (결과 화면)</div>
+      </div>
+      <div class="scene-visual">
+        <div class="sv-area" style="border-color:rgba(0,255,204,.2)">📊<div class="sv-label">결과 요약 화면</div></div>
+        <div class="sv-hud">
+          <div class="sv-hud-cell">MAX RISK<span style="color:var(--accent)">82%</span></div>
+          <div class="sv-hud-cell">CUTOFF<span style="color:var(--accent)">T+150s</span></div>
+          <div class="sv-hud-cell">GAS<span style="color:var(--info)">Methane</span></div>
+          <div class="sv-hud-cell">RESULT<span style="color:var(--safe)">COMPLETE</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="side-panel">
+      <div class="info-block">
+        <div class="ib-label">씬 설명</div>
+        <div class="ib-title">시뮬레이션 종료 — 결과 요약 화면</div>
+        <div class="ib-text">시뮬레이션이 완료되면 결과 요약 화면으로 전환됩니다. 최대 위험률, 자동차단 시점, 이벤트 타임라인, 위험 요인 분석 결과가 표시됩니다.</div>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">화면 구성</div>
+        <ul class="ib-list">
+          <li>KPI 카드: max_risk, cutoff_time, 가스 종류, 결과</li>
+          <li>이벤트 타임라인 (정상→누출→주의→차단→완료)</li>
+          <li>위험 요인 분석 패널 (농도/속도/지속시간)</li>
+          <li>[다시 실행] / [이력 보기] 버튼</li>
+        </ul>
+      </div>
+      <div class="info-block">
+        <div class="ib-label">시스템 상태</div>
+        <div class="state-chips"><span class="chip ch-a">COMPLETE</span><span class="chip ch-i">LOG SAVED</span><span class="chip ch-s">REVIEW READY</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function showScene(i){
+  document.querySelectorAll('.board').forEach((b,j)=>b.classList.toggle('active',j===i));
+  document.querySelectorAll('.tf-step').forEach((s,j)=>{s.classList.remove('active-tf');if(j===i)s.classList.add('active-tf')});
+}
+</script>
+</body>
+</html>

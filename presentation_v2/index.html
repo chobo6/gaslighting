@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE 기획 발표</title>
+<style>
+/* ═══════════════════════════════════════
+   BLUEPRINT DESIGN SYSTEM — G-SAFE
+   ─ 산업용 도면 / 기술 터미널 스타일
+═══════════════════════════════════════ */
+:root {
+  --bg:#060e1a; --surf:#09152a; --panel:#0d1e38; --panel2:#112545;
+  --line:#163255; --line2:#1e4575; --line-hi:#2a6aaa;
+  --text:#c2dfff; --text2:#8ab8e0; --muted:#3f6a90; --dim:#1a3558;
+  --accent:#00ffcc; --accent-d:rgba(0,255,204,.15); --accent-g:0 0 18px rgba(0,255,204,.28);
+  --safe:#00ff88; --warn:#ffaa00; --danger:#ff3333; --info:#00ccff;
+  --safe-g:0 0 14px rgba(0,255,136,.25); --warn-g:0 0 14px rgba(255,170,0,.25); --danger-g:0 0 14px rgba(255,51,51,.28);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  font-family:"Noto Sans KR","Segoe UI",sans-serif;
+  background:var(--bg);color:var(--text);
+  background-image:
+    repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),
+    repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),
+    repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),
+    repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px);
+}
+
+/* ── Deck ── */
+.deck{width:100vw;height:100vh;position:relative}
+.slide{display:none;width:100vw;height:100vh;padding:32px 52px 28px;flex-direction:column}
+.slide.active{display:flex}
+
+/* ── 도면 테두리 — 슬라이드 외곽 ── */
+.slide::before,.slide::after{content:"";position:absolute;pointer-events:none}
+.slide::before{
+  top:16px;left:16px;right:16px;bottom:16px;
+  border:1px solid rgba(0,255,204,.08);
+  border-radius:0;
+}
+
+/* ── Cover ── */
+.cover{align-items:center;justify-content:center;position:relative}
+.cover-corner{position:absolute;width:40px;height:40px;border-color:var(--accent);border-style:solid;opacity:.5}
+.cover-corner.tl{top:24px;left:24px;border-width:1px 0 0 1px}
+.cover-corner.tr{top:24px;right:24px;border-width:1px 1px 0 0}
+.cover-corner.bl{bottom:24px;left:24px;border-width:0 0 1px 1px}
+.cover-corner.br{bottom:24px;right:24px;border-width:0 1px 1px 0}
+.cover-inner{display:flex;flex-direction:column;align-items:center;gap:0;position:relative;z-index:1}
+.cover-tag{
+  font-family:"Courier New",monospace;font-size:11px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--accent);opacity:.7;margin-bottom:24px;
+}
+.cover-title{
+  font-family:"Courier New",monospace;
+  font-size:clamp(90px,14vw,180px);font-weight:900;letter-spacing:-4px;line-height:.9;
+  color:var(--text);
+  text-shadow:var(--accent-g),0 0 60px rgba(0,255,204,.12);
+}
+.cover-line{width:100%;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:28px 0;opacity:.4}
+.cover-sub{
+  font-size:clamp(14px,2vw,22px);font-weight:400;color:var(--text2);
+  letter-spacing:.5px;text-align:center;max-width:640px;line-height:1.6;
+}
+/* 도면 타이틀 블록 */
+.title-block{
+  position:absolute;bottom:24px;right:24px;
+  border:1px solid rgba(0,255,204,.2);
+  font-family:"Courier New",monospace;font-size:10px;
+  display:grid;grid-template-columns:80px 140px 100px;
+}
+.tb-cell{
+  padding:5px 9px;border:1px solid rgba(0,255,204,.1);
+  color:var(--muted);display:flex;flex-direction:column;gap:2px;
+}
+.tb-cell span{color:var(--text2);font-weight:700}
+/* 좌측 프로젝트 정보 */
+.cover-info{
+  position:absolute;bottom:24px;left:24px;
+  font-family:"Courier New",monospace;font-size:11px;letter-spacing:1px;
+  color:var(--muted);display:flex;flex-direction:column;gap:4px;
+}
+.cover-info b{color:var(--accent);font-weight:700}
+
+/* ── Slide Header ── */
+.sh{flex:0 0 auto;margin-bottom:14px;display:flex;flex-direction:column;gap:5px}
+.sh-label{
+  font-family:"Courier New",monospace;font-size:10px;letter-spacing:3px;
+  text-transform:uppercase;color:var(--accent);opacity:.7;
+  display:flex;align-items:center;gap:8px;
+}
+.sh-label::before{content:"▸";opacity:.6}
+.sh-num{opacity:.4;margin-right:4px}
+.sh-title{font-size:clamp(22px,2.8vw,34px);font-weight:900;letter-spacing:-.5px;line-height:1.1}
+.sh-desc{color:var(--text2);font-size:14px;line-height:1.6;max-width:1100px;border-left:2px solid rgba(0,255,204,.2);padding-left:12px}
+
+/* ── Content ── */
+.content{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:10px}
+.grid{display:grid;gap:10px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+
+/* ── Cards — corner bracket style ── */
+.card{
+  position:relative;padding:16px 18px;
+  background:var(--panel);
+}
+.card::before,.card::after,.card .br-bl,.card .br-br{
+  content:"";position:absolute;width:12px;height:12px;
+  border-color:var(--line-hi);border-style:solid;
+}
+.card::before{top:0;left:0;border-width:1px 0 0 1px}
+.card::after{top:0;right:0;border-width:1px 1px 0 0}
+.card .br-bl{bottom:0;left:0;border-width:0 0 1px 1px}
+.card .br-br{bottom:0;right:0;border-width:0 1px 1px 0}
+.card h3{font-size:15px;font-weight:800;margin-bottom:8px;letter-spacing:.3px}
+.card p,.card li{color:var(--text2);font-size:13.5px;line-height:1.7}
+.card ul{padding-left:18px}
+.card li{margin-top:3px}
+/* 카드 색상 variant */
+.c-accent{border-top:1px solid rgba(0,255,204,.3);background:rgba(0,255,204,.03)}
+.c-accent::before,.c-accent::after,.c-accent .br-bl,.c-accent .br-br{border-color:rgba(0,255,204,.4)}
+.c-accent h3{color:var(--accent)}
+.c-safe{border-top:1px solid rgba(0,255,136,.25);background:rgba(0,255,136,.03)}
+.c-safe::before,.c-safe::after,.c-safe .br-bl,.c-safe .br-br{border-color:rgba(0,255,136,.35)}
+.c-safe h3{color:var(--safe)}
+.c-warn{border-top:1px solid rgba(255,170,0,.25);background:rgba(255,170,0,.03)}
+.c-warn::before,.c-warn::after,.c-warn .br-bl,.c-warn .br-br{border-color:rgba(255,170,0,.35)}
+.c-warn h3{color:var(--warn)}
+.c-danger{border-top:1px solid rgba(255,51,51,.3);background:rgba(255,51,51,.03)}
+.c-danger::before,.c-danger::after,.c-danger .br-bl,.c-danger .br-br{border-color:rgba(255,51,51,.4)}
+.c-danger h3{color:var(--danger)}
+.c-info{border-top:1px solid rgba(0,204,255,.25);background:rgba(0,204,255,.03)}
+.c-info::before,.c-info::after,.c-info .br-bl,.c-info .br-br{border-color:rgba(0,204,255,.35)}
+.c-info h3{color:var(--info)}
+
+/* 인라인 강조 */
+b[data-c]{font-weight:700}
+b[data-c="a"]{color:var(--accent)}
+b[data-c="s"]{color:var(--safe)}
+b[data-c="w"]{color:var(--warn)}
+b[data-c="d"]{color:var(--danger)}
+b[data-c="i"]{color:var(--info)}
+
+/* ── Flow ── */
+.flow-row{display:flex;align-items:stretch;gap:0}
+.flow-step{
+  flex:1;background:var(--panel);
+  padding:14px 10px;position:relative;text-align:center;
+  border:1px solid var(--line);border-right:none;
+}
+.flow-step:last-child{border-right:1px solid var(--line)}
+.flow-step-num{
+  font-family:"Courier New",monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+}
+.flow-step-icon{font-size:22px;margin-bottom:6px}
+.flow-step-label{font-size:13px;font-weight:800;line-height:1.3;margin-bottom:5px}
+.flow-step-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.flow-step.fs-s{background:rgba(0,255,136,.04);border-color:rgba(0,255,136,.2)}
+.flow-step.fs-s .flow-step-label{color:var(--safe)}
+.flow-step.fs-i{background:rgba(0,204,255,.04);border-color:rgba(0,204,255,.2)}
+.flow-step.fs-i .flow-step-label{color:var(--info)}
+.flow-step.fs-w{background:rgba(255,170,0,.04);border-color:rgba(255,170,0,.2)}
+.flow-step.fs-w .flow-step-label{color:var(--warn)}
+.flow-step.fs-d{background:rgba(255,51,51,.05);border-color:rgba(255,51,51,.25)}
+.flow-step.fs-d .flow-step-label{color:var(--danger)}
+
+/* ── Stack section ── */
+.stack-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.stack-item{background:var(--panel);border:1px solid var(--line);padding:14px}
+.stack-item-label{
+  font-family:"Courier New",monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--accent);margin-bottom:7px;opacity:.7;
+}
+.stack-item-name{font-size:14px;font-weight:800;margin-bottom:6px}
+.stack-item-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}
+.tag{
+  font-family:"Courier New",monospace;font-size:10px;font-weight:700;
+  padding:3px 8px;background:var(--panel2);border:1px solid var(--line2);
+  color:var(--text2);letter-spacing:.5px;
+}
+.tag.t-a{border-color:rgba(0,255,204,.3);color:var(--accent)}
+.tag.t-s{border-color:rgba(0,255,136,.3);color:var(--safe)}
+.tag.t-w{border-color:rgba(255,170,0,.3);color:var(--warn)}
+.tag.t-d{border-color:rgba(255,51,51,.3);color:var(--danger)}
+.stack-item-sub{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* ── Timeline ── */
+.timeline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0}
+.week{border:1px solid var(--line);border-right:none;padding:14px;background:var(--panel);position:relative}
+.week:last-child{border-right:1px solid var(--line)}
+.week-bar{position:absolute;top:0;left:0;right:0;height:2px}
+.w1 .week-bar{background:linear-gradient(90deg,var(--info),transparent)}
+.w2 .week-bar{background:linear-gradient(90deg,var(--safe),transparent)}
+.w3 .week-bar{background:linear-gradient(90deg,var(--warn),transparent)}
+.w4 .week-bar{background:linear-gradient(90deg,var(--danger),transparent)}
+.week-label{
+  font-family:"Courier New",monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;margin-bottom:3px;
+}
+.w1 .week-label{color:var(--info)}.w2 .week-label{color:var(--safe)}
+.w3 .week-label{color:var(--warn)}.w4 .week-label{color:var(--danger)}
+.week-date{font-size:11px;color:var(--muted);margin-bottom:8px;font-family:"Courier New",monospace}
+.week-title{font-size:14px;font-weight:800;margin-bottom:7px}
+.week-items{list-style:none;display:flex;flex-direction:column;gap:4px}
+.week-items li{font-size:12px;color:var(--text2);display:flex;align-items:flex-start;gap:5px}
+.week-items li::before{content:"─";color:var(--dim);flex-shrink:0}
+
+/* ── Stat chips ── */
+.stat-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;flex-shrink:0}
+.stat-chip{background:var(--panel);border:1px solid var(--line);padding:10px 14px;display:flex;align-items:baseline;gap:8px}
+.stat-num{font-family:"Courier New",monospace;font-size:22px;font-weight:900;line-height:1}
+.stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── Effect cards ── */
+.effect-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.effect-card{background:var(--panel);border:1px solid var(--line);padding:18px 20px;text-align:center}
+.effect-icon{font-size:32px;margin-bottom:8px}
+.effect-title{font-size:14px;font-weight:800;margin-bottom:6px}
+.effect-desc{font-size:12.5px;color:var(--text2);line-height:1.65}
+.ec-a{border-top:2px solid rgba(0,255,204,.3)}.ec-a .effect-title{color:var(--accent)}
+.ec-s{border-top:2px solid rgba(0,255,136,.3)}.ec-s .effect-title{color:var(--safe)}
+.ec-w{border-top:2px solid rgba(255,170,0,.3)}.ec-w .effect-title{color:var(--warn)}
+
+/* ── 문서 링크 ── */
+.doc-links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.doc-link{
+  font-family:"Courier New",monospace;font-size:11px;letter-spacing:.5px;
+  padding:7px 14px;border:1px solid var(--line2);color:var(--text2);
+  text-decoration:none;background:var(--panel);
+  transition:border-color .15s,color .15s;
+}
+.doc-link:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── Close message ── */
+.close-panel{
+  background:var(--panel);border:1px solid var(--line);
+  padding:18px 24px;text-align:center;
+  border-left:3px solid var(--accent);
+  font-size:15px;color:var(--text2);line-height:1.8;
+}
+.close-panel b{color:var(--accent)}
+
+/* ── Controls ── */
+.controls{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:100;display:flex;gap:8px;align-items:center}
+.btn{
+  width:40px;height:40px;border:1px solid var(--line2);
+  background:rgba(6,14,26,.9);color:var(--text2);font-size:18px;
+  cursor:pointer;display:grid;place-items:center;transition:border-color .15s,color .15s;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.counter{
+  font-family:"Courier New",monospace;font-size:12px;letter-spacing:1px;
+  color:var(--muted);min-width:56px;text-align:center;
+  background:rgba(6,14,26,.9);border:1px solid var(--line);padding:9px 12px;
+}
+
+/* ── Progress ── */
+.prog{position:fixed;top:0;left:0;right:0;height:2px;background:var(--line);z-index:100}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--safe));transition:width .3s}
+
+/* ── 슬라이드 번호 ── */
+.slide-num{
+  position:absolute;top:22px;right:28px;
+  font-family:"Courier New",monospace;font-size:10px;letter-spacing:2px;
+  color:var(--muted);opacity:.5;
+}
+</style>
+</head>
+<body>
+<div class="prog"><div class="prog-fill" id="pf"></div></div>
+<main class="deck">
+
+<!-- ① Cover -->
+<section class="slide cover active" data-title="G-SAFE">
+  <div class="cover-corner tl"></div>
+  <div class="cover-corner tr"></div>
+  <div class="cover-corner bl"></div>
+  <div class="cover-corner br"></div>
+  <div class="cover-inner">
+    <div class="cover-tag">// GAS SAFETY SIMULATION SYSTEM</div>
+    <div class="cover-title">G-SAFE</div>
+    <div class="cover-line"></div>
+    <div class="cover-sub">Unity 기반 가스 누출 위험률 예측 및 자동차단 시뮬레이션</div>
+  </div>
+  <div class="cover-info">
+    <div><b>PROJECT</b> G-SAFE v1.0</div>
+    <div><b>PERIOD</b> 2026.06.16 – 07.13</div>
+    <div><b>TEAM</b> 5인 · Data/ML · Backend · Unity · Test</div>
+    <div><b>DATE</b> 2026.07.13 PRESENTATION</div>
+  </div>
+</section>
+
+<!-- ② 목차 -->
+<section class="slide" data-title="목차">
+  <div class="slide-num">01 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">00</span> INDEX</div>
+    <h2 class="sh-title">목차</h2>
+    <p class="sh-desc">G-SAFE 기획 발표 구성</p>
+  </div>
+  <div class="content" style="justify-content:center">
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:700px;margin:auto">
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,255,204,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--accent);opacity:.35;min-width:36px">01</div>
+        <div><div style="font-size:16px;font-weight:800">팀원 소개</div><div style="font-size:12px;color:var(--muted);margin-top:3px">프론트 · 백엔드 · 인프라 · 데이터셋 — 5인 팀 구성</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(255,51,51,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--danger);opacity:.35;min-width:36px">02</div>
+        <div><div style="font-size:16px;font-weight:800">배경 / 문제</div><div style="font-size:12px;color:var(--muted);margin-top:3px">왜 이 시스템이 필요한가 · 문제 인식 · 해결 접근</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,204,255,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--info);opacity:.35;min-width:36px">03</div>
+        <div><div style="font-size:16px;font-weight:800">프로젝트 목표</div><div style="font-size:12px;color:var(--muted);margin-top:3px">위험률 예측 모델 · Unity 3D 시뮬레이션 · 통합 시스템 연동</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(255,170,0,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--warn);opacity:.35;min-width:36px">04</div>
+        <div><div style="font-size:16px;font-weight:800">핵심 동작 흐름</div><div style="font-size:12px;color:var(--muted);margin-top:3px">가스 누출 → 센서 → 예측 → Threshold → 자동차단 5단계 파이프라인</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,255,136,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--safe);opacity:.35;min-width:36px">05</div>
+        <div><div style="font-size:16px;font-weight:800">기술 스택</div><div style="font-size:12px;color:var(--muted);margin-top:3px">Unity · Python/scikit-learn · FastAPI · HUD Dashboard</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(170,128,255,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:#aa80ff;opacity:.35;min-width:36px">06</div>
+        <div><div style="font-size:16px;font-weight:800">시스템 아키텍처</div><div style="font-size:12px;color:var(--muted);margin-top:3px">계층 구조 · 오프라인 학습 vs 실시간 추론 분리 설계</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,255,204,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--accent);opacity:.35;min-width:36px">07</div>
+        <div><div style="font-size:16px;font-weight:800">4주 개발 일정</div><div style="font-size:12px;color:var(--muted);margin-top:3px">2026.06.16 – 07.13 · 36개 작업 · 5인 팀 역할</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(255,170,0,.4);padding:16px 22px">
+        <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--warn);opacity:.35;min-width:36px">08</div>
+        <div><div style="font-size:16px;font-weight:800">기대효과</div><div style="font-size:12px;color:var(--muted);margin-top:3px">수치 기반 의사결정 · 직관적 시각화 · 확장 가능한 구조</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ③ 팀원 소개 -->
+<section class="slide" data-title="팀원 소개">
+  <div class="slide-num">02 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">01</span> TEAM</div>
+    <h2 class="sh-title">팀원 소개</h2>
+    <p class="sh-desc">5인 팀 · 프론트 · 백엔드 · 인프라 · 데이터셋</p>
+  </div>
+  <div class="content" style="justify-content:center">
+    <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;width:100%">
+      <!-- 안세웅 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:2px solid rgba(0,204,255,.5);padding:22px 18px;display:flex;flex-direction:column;gap:12px;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--info);border-left:1px solid var(--info)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--info);border-right:1px solid var(--info)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--info)">FRONTEND</div>
+        <div style="font-size:22px;font-weight:900">안세웅</div>
+        <div style="width:32px;height:1px;background:rgba(0,204,255,.3)"></div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;flex:1">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info)">─</span>Unity 3D 씬 구성</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info)">─</span>Particle System 구현</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info)">─</span>밸브 · 경보 · 환기팬</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info)">─</span>위험률 HUD · 애니메이션</li>
+        </ul>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px">Unity 3D · C#</div>
+      </div>
+      <!-- 홍제규 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:2px solid rgba(255,170,0,.5);padding:22px 18px;display:flex;flex-direction:column;gap:12px;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--warn);border-left:1px solid var(--warn)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--warn);border-right:1px solid var(--warn)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warn)">BACKEND</div>
+        <div style="font-size:22px;font-weight:900">홍제규</div>
+        <div style="width:32px;height:1px;background:rgba(255,170,0,.3)"></div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;flex:1">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>FastAPI 서버 구현</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>예측 API 엔드포인트</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>Unity 연동 REST API</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>차단 이벤트 로그 처리</li>
+        </ul>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px">FastAPI · Python</div>
+      </div>
+      <!-- 이성룡 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:2px solid rgba(255,170,0,.5);padding:22px 18px;display:flex;flex-direction:column;gap:12px;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--warn);border-left:1px solid var(--warn)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--warn);border-right:1px solid var(--warn)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warn)">BACKEND</div>
+        <div style="font-size:22px;font-weight:900">이성룡</div>
+        <div style="width:32px;height:1px;background:rgba(255,170,0,.3)"></div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;flex:1">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>DB 스키마 설계</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>테스트 케이스 15개</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>통합 시나리오 검증</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn)">─</span>데모 흐름 완성</li>
+        </ul>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px">SQLite · PostgreSQL</div>
+      </div>
+      <!-- 장영재 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:2px solid rgba(0,255,204,.5);padding:22px 18px;display:flex;flex-direction:column;gap:12px;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--accent);border-right:1px solid var(--accent)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--accent)">INFRA</div>
+        <div style="font-size:22px;font-weight:900">장영재</div>
+        <div style="width:32px;height:1px;background:rgba(0,255,204,.3)"></div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;flex:1">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--accent)">─</span>서버 환경 구성</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--accent)">─</span>ERD · 와이어프레임</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--accent)">─</span>HUD 그래프 UI</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--accent)">─</span>배포 환경 관리</li>
+        </ul>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px">인프라 · DB 설계</div>
+      </div>
+      <!-- 김응석 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:2px solid rgba(0,255,136,.5);padding:22px 18px;display:flex;flex-direction:column;gap:12px;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--safe);border-left:1px solid var(--safe)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--safe);border-right:1px solid var(--safe)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--safe)">DATASET</div>
+        <div style="font-size:22px;font-weight:900">김응석</div>
+        <div style="width:32px;height:1px;background:rgba(0,255,136,.3)"></div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;flex:1">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>UCI 데이터 수집·분석</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>risk_score 라벨 생성</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>RF/GBR 모델 학습</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>Threshold 탐색·평가</li>
+        </ul>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px">scikit-learn · pandas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ④ 배경 & 문제 -->
+<section class="slide" data-title="배경/문제">
+  <div class="slide-num">03 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">01</span> BACKGROUND</div>
+    <h2 class="sh-title">왜 이 시스템이 필요한가?</h2>
+  </div>
+  <div class="content">
+
+    <!-- 배경 설명 텍스트 -->
+    <div style="flex-shrink:0;padding:14px 20px;background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(0,204,255,.3)">
+      <span style="font-size:14px;color:var(--text2);line-height:1.8">
+        연구소·개발실 환경에서 가스 누출은 <b style="color:var(--text)">시간이 지날수록 위험도가 급격히 증가</b>하지만,
+        현재는 <b style="color:var(--danger)">수치 기반 위험률 기준도, 직관적 시각화도 없다.</b>
+        G-SAFE는 아래 세 가지 문제를 해결한다.
+      </span>
+    </div>
+
+    <!-- 매핑 행 3개 -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-height:0">
+
+      <!-- 행 1 -->
+      <div style="flex:1;display:flex;align-items:stretch;border:1px solid var(--line);overflow:hidden">
+        <div style="flex:1;background:var(--panel);border-right:none;padding:18px 22px;display:flex;flex-direction:column;gap:8px;border-left:3px solid rgba(255,51,51,.6)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--danger);opacity:.8">PROBLEM 01</div>
+          <div style="font-size:20px;font-weight:900;color:var(--danger);font-family:'Courier New',monospace">위험률 정량화 불가</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1">기존 센서는 raw 농도값만 제공. <b style="color:var(--danger)">"현재 몇 % 위험한지"</b> 계산하는 기준 자체가 없어 대응이 주관적으로 이루어진다.</div>
+        </div>
+        <div style="flex-shrink:0;width:60px;background:var(--panel2);display:flex;align-items:center;justify-content:center;border-left:1px solid var(--line);border-right:1px solid var(--line)">
+          <span style="font-size:22px;color:var(--accent);opacity:.6">→</span>
+        </div>
+        <div style="flex:1;background:var(--panel2);padding:18px 22px;display:flex;flex-direction:column;gap:8px;border-right:3px solid rgba(0,255,204,.5)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--accent);opacity:.8">SOLUTION 01</div>
+          <div style="font-size:20px;font-weight:900;color:var(--accent);font-family:'Courier New',monospace">risk_score ML 예측</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1">UCI 16채널 센서 데이터로 <b style="color:var(--accent)">위험률 0~100</b>을 회귀 모델로 예측. 수치 기반 판단 기준을 제공한다.</div>
+        </div>
+      </div>
+
+      <!-- 행 2 -->
+      <div style="flex:1;display:flex;align-items:stretch;border:1px solid var(--line);overflow:hidden">
+        <div style="flex:1;background:var(--panel);padding:18px 22px;display:flex;flex-direction:column;gap:8px;border-left:3px solid rgba(255,170,0,.6)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--warn);opacity:.8">PROBLEM 02</div>
+          <div style="font-size:20px;font-weight:900;color:var(--warn);font-family:'Courier New',monospace">차단 기준 부재</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1"><b style="color:var(--warn)">언제 밸브를 잠가야 하는가?</b> 명확한 수치 기준 없이 운영자 경험에만 의존. 늦은 차단은 대형 사고로 이어진다.</div>
+        </div>
+        <div style="flex-shrink:0;width:60px;background:var(--panel2);display:flex;align-items:center;justify-content:center;border-left:1px solid var(--line);border-right:1px solid var(--line)">
+          <span style="font-size:22px;color:var(--accent);opacity:.6">→</span>
+        </div>
+        <div style="flex:1;background:var(--panel2);padding:18px 22px;display:flex;flex-direction:column;gap:8px;border-right:3px solid rgba(0,255,136,.5)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--safe);opacity:.8">SOLUTION 02</div>
+          <div style="font-size:20px;font-weight:900;color:var(--safe);font-family:'Courier New',monospace">Threshold 자동차단</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1">F2-score 기준으로 <b style="color:var(--safe)">최적 threshold</b>를 탐색해 수치 기반 차단 기준을 정의. 오탐률 &lt;10%, Recall &gt;0.9 목표.</div>
+        </div>
+      </div>
+
+      <!-- 행 3 -->
+      <div style="flex:1;display:flex;align-items:stretch;border:1px solid var(--line);overflow:hidden">
+        <div style="flex:1;background:var(--panel);padding:18px 22px;display:flex;flex-direction:column;gap:8px;border-left:3px solid rgba(0,204,255,.5)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--info);opacity:.8">PROBLEM 03</div>
+          <div style="font-size:20px;font-weight:900;color:var(--info);font-family:'Courier New',monospace">직관적 파악 어려움</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1">숫자만으로는 비전문가가 <b style="color:var(--info)">가스 확산 상황</b>을 직관적으로 이해하기 어렵고, 대응 판단에 시간이 걸린다.</div>
+        </div>
+        <div style="flex-shrink:0;width:60px;background:var(--panel2);display:flex;align-items:center;justify-content:center;border-left:1px solid var(--line);border-right:1px solid var(--line)">
+          <span style="font-size:22px;color:var(--accent);opacity:.6">→</span>
+        </div>
+        <div style="flex:1;background:var(--panel2);padding:18px 22px;display:flex;flex-direction:column;gap:8px;border-right:3px solid rgba(0,204,255,.4)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--info);opacity:.8">SOLUTION 03</div>
+          <div style="font-size:20px;font-weight:900;color:var(--info);font-family:'Courier New',monospace">Unity 3D 시각화</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1">가스 확산 Particle, 위험률 HUD, 밸브 자동차단 애니메이션으로 <b style="color:var(--info)">누구나 한눈에</b> 상황을 파악할 수 있다.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- NOTE -->
+    <div style="flex-shrink:0;background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(255,170,0,.4);padding:10px 18px">
+      <span style="font-family:'Courier New',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--warn);margin-right:12px">NOTE</span>
+      <span style="font-size:13px;color:var(--text2)">교육·연구 목적의 가스 안전 대응 시뮬레이션 — 실제 장치 제어가 아닌 <b data-c="a">의사결정 지원 시각화</b> 시스템</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ④ 목표 -->
+<section class="slide" data-title="프로젝트 목표">
+  <div class="slide-num">04 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">02</span> OBJECTIVE</div>
+    <h2 class="sh-title">프로젝트 목표</h2>
+    <p class="sh-desc">G-SAFE는 세 가지 핵심 목표를 달성하는 것을 지향합니다.</p>
+  </div>
+  <div class="content">
+    <div class="grid g3" style="flex:1">
+
+      <!-- 목표 01 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--info);position:relative;display:flex;flex-direction:column;padding:24px 22px;gap:0">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--info);border-left:1px solid var(--info)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--info);border-right:1px solid var(--info)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:52px;font-weight:900;color:var(--info);opacity:.12;line-height:1;margin-bottom:8px">01</div>
+        <div style="font-size:18px;font-weight:900;color:var(--info);margin-bottom:4px">위험률 예측 모델</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:16px">DATA / ML</div>
+        <div style="width:100%;height:1px;background:rgba(0,204,255,.2);margin-bottom:16px"></div>
+        <div style="display:flex;flex-direction:column;gap:10px;flex:1">
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">UCI 16채널 센서 → <b style="color:var(--text)">risk_score 0~100</b> 회귀 예측</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">RandomForest / GBR 두 모델 비교 학습</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">MAE · RMSE · R² 기준 성능 평가</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)"><b style="color:var(--info)">최적 threshold</b> 탐색 — F2-score 기준</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">오탐률 &lt;10% · Recall &gt;0.9 달성 목표</span></div>
+        </div>
+        <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">scikit-learn · pandas</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--info)">R² &gt; 0.9</span>
+        </div>
+      </div>
+
+      <!-- 목표 02 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--safe);position:relative;display:flex;flex-direction:column;padding:24px 22px;gap:0">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--safe);border-left:1px solid var(--safe)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--safe);border-right:1px solid var(--safe)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:52px;font-weight:900;color:var(--safe);opacity:.12;line-height:1;margin-bottom:8px">02</div>
+        <div style="font-size:18px;font-weight:900;color:var(--safe);margin-bottom:4px">Unity 3D 시뮬레이션</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:16px">SIMULATION</div>
+        <div style="width:100%;height:1px;background:rgba(0,255,136,.2);margin-bottom:16px"></div>
+        <div style="display:flex;flex-direction:column;gap:10px;flex:1">
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">연구소·개발실 <b style="color:var(--text)">3D 씬</b> 구현 (배관·밸브·환기팬)</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">가스 확산 <b style="color:var(--safe)">Particle System</b> 시각화</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">위험률 HUD 게이지 · 상태 배지 실시간 갱신</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">threshold 초과 시 <b style="color:var(--safe)">밸브 자동차단</b> + 경보 ON</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">발표용 데모 자동 진행 모드 구현</span></div>
+        </div>
+        <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">Unity 3D · C#</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--safe)">30fps+</span>
+        </div>
+      </div>
+
+      <!-- 목표 03 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--warn);position:relative;display:flex;flex-direction:column;padding:24px 22px;gap:0">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--warn);border-left:1px solid var(--warn)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--warn);border-right:1px solid var(--warn)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:52px;font-weight:900;color:var(--warn);opacity:.12;line-height:1;margin-bottom:8px">03</div>
+        <div style="font-size:18px;font-weight:900;color:var(--warn);margin-bottom:4px">통합 시스템 연동</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:16px">BACKEND / API</div>
+        <div style="width:100%;height:1px;background:rgba(255,170,0,.2);margin-bottom:16px"></div>
+        <div style="display:flex;flex-direction:column;gap:10px;flex:1">
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--warn);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">Unity C# → <b style="color:var(--warn)">POST /api/predict-risk</b> → FastAPI</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--warn);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">ML 예측값 → HUD <b style="color:var(--text)">실시간 반영</b></span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--warn);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">차단 이벤트 → <b style="color:var(--warn)">cutoff_events</b> DB 저장</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--warn);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">5개 테이블 스키마 설계 및 구현</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--warn);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">API 실패 시 fallback — 이전값 유지</span></div>
+        </div>
+        <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">FastAPI · SQLite</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--warn)">응답 &lt;1s</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ⑤ 핵심 흐름 -->
+<section class="slide" data-title="핵심 흐름">
+  <div class="slide-num">05 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">03</span> CORE FLOW</div>
+    <h2 class="sh-title">핵심 동작 흐름</h2>
+    <p class="sh-desc">가스 누출 발생부터 자동차단 완료까지의 5단계 파이프라인</p>
+  </div>
+  <div class="content">
+
+    <!-- 상단: 플로우 카드 (화살표 연결) -->
+    <div style="display:flex;align-items:stretch;flex-shrink:0;gap:0">
+
+      <div style="flex:1;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,255,136,.6);padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--safe);opacity:.8">STEP 01</div>
+        <div style="font-size:28px;line-height:1">💨</div>
+        <div style="font-size:14px;font-weight:900;color:var(--safe)">가스 누출 발생</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65">Unity 연구소 씬 배관 누출<br>Particle System 활성화<br>누출 지점 시각화</div>
+      </div>
+
+      <!-- 화살표 01→02 -->
+      <div style="flex-shrink:0;width:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1">
+        <div style="width:100%;height:2px;background:linear-gradient(90deg,rgba(0,255,136,.4),rgba(0,204,255,.4))"></div>
+        <div style="position:absolute;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid rgba(0,204,255,.5);right:0"></div>
+      </div>
+
+      <div style="flex:1;background:var(--panel);border:1px solid var(--line);border-left:none;border-right:none;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--info);opacity:.8">STEP 02</div>
+        <div style="font-size:28px;line-height:1">📡</div>
+        <div style="font-size:14px;font-weight:900;color:var(--info)">센서값 증가</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65">UCI CSV 시계열 재생<br>1초 단위 sensor_1~16 갱신<br>농도 수치 HUD 반영</div>
+      </div>
+
+      <!-- 화살표 02→03 -->
+      <div style="flex-shrink:0;width:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1">
+        <div style="width:100%;height:2px;background:linear-gradient(90deg,rgba(0,204,255,.4),rgba(255,170,0,.4))"></div>
+        <div style="position:absolute;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid rgba(255,170,0,.5);right:0"></div>
+      </div>
+
+      <div style="flex:1;background:var(--panel);border:1px solid var(--line);border-left:none;border-right:none;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--warn);opacity:.8">STEP 03</div>
+        <div style="font-size:28px;line-height:1">🧠</div>
+        <div style="font-size:14px;font-weight:900;color:var(--warn)">위험률 예측</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65">POST /api/predict-risk 호출<br>ML → risk_score 반환<br>HUD 게이지 실시간 업데이트</div>
+      </div>
+
+      <!-- 화살표 03→04 -->
+      <div style="flex-shrink:0;width:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1">
+        <div style="width:100%;height:2px;background:linear-gradient(90deg,rgba(255,170,0,.4),rgba(255,51,51,.5))"></div>
+        <div style="position:absolute;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid rgba(255,51,51,.6);right:0"></div>
+      </div>
+
+      <div style="flex:1;background:var(--panel);border:1px solid var(--line);border-left:none;border-right:none;padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--danger);opacity:.8">STEP 04</div>
+        <div style="font-size:28px;line-height:1">⚠️</div>
+        <div style="font-size:14px;font-weight:900;color:var(--danger)">Threshold 초과</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65">risk_score ≥ threshold 감지<br>차단 이벤트 트리거<br>HUD → DANGER 전환</div>
+      </div>
+
+      <!-- 화살표 04→05 -->
+      <div style="flex-shrink:0;width:36px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;z-index:1">
+        <div style="width:100%;height:2px;background:rgba(255,51,51,.6)"></div>
+        <div style="position:absolute;width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:10px solid rgba(255,51,51,.8);right:0"></div>
+      </div>
+
+      <div style="flex:1;background:var(--panel2);border:1px solid var(--line);border-left:2px solid rgba(255,51,51,.8);padding:20px 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--danger);opacity:.8">STEP 05</div>
+        <div style="font-size:28px;line-height:1">🔒</div>
+        <div style="font-size:14px;font-weight:900;color:var(--danger)">자동차단 완료</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65">밸브 CLOSED 애니메이션<br>경보 ON · 환기팬 ON<br>cutoff_events DB 저장</div>
+      </div>
+
+    </div>
+
+    <!-- 하단: INPUT / MODEL / OUTPUT 상세 패널 (flex:1 채움) -->
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;flex:1;min-height:0">
+
+      <div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(0,204,255,.5);padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--info);opacity:.8">INPUT — 데이터</div>
+        <div style="font-size:16px;font-weight:900;color:var(--text)">UCI Gas Sensor Array</div>
+        <div style="width:32px;height:1px;background:rgba(0,204,255,.3)"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+          <div style="display:flex;gap:8px"><span style="color:var(--info);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">16채널 화학 센서 반응값</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--info);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">시간별 가스 농도 시계열</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--info);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">Dynamic Gas Mixtures 데이터셋</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--info);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">1초 단위 sensor_1 ~ sensor_16</span></div>
+        </div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px">pandas · numpy · CSV 재생 모듈</div>
+      </div>
+
+      <div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(255,170,0,.5);padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warn);opacity:.8">MODEL — 회귀 예측</div>
+        <div style="font-size:16px;font-weight:900;color:var(--text)">RandomForest / GBR</div>
+        <div style="width:32px;height:1px;background:rgba(255,170,0,.3)"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">분류(0/1) 아닌 <b style="color:var(--warn)">연속값</b> 예측</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">risk_score 0 ~ 100 출력</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">MAE · RMSE · R² 성능 평가</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">두 모델 비교 후 최적 선택</span></div>
+        </div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px">scikit-learn · joblib 모델 저장</div>
+      </div>
+
+      <div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(255,51,51,.5);padding:20px 22px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--danger);opacity:.8">OUTPUT — 자동차단</div>
+        <div style="font-size:16px;font-weight:900;color:var(--text)">Threshold 기반 차단</div>
+        <div style="width:32px;height:1px;background:rgba(255,51,51,.3)"></div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">F2-score 기준 최적값 탐색</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">오탐률 &lt;10% · Recall &gt;0.9 목표</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">차단 시점 오차 최소화</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">cutoff_events 테이블 저장</span></div>
+        </div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px">FastAPI → DB → Unity HUD 반영</div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ⑥ 기술 스택 -->
+<section class="slide" data-title="기술 스택">
+  <div class="slide-num">06 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">04</span> TECH STACK</div>
+    <h2 class="sh-title">기술 스택</h2>
+  </div>
+  <div class="content">
+
+    <!-- 상단: 4개 기술 카드 (고정 높이) -->
+    <div class="stack-row" style="flex-shrink:0">
+
+      <div class="stack-item" style="display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(0,204,255,.5)">
+        <div class="stack-item-label">SIMULATION</div>
+        <div class="stack-item-name" style="color:var(--info)">🎮 Unity</div>
+        <div class="stack-item-tags">
+          <span class="tag t-a">Unity 3D</span><span class="tag t-a">C#</span><span class="tag">Particle System</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>연구소/개발실 3D 씬 구성</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>가스 확산 Particle Effect</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>밸브/경보/환기팬 애니메이션</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>위험률 HUD · 시계열 그래프</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>CSV 재생 모듈 · 데모 모드</li>
+        </ul>
+      </div>
+
+      <div class="stack-item" style="display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(0,255,136,.5)">
+        <div class="stack-item-label">DATA / ML</div>
+        <div class="stack-item-name" style="color:var(--safe)">🧪 Python</div>
+        <div class="stack-item-tags">
+          <span class="tag t-s">scikit-learn</span><span class="tag t-s">pandas</span><span class="tag">numpy</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>UCI 데이터 전처리 · 정규화</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>rule-based risk_score 라벨 생성</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>RandomForest / GBR 회귀 학습</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>Threshold 탐색 (F2/Recall 기준)</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>모델 성능 평가 · 비교 표 작성</li>
+        </ul>
+      </div>
+
+      <div class="stack-item" style="display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(255,170,0,.5)">
+        <div class="stack-item-label">BACKEND</div>
+        <div class="stack-item-name" style="color:var(--warn)">⚙️ FastAPI</div>
+        <div class="stack-item-tags">
+          <span class="tag t-w">FastAPI</span><span class="tag">SQLite</span><span class="tag">PostgreSQL</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn);opacity:.5">▸</span>POST /api/predict-risk 엔드포인트</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn);opacity:.5">▸</span>센서 로그 · 차단 이벤트 저장 API</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn);opacity:.5">▸</span>5개 테이블 DB 스키마 구현</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn);opacity:.5">▸</span>Unity UnityWebRequest 연동</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--warn);opacity:.5">▸</span>개발: SQLite / 배포: PostgreSQL</li>
+        </ul>
+      </div>
+
+      <div class="stack-item" style="display:flex;flex-direction:column;gap:8px;border-left:2px solid rgba(255,51,51,.5)">
+        <div class="stack-item-label">MONITORING</div>
+        <div class="stack-item-name" style="color:var(--danger)">📊 Unity UI</div>
+        <div class="stack-item-tags">
+          <span class="tag t-d">HUD</span><span class="tag t-d">Graph</span><span class="tag">Dashboard</span>
+        </div>
+        <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>실시간 위험률 게이지 HUD</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>시계열 그래프 + threshold 기준선</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>정상/주의/위험/차단 상태 배지</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>결과 요약 · 이벤트 타임라인</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>모델 성능 비교 화면</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- 하단: 데이터 흐름 다이어그램 (flex:1) -->
+    <div style="flex:1;min-height:0;background:var(--panel);border:1px solid var(--line);padding:18px 24px;display:flex;flex-direction:column;gap:14px">
+
+      <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--accent);opacity:.7">SYSTEM DATA FLOW</div>
+
+      <!-- 메인 흐름 -->
+      <div style="flex:1;display:flex;align-items:center;gap:0">
+
+        <!-- 노드: Unity C# -->
+        <div style="flex-shrink:0;background:rgba(0,204,255,.08);border:1px solid rgba(0,204,255,.3);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:110px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--info);opacity:.8;letter-spacing:1px">SIMULATION</div>
+          <div style="font-size:13px;font-weight:900;color:var(--info)">Unity C#</div>
+          <div style="font-size:10px;color:var(--muted)">sensor_1~16 전송</div>
+        </div>
+
+        <!-- 화살표 -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted)">POST JSON</div>
+          <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(0,204,255,.4),rgba(255,170,0,.4));position:relative">
+            <div style="position:absolute;right:-1px;top:-4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid rgba(255,170,0,.5)"></div>
+          </div>
+        </div>
+
+        <!-- 노드: FastAPI -->
+        <div style="flex-shrink:0;background:rgba(255,170,0,.08);border:1px solid rgba(255,170,0,.3);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:110px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--warn);opacity:.8;letter-spacing:1px">BACKEND</div>
+          <div style="font-size:13px;font-weight:900;color:var(--warn)">FastAPI</div>
+          <div style="font-size:10px;color:var(--muted)">/api/predict-risk</div>
+        </div>
+
+        <!-- 화살표 -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted)">predict()</div>
+          <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(255,170,0,.4),rgba(0,255,136,.4));position:relative">
+            <div style="position:absolute;right:-1px;top:-4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid rgba(0,255,136,.5)"></div>
+          </div>
+        </div>
+
+        <!-- 노드: ML Model -->
+        <div style="flex-shrink:0;background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.3);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:110px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--safe);opacity:.8;letter-spacing:1px">ML MODEL</div>
+          <div style="font-size:13px;font-weight:900;color:var(--safe)">RF / GBR</div>
+          <div style="font-size:10px;color:var(--muted)">risk_score 0~100</div>
+        </div>
+
+        <!-- 화살표 -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted)">score 반환</div>
+          <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(0,255,136,.4),rgba(0,204,255,.4));position:relative">
+            <div style="position:absolute;right:-1px;top:-4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid rgba(0,204,255,.5)"></div>
+          </div>
+        </div>
+
+        <!-- 노드: HUD -->
+        <div style="flex-shrink:0;background:rgba(0,204,255,.08);border:1px solid rgba(0,204,255,.3);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:110px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--info);opacity:.8;letter-spacing:1px">MONITORING</div>
+          <div style="font-size:13px;font-weight:900;color:var(--info)">Unity HUD</div>
+          <div style="font-size:10px;color:var(--muted)">게이지 · 상태 배지</div>
+        </div>
+
+        <!-- 화살표 -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted)">≥ threshold</div>
+          <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(0,204,255,.4),rgba(255,51,51,.6));position:relative">
+            <div style="position:absolute;right:-1px;top:-4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid rgba(255,51,51,.7)"></div>
+          </div>
+        </div>
+
+        <!-- 노드: 자동차단 -->
+        <div style="flex-shrink:0;background:rgba(255,51,51,.1);border:1px solid rgba(255,51,51,.4);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:110px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--danger);opacity:.8;letter-spacing:1px">ACTION</div>
+          <div style="font-size:13px;font-weight:900;color:var(--danger)">자동차단</div>
+          <div style="font-size:10px;color:var(--muted)">밸브 · 경보 · 환기</div>
+        </div>
+
+        <!-- 화살표 -->
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted)">log event</div>
+          <div style="width:100%;height:1px;background:linear-gradient(90deg,rgba(255,51,51,.4),rgba(100,100,160,.4));position:relative">
+            <div style="position:absolute;right:-1px;top:-4px;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid rgba(100,100,160,.6)"></div>
+          </div>
+        </div>
+
+        <!-- 노드: DB -->
+        <div style="flex-shrink:0;background:rgba(100,100,160,.1);border:1px solid rgba(100,100,160,.3);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:110px">
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);letter-spacing:1px">STORAGE</div>
+          <div style="font-size:13px;font-weight:900;color:var(--text2)">SQLite / PG</div>
+          <div style="font-size:10px;color:var(--muted)">cutoff_events 저장</div>
+        </div>
+
+      </div>
+
+      <!-- 하단 보조 정보 -->
+      <div style="display:flex;gap:10px;flex-shrink:0">
+        <div style="flex:1;background:var(--panel2);border:1px solid var(--line);padding:8px 12px;font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">
+          <span style="color:var(--info)">Unity</span> → <span style="color:var(--warn)">UnityWebRequest</span> 비동기 코루틴 · 응답 실패 시 이전 score 유지(fallback)
+        </div>
+        <div style="flex:1;background:var(--panel2);border:1px solid var(--line);padding:8px 12px;font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">
+          <span style="color:var(--safe)">ML</span> → 학습 완료 모델 <span style="color:var(--warn)">joblib</span> 저장 · FastAPI 기동 시 메모리 로드 · 1회 로드 후 재사용
+        </div>
+        <div style="flex:1;background:var(--panel2);border:1px solid var(--line);padding:8px 12px;font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">
+          응답 목표 <span style="color:var(--safe)">&lt; 1s</span> · 1초 단위 HUD 갱신 · 개발 <span style="color:var(--warn)">SQLite</span> → 배포 <span style="color:var(--warn)">PostgreSQL</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ⑦ 시스템 아키텍처 -->
+<section class="slide" data-title="시스템 아키텍처">
+  <div class="slide-num">07 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">05</span> ARCHITECTURE</div>
+    <h2 class="sh-title">시스템 아키텍처</h2>
+    <p class="sh-desc">계층 구조 · 오프라인 학습 파이프라인 vs 실시간 추론 시스템</p>
+  </div>
+  <div class="content">
+
+    <!-- 상단: 계층 구조 (강화된 비주얼) -->
+    <div style="flex-shrink:0;display:grid;grid-template-columns:auto 1fr;gap:0">
+
+      <!-- 레이어 라벨 컬럼 -->
+      <div style="display:flex;flex-direction:column;width:120px">
+        <div style="flex:1;background:rgba(0,204,255,.08);border:1px solid rgba(0,204,255,.25);border-right:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;gap:4px">
+          <div style="font-size:18px">🎮</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;letter-spacing:1.5px;color:var(--info);text-align:center;line-height:1.6">PRESENTATION</div>
+        </div>
+        <div style="height:22px;background:transparent;border-right:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;padding-right:8px">
+          <div style="font-family:'Courier New',monospace;font-size:8px;color:var(--muted)">↕ HTTP</div>
+        </div>
+        <div style="flex:1;background:rgba(255,170,0,.07);border:1px solid rgba(255,170,0,.25);border-right:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;gap:4px">
+          <div style="font-size:18px">⚙️</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;letter-spacing:1.5px;color:var(--warn);text-align:center;line-height:1.6">API SERVER</div>
+        </div>
+        <div style="height:22px;background:transparent;border-right:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;padding-right:8px">
+          <div style="font-family:'Courier New',monospace;font-size:8px;color:var(--muted)">↓ call</div>
+        </div>
+        <div style="flex:1;background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);border-right:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;gap:4px">
+          <div style="font-size:18px">🧠</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;letter-spacing:1.5px;color:var(--safe);text-align:center;line-height:1.6">ML · DATA</div>
+        </div>
+        <div style="height:22px;background:transparent;border-right:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;padding-right:8px">
+          <div style="font-family:'Courier New',monospace;font-size:8px;color:var(--muted)">↓ SQL</div>
+        </div>
+        <div style="flex:1;background:rgba(100,100,160,.08);border:1px solid rgba(100,100,160,.2);border-right:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;gap:4px">
+          <div style="font-size:18px">🗄️</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;letter-spacing:1.5px;color:var(--muted);text-align:center;line-height:1.6">STORAGE</div>
+        </div>
+      </div>
+
+      <!-- 레이어 내용 컬럼 -->
+      <div style="display:flex;flex-direction:column">
+
+        <!-- PRESENTATION 내용 -->
+        <div style="flex:1;background:rgba(0,204,255,.04);border:1px solid rgba(0,204,255,.2);padding:10px 16px;display:flex;gap:16px;align-items:center">
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--line);padding-right:16px">
+            <div style="font-size:13px;font-weight:900;color:var(--info)">Unity 3D 시뮬레이션</div>
+            <div style="font-size:11px;color:var(--muted)">3D 씬 · Particle System · 밸브/경보/환기팬 애니메이션</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+            <div style="font-size:13px;font-weight:900;color:var(--info)">HUD · Dashboard</div>
+            <div style="font-size:11px;color:var(--muted)">실시간 게이지 · 시계열 그래프 · 정상/주의/위험/차단 배지</div>
+          </div>
+        </div>
+
+        <!-- 화살표 행 -->
+        <div style="height:22px;background:var(--panel2);border-left:1px solid rgba(0,204,255,.2);border-right:1px solid rgba(255,170,0,.2);display:flex;align-items:center;padding:0 16px">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,204,255,.3),rgba(255,170,0,.3))"></div>
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);padding:0 10px;white-space:nowrap">UnityWebRequest 비동기 코루틴 · POST sensor_1~16 → risk_score 반환</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,170,0,.3),rgba(0,204,255,.3))"></div>
+        </div>
+
+        <!-- API 내용 -->
+        <div style="flex:1;background:rgba(255,170,0,.04);border:1px solid rgba(255,170,0,.2);padding:10px 16px;display:flex;gap:16px;align-items:center">
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--line);padding-right:16px">
+            <div style="font-size:13px;font-weight:900;color:var(--warn)">FastAPI 서버</div>
+            <div style="font-size:11px;color:var(--muted)">POST /api/predict-risk · 센서 로그 저장 · 차단 이벤트 기록</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+            <div style="font-family:'Courier New',monospace;font-size:12px;font-weight:700;color:var(--warn)">joblib 모델 로드</div>
+            <div style="font-size:11px;color:var(--muted)">기동 시 1회 메모리 적재 · 이후 재사용 · 응답 &lt; 1s</div>
+          </div>
+        </div>
+
+        <!-- 화살표 행 -->
+        <div style="height:22px;background:var(--panel2);border-left:1px solid rgba(255,170,0,.2);border-right:1px solid rgba(0,255,136,.2);display:flex;align-items:center;padding:0 16px">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(255,170,0,.3),rgba(0,255,136,.3))"></div>
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);padding:0 10px;white-space:nowrap">predict(sensor_values) → risk_score 0~100 · INSERT gas_readings / cutoff_events</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,136,.3),rgba(255,170,0,.3))"></div>
+        </div>
+
+        <!-- ML·DATA 내용 -->
+        <div style="flex:1;background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.18);padding:10px 16px;display:flex;gap:16px;align-items:center">
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--line);padding-right:16px">
+            <div style="font-size:13px;font-weight:900;color:var(--safe)">ML Model — RF / GBR</div>
+            <div style="font-size:11px;color:var(--muted)">회귀 예측 · risk_score 0~100 · R² &gt; 0.9 · model.pkl</div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:3px">
+            <div style="font-size:13px;font-weight:900;color:var(--safe)">UCI 데이터 파이프라인</div>
+            <div style="font-size:11px;color:var(--muted)">16채널 전처리 · 정규화 · rule-based risk_score 라벨 생성</div>
+          </div>
+        </div>
+
+        <!-- 화살표 행 -->
+        <div style="height:22px;background:var(--panel2);border-left:1px solid rgba(0,255,136,.18);border-right:1px solid rgba(100,100,160,.2);display:flex;align-items:center;padding:0 16px">
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(0,255,136,.3),rgba(100,100,160,.3))"></div>
+          <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);padding:0 10px;white-space:nowrap">READ / WRITE · SQLite(개발) / PostgreSQL(배포)</div>
+          <div style="flex:1;height:1px;background:linear-gradient(90deg,rgba(100,100,160,.3),rgba(0,255,136,.3))"></div>
+        </div>
+
+        <!-- STORAGE 내용 -->
+        <div style="flex:1;background:rgba(100,100,160,.05);border:1px solid rgba(100,100,160,.18);padding:10px 16px;display:flex;align-items:center;gap:12px">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">gas_readings</span>
+            <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid rgba(255,51,51,.2);padding:3px 8px;color:var(--danger)">cutoff_events</span>
+            <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">scenarios</span>
+            <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">sensor_configs</span>
+            <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">model_results</span>
+          </div>
+          <div style="margin-left:auto;font-family:'Courier New',monospace;font-size:10px;color:var(--muted);white-space:nowrap">5개 테이블</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 하단: 오프라인 학습 vs 실시간 추론 (각 단계 상세 카드) -->
+    <div style="flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+
+      <!-- 오프라인 학습 파이프라인 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:2px solid rgba(0,255,136,.6);padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--safe)">OFFLINE — 학습 파이프라인 (발표 전 1회 완료)</div>
+        <!-- 플로우 단계 카드 4개 -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;flex:1">
+          <div style="background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);padding:12px 10px;display:flex;flex-direction:column;gap:6px;position:relative">
+            <div style="font-size:20px">📂</div>
+            <div style="font-size:12px;font-weight:900;color:var(--safe)">UCI CSV</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">16채널 화학 센서<br>동적 가스 혼합<br>시계열 데이터</div>
+            <!-- 오른쪽 화살표 -->
+            <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(0,255,136,.4);z-index:1"></div>
+          </div>
+          <div style="background:var(--panel2);border:1px solid var(--line);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px;position:relative">
+            <div style="font-size:20px">🔧</div>
+            <div style="font-size:12px;font-weight:900;color:var(--text)">전처리 · 라벨</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">정규화 · 결측치<br>risk_score<br>rule-based 생성</div>
+            <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(255,255,255,.15);z-index:1"></div>
+          </div>
+          <div style="background:var(--panel2);border:1px solid var(--line);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px;position:relative">
+            <div style="font-size:20px">🤖</div>
+            <div style="font-size:12px;font-weight:900;color:var(--text)">RF / GBR 학습</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">회귀 예측 학습<br>MAE · RMSE · R²<br>두 모델 비교</div>
+            <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(255,255,255,.15);z-index:1"></div>
+          </div>
+          <div style="background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:20px">💾</div>
+            <div style="font-size:12px;font-weight:900;color:var(--safe)">model.pkl</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">joblib 직렬화<br>FastAPI 기동 시<br>메모리 로드</div>
+          </div>
+        </div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;flex-shrink:0">scikit-learn · pandas · numpy · joblib</div>
+      </div>
+
+      <!-- 실시간 추론 시스템 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:2px solid rgba(255,170,0,.6);padding:14px 18px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--warn)">REALTIME — 추론 시스템 (1초 단위 반복)</div>
+        <!-- 플로우 단계 카드 4개 -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;flex:1">
+          <div style="background:rgba(0,204,255,.06);border:1px solid rgba(0,204,255,.2);padding:12px 10px;display:flex;flex-direction:column;gap:6px;position:relative">
+            <div style="font-size:20px">🎮</div>
+            <div style="font-size:12px;font-weight:900;color:var(--info)">Unity C#</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">CSV 시계열 재생<br>sensor_1~16<br>1초 단위 갱신</div>
+            <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(0,204,255,.4);z-index:1"></div>
+          </div>
+          <div style="background:var(--panel2);border:1px solid var(--line);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px;position:relative">
+            <div style="font-size:20px">📡</div>
+            <div style="font-size:12px;font-weight:900;color:var(--text)">POST JSON</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">UnityWebRequest<br>비동기 코루틴<br>/api/predict-risk</div>
+            <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(255,255,255,.15);z-index:1"></div>
+          </div>
+          <div style="background:var(--panel2);border:1px solid var(--line);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px;position:relative">
+            <div style="font-size:20px">⚙️</div>
+            <div style="font-size:12px;font-weight:900;color:var(--text)">FastAPI predict()</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">모델 추론 실행<br>응답 &lt; 1s 목표<br>DB 로그 저장</div>
+            <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(255,255,255,.15);z-index:1"></div>
+          </div>
+          <div style="background:rgba(255,51,51,.07);border:1px solid rgba(255,51,51,.2);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px">
+            <div style="font-size:20px">🔒</div>
+            <div style="font-size:12px;font-weight:900;color:var(--danger)">HUD · 차단</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">게이지 업데이트<br>≥ threshold 시<br>밸브/경보/환기</div>
+          </div>
+        </div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px;flex-shrink:0">fallback: 응답 실패 시 이전 risk_score 유지 · cutoff_events DB 기록</div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ⑧ 일정 -->
+<section class="slide" data-title="개발 일정">
+  <div class="slide-num">08 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">06</span> SCHEDULE</div>
+    <h2 class="sh-title">4주 개발 일정</h2>
+    <p class="sh-desc">2026.06.16 – 07.13 · 총 36개 작업 · 5인 팀</p>
+  </div>
+  <div class="content">
+
+    <!-- 상단: 컴팩트 WEEK 카드 4개 -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;flex-shrink:0">
+
+      <!-- WEEK 01 — 완료 -->
+      <div style="background:var(--panel);border:1px solid rgba(0,255,136,.4);border-top:2px solid var(--safe);padding:12px 14px;position:relative">
+        <div style="position:absolute;top:10px;right:10px;font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:var(--safe);background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);padding:2px 7px">✓ 완료</div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--safe);margin-bottom:4px">WEEK 01</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">06.16 – 06.23</div>
+        <div style="font-size:13px;font-weight:900;color:var(--safe);margin-bottom:8px">기획 · 설계</div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.6">✓</span>요구사항 명세서 (25개)</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.6">✓</span>WBS 36개 작업 분해</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.6">✓</span>메뉴 트리 · 시나리오</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.6">✓</span>테이블 정의서 · ERD</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.6">✓</span>와이어프레임 · 스토리보드</div>
+        </div>
+      </div>
+
+      <!-- WEEK 02 — 진행 중 -->
+      <div style="background:var(--panel);border:1px solid rgba(0,204,255,.35);border-top:2px solid var(--info);padding:12px 14px;position:relative">
+        <div style="position:absolute;top:10px;right:10px;font-family:'Courier New',monospace;font-size:9px;font-weight:700;color:var(--info);background:rgba(0,204,255,.08);border:1px solid rgba(0,204,255,.3);padding:2px 7px">▶ 진행중</div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--info);margin-bottom:4px">WEEK 02</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">06.23 – 06.30</div>
+        <div style="font-size:13px;font-weight:900;color:var(--info);margin-bottom:8px">데이터 · Unity 구현</div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>UCI 데이터 수집 · 전처리</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>risk_score 라벨 생성</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>Unity 3D 씬 구성</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>Particle System 구현</div>
+          <div style="font-size:11px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--info);opacity:.5">▸</span>밸브/경보/환기팬 · HUD</div>
+        </div>
+      </div>
+
+      <!-- WEEK 03 — 예정 -->
+      <div style="background:var(--panel);border:1px solid rgba(255,170,0,.3);border-top:2px solid var(--warn);padding:12px 14px;position:relative">
+        <div style="position:absolute;top:10px;right:10px;font-family:'Courier New',monospace;font-size:9px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:2px 7px">예정</div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--warn);margin-bottom:4px">WEEK 03</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">06.30 – 07.06</div>
+        <div style="font-size:13px;font-weight:900;color:var(--warn);margin-bottom:8px">모델 · API · 연동</div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>RF / GBR 회귀 모델 학습</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>Threshold 탐색 · 평가</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>FastAPI 예측 API 구현</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>DB 스키마 · 로그 저장</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>Unity-API 연동 · 차단 처리</div>
+        </div>
+      </div>
+
+      <!-- WEEK 04 — 예정 -->
+      <div style="background:var(--panel);border:1px solid rgba(255,51,51,.3);border-top:2px solid var(--danger);padding:12px 14px;position:relative">
+        <div style="position:absolute;top:10px;right:10px;font-family:'Courier New',monospace;font-size:9px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:2px 7px">예정</div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--danger);margin-bottom:4px">WEEK 04</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">07.06 – 07.13</div>
+        <div style="font-size:13px;font-weight:900;color:var(--danger);margin-bottom:8px">테스트 · 마감</div>
+        <div style="display:flex;flex-direction:column;gap:3px">
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>단위 테스트 15개 수행</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>통합 시나리오 테스트</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>버그 수정 · 최종 디버깅</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>데모 시나리오 완성</div>
+          <div style="font-size:11px;color:var(--danger);display:flex;gap:6px;font-weight:700"><span>◈</span>07.13 최종 발표</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 하단: Gantt 차트 (flex:1) -->
+    <div style="flex:1;min-height:0;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column">
+
+      <!-- Gantt 헤더 -->
+      <div style="display:grid;grid-template-columns:140px repeat(4,1fr);border-bottom:1px solid var(--line);flex-shrink:0">
+        <div style="padding:8px 14px;font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;color:var(--muted)">팀원 / 담당</div>
+        <div style="padding:8px 12px;border-left:1px solid var(--line);background:rgba(0,255,136,.05)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;color:var(--safe)">WEEK 01</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;color:var(--muted)">06.16 – 06.23</div>
+        </div>
+        <div style="padding:8px 12px;border-left:1px solid var(--line);background:rgba(0,204,255,.04)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;color:var(--info)">WEEK 02</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;color:var(--muted)">06.23 – 06.30</div>
+        </div>
+        <div style="padding:8px 12px;border-left:1px solid var(--line)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;color:var(--warn)">WEEK 03</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;color:var(--muted)">06.30 – 07.06</div>
+        </div>
+        <div style="padding:8px 12px;border-left:1px solid var(--line)">
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:1px;color:var(--danger)">WEEK 04</div>
+          <div style="font-family:'Courier New',monospace;font-size:8px;color:var(--muted)">07.06 – 07.13</div>
+        </div>
+      </div>
+
+      <!-- Gantt 행들 -->
+      <div style="flex:1;display:flex;flex-direction:column;min-height:0">
+
+        <!-- 김응석 -->
+        <div style="flex:1;display:grid;grid-template-columns:140px repeat(4,1fr);border-bottom:1px solid var(--line);min-height:0">
+          <div style="padding:8px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;border-right:1px solid var(--line)">
+            <div style="font-size:13px;font-weight:800">김응석</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--info)">DATA / ML</div>
+          </div>
+          <div style="padding:8px 12px;background:rgba(0,255,136,.06);border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,255,136,.25);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--safe);font-weight:700">✓ 기획 참여 · WBS</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,204,255,.12);border:1px dashed rgba(0,204,255,.3);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--info)">UCI 수집 · 전처리 · 라벨 생성</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">RF / GBR 학습 · Threshold 탐색</div>
+          </div>
+          <div style="padding:8px 12px;display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,51,51,.06);border:1px dashed rgba(255,51,51,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">TC 수행 · 모델 성능 검증</div>
+          </div>
+        </div>
+
+        <!-- 홍제규 -->
+        <div style="flex:1;display:grid;grid-template-columns:140px repeat(4,1fr);border-bottom:1px solid var(--line);min-height:0">
+          <div style="padding:8px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;border-right:1px solid var(--line)">
+            <div style="font-size:13px;font-weight:800">홍제규</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--warn)">BACKEND</div>
+          </div>
+          <div style="padding:8px 12px;background:rgba(0,255,136,.06);border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,255,136,.25);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--safe);font-weight:700">✓ 기획 참여 · API 명세</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,204,255,.12);border:1px dashed rgba(0,204,255,.3);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--info)">API 설계 · DB 스키마 초안</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">FastAPI 구현 · Unity 연동</div>
+          </div>
+          <div style="padding:8px 12px;display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,51,51,.06);border:1px dashed rgba(255,51,51,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">통합 테스트 · 버그 수정</div>
+          </div>
+        </div>
+
+        <!-- 장영재 -->
+        <div style="flex:1;display:grid;grid-template-columns:140px repeat(4,1fr);border-bottom:1px solid var(--line);min-height:0">
+          <div style="padding:8px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;border-right:1px solid var(--line)">
+            <div style="font-size:13px;font-weight:800">장영재</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--accent)">UI / DB</div>
+          </div>
+          <div style="padding:8px 12px;background:rgba(0,255,136,.06);border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,255,136,.25);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--safe);font-weight:700">✓ ERD · 와이어프레임</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,204,255,.12);border:1px dashed rgba(0,204,255,.3);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--info)">HUD UI · 그래프 컴포넌트</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">DB 로그 저장 · Unity UI 완성</div>
+          </div>
+          <div style="padding:8px 12px;display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,51,51,.06);border:1px dashed rgba(255,51,51,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">TC 수행 · 인프라 점검</div>
+          </div>
+        </div>
+
+        <!-- 안세웅 -->
+        <div style="flex:1;display:grid;grid-template-columns:140px repeat(4,1fr);border-bottom:1px solid var(--line);min-height:0">
+          <div style="padding:8px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;border-right:1px solid var(--line)">
+            <div style="font-size:13px;font-weight:800">안세웅</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--safe)">UNITY</div>
+          </div>
+          <div style="padding:8px 12px;background:rgba(0,255,136,.06);border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,255,136,.25);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--safe);font-weight:700">✓ 스토리보드 · 씬 계획</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,204,255,.12);border:1px dashed rgba(0,204,255,.3);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--info)">Unity 3D 씬 · Particle System</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">밸브/경보/환기팬 · API 연동</div>
+          </div>
+          <div style="padding:8px 12px;display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,51,51,.06);border:1px dashed rgba(255,51,51,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">데모 시나리오 · 발표 준비</div>
+          </div>
+        </div>
+
+        <!-- 이성룡 -->
+        <div style="flex:1;display:grid;grid-template-columns:140px repeat(4,1fr);min-height:0">
+          <div style="padding:8px 14px;display:flex;flex-direction:column;justify-content:center;gap:2px;border-right:1px solid var(--line)">
+            <div style="font-size:13px;font-weight:800">이성룡</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--danger)">TEST</div>
+          </div>
+          <div style="padding:8px 12px;background:rgba(0,255,136,.06);border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,255,136,.25);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--safe);font-weight:700">✓ TC 명세서 작성 (15개)</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(0,204,255,.12);border:1px dashed rgba(0,204,255,.3);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--info)">TC 보완 · 테스트 환경 구성</div>
+          </div>
+          <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">연동 테스트 · 시나리오 검증</div>
+          </div>
+          <div style="padding:8px 12px;display:flex;align-items:center">
+            <div style="width:100%;background:rgba(255,51,51,.12);border:1px dashed rgba(255,51,51,.35);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--danger);font-weight:700">TC 15개 수행 · 최종 발표</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ⑧ 기대효과 -->
+<section class="slide" data-title="기대효과">
+  <div class="slide-num">09 / 09</div>
+  <div class="sh">
+    <div class="sh-label"><span class="sh-num">07</span> EXPECTED OUTCOME</div>
+    <h2 class="sh-title">기대효과</h2>
+  </div>
+  <div class="content">
+
+    <!-- 상단: 3개 기대효과 카드 (대형 번호 + 항목 채움) -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;flex-shrink:0">
+
+      <!-- 카드 1: 수치 기반 의사결정 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--accent);padding:22px 22px;display:flex;flex-direction:column;gap:0;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--accent);border-right:1px solid var(--accent)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:56px;font-weight:900;color:var(--accent);opacity:.08;line-height:1;margin-bottom:6px">01</div>
+        <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:6px">DECISION SUPPORT</div>
+        <div style="font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px">수치 기반 의사결정</div>
+        <div style="width:28px;height:2px;background:var(--accent);opacity:.5;margin-bottom:14px"></div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:14px">위험률 0~100%와 threshold를 수치로 제시해 <b style="color:var(--text)">"언제 차단할지"</b> 기준을 명확히 정의한다.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">F2-score 기준 최적 threshold 자동 탐색</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">오탐률 &lt;10% · Recall &gt;0.9 균형점 시각화</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">경험 의존 없는 객관적 차단 기준 제공</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">MAE · RMSE · R² 모델 성능 비교 화면</span></div>
+        </div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">scikit-learn · F2-score</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--accent)">R² &gt; 0.9</span>
+        </div>
+      </div>
+
+      <!-- 카드 2: 직관적 시각화 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--safe);padding:22px 22px;display:flex;flex-direction:column;gap:0;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--safe);border-left:1px solid var(--safe)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--safe);border-right:1px solid var(--safe)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:56px;font-weight:900;color:var(--safe);opacity:.08;line-height:1;margin-bottom:6px">02</div>
+        <div style="font-size:11px;font-weight:700;color:var(--safe);letter-spacing:1px;margin-bottom:6px">3D VISUALIZATION</div>
+        <div style="font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px">직관적 시각화</div>
+        <div style="width:28px;height:2px;background:var(--safe);opacity:.5;margin-bottom:14px"></div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:14px">Unity 3D로 비전문가도 가스 누출 → 위험률 상승 → 자동차단 흐름을 <b style="color:var(--text)">한눈에</b> 이해할 수 있다.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--safe);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">가스 확산 Particle System 실시간 표현</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--safe);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">위험률 게이지 · 상태 색상 자동 전환</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--safe);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">정상/주의/위험/차단 4단계 HUD 배지</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--safe);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">교육·발표용 데모 시나리오 자동 재생</span></div>
+        </div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">Unity 3D · Particle · HUD</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--safe)">30fps+</span>
+        </div>
+      </div>
+
+      <!-- 카드 3: 확장 가능한 구조 -->
+      <div style="background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--warn);padding:22px 22px;display:flex;flex-direction:column;gap:0;position:relative">
+        <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--warn);border-left:1px solid var(--warn)"></div>
+        <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--warn);border-right:1px solid var(--warn)"></div>
+        <div style="font-family:'Courier New',monospace;font-size:56px;font-weight:900;color:var(--warn);opacity:.08;line-height:1;margin-bottom:6px">03</div>
+        <div style="font-size:11px;font-weight:700;color:var(--warn);letter-spacing:1px;margin-bottom:6px">SCALABLE ARCHITECTURE</div>
+        <div style="font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px">확장 가능한 구조</div>
+        <div style="width:28px;height:2px;background:var(--warn);opacity:.5;margin-bottom:14px"></div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:14px">시나리오 데이터 추가만으로 새 가스 종류·공간에 대응 가능한 <b style="color:var(--text)">확장형 아키텍처</b>를 구현한다.</div>
+        <div style="display:flex;flex-direction:column;gap:8px;flex:1">
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--warn);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">CSV 교체만으로 새 시나리오 즉시 반영</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--warn);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">모델 재학습 없이 threshold만 재탐색</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--warn);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">다양한 공간·가스 종류 대응 가능</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--warn);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">FastAPI 모듈 교체로 ML 모델 업그레이드</span></div>
+        </div>
+        <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">FastAPI · SQLite · PostgreSQL</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--warn)">&lt; 1s</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 하단: 프로젝트 요약 + 산출물 링크 (flex:1) -->
+    <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:10px">
+
+      <!-- 요약 문구 -->
+      <div style="flex:1;background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(0,255,204,.5);padding:18px 28px;display:flex;align-items:center;gap:32px">
+        <div style="font-family:'Courier New',monospace;font-size:36px;color:var(--accent);opacity:.2;flex-shrink:0;line-height:1">//</div>
+        <div>
+          <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--accent);opacity:.7;margin-bottom:8px">PROJECT SUMMARY</div>
+          <div style="font-size:14px;color:var(--text2);line-height:1.9">
+            G-SAFE는 <b style="color:var(--accent)">교육·연구 목적</b>의 가스 안전 시뮬레이션으로,
+            ML 기반 위험률 예측과 Unity 3D 시각화를 결합해 <b style="color:var(--accent)">안전 대응 의사결정을 지원</b>하는 시스템입니다.
+          </div>
+        </div>
+        <!-- 우측 핵심 수치 3개 -->
+        <div style="flex-shrink:0;display:flex;gap:20px;padding-left:24px;border-left:1px solid var(--line)">
+          <div style="text-align:center">
+            <div style="font-family:'Courier New',monospace;font-size:22px;font-weight:900;color:var(--info)">25</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);margin-top:2px">요구사항</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Courier New',monospace;font-size:22px;font-weight:900;color:var(--safe)">36</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);margin-top:2px">WBS 작업</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Courier New',monospace;font-size:22px;font-weight:900;color:var(--warn)">15</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);margin-top:2px">테스트 케이스</div>
+          </div>
+          <div style="text-align:center">
+            <div style="font-family:'Courier New',monospace;font-size:22px;font-weight:900;color:var(--danger)">5</div>
+            <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--muted);margin-top:2px">팀원</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 산출물 링크 -->
+      <div style="flex-shrink:0;background:var(--panel);border:1px solid var(--line);padding:12px 18px;display:flex;align-items:center;gap:12px">
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);white-space:nowrap;flex-shrink:0">DOCUMENTS</div>
+        <div style="width:1px;height:20px;background:var(--line);flex-shrink:0"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="requirements.html" class="doc-link">[ 요구사항 ]</a>
+          <a href="wbs.html" class="doc-link">[ WBS ]</a>
+          <a href="menu_scenario.html" class="doc-link">[ 메뉴/시나리오 ]</a>
+          <a href="wireframe.html" class="doc-link">[ 와이어프레임 ]</a>
+          <a href="storyboard.html" class="doc-link">[ 스토리보드 ]</a>
+          <a href="table_definition.html" class="doc-link">[ 테이블/ERD ]</a>
+          <a href="test_cases.html" class="doc-link">[ 테스트케이스 ]</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+</main>
+<script>
+const slides=[...document.querySelectorAll('.slide')];
+let cur=0;
+function show(i){
+  cur=Math.max(0,Math.min(slides.length-1,i));
+  slides.forEach((s,j)=>s.classList.toggle('active',j===cur));
+  const pf=document.getElementById('pf');
+  if(pf)pf.style.width=`${(cur/(slides.length-1))*100}%`;
+  document.title=`${slides[cur].dataset.title} — G-SAFE`;
+}
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(cur+1);}
+  if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();show(cur-1);}
+  if(e.key==='Home')show(0);if(e.key==='End')show(slides.length-1);
+});
+show(0);
+</script>
+</body>
+</html>

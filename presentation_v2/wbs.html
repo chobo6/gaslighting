@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE WBS</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:14px 20px;gap:10px}
+.head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-title{font-family:"Courier New",monospace;font-size:13px;font-weight:900;letter-spacing:1px}
+.head-sub{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.nav{display:flex;gap:0}
+.nav-btn{font-family:"Courier New",monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px 6px;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.nav-btn:hover{color:var(--text2);border-bottom-color:var(--line-hi)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.scene{display:none;flex:1;min-height:0;flex-direction:column;gap:10px}.scene.active{display:flex}
+.kpi-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;flex-shrink:0}
+.kpi{background:var(--panel);border:1px solid var(--line);padding:12px 16px;position:relative}
+.kpi::before{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)}
+.kpi-num{font-family:"Courier New",monospace;font-size:26px;font-weight:900;line-height:1}
+.kpi-lbl{font-family:"Courier New",monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:3px}
+.scroll{flex:1;overflow:auto}.scroll::-webkit-scrollbar{width:3px}.scroll::-webkit-scrollbar-thumb{background:var(--line2)}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead th{padding:8px 10px;text-align:left;font-family:"Courier New",monospace;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:var(--panel2);border:1px solid var(--line2);white-space:nowrap;position:sticky;top:0;opacity:.8}
+tbody td{padding:8px 10px;border:1px solid var(--line);color:var(--text2);vertical-align:top;line-height:1.5;font-size:12px}
+tbody tr:hover td{background:rgba(0,255,204,.025)}
+.id-c{font-family:"Courier New",monospace;font-size:10px;font-weight:700;color:var(--info);white-space:nowrap}
+.task-name{color:var(--text);font-weight:700;font-size:13px}
+.badge{display:inline-block;font-family:"Courier New",monospace;font-size:10px;font-weight:700;padding:2px 7px;white-space:nowrap}
+.bw1{background:rgba(0,204,255,.08);color:var(--info);border:1px solid rgba(0,204,255,.2)}
+.bw2{background:rgba(0,255,136,.07);color:var(--safe);border:1px solid rgba(0,255,136,.2)}
+.bw3{background:rgba(255,170,0,.08);color:var(--warn);border:1px solid rgba(255,170,0,.2)}
+.bw4{background:rgba(255,51,51,.08);color:var(--danger);border:1px solid rgba(255,51,51,.2)}
+/* Gantt */
+.gantt-wrap{flex:1;overflow:auto}
+.gantt-head{display:grid;grid-template-columns:180px repeat(28,minmax(0,1fr));background:var(--panel2);border:1px solid var(--line2);position:sticky;top:0;z-index:1;min-width:900px}
+.ghc{font-family:"Courier New",monospace;font-size:9px;padding:5px 2px;text-align:center;color:var(--muted);border-right:1px solid var(--line)}
+.ghc.ws{color:var(--accent);font-weight:700;border-right:1px solid var(--line2)}
+.g-row{display:grid;grid-template-columns:180px repeat(28,minmax(0,1fr));border:1px solid var(--line);border-top:none;min-height:22px;min-width:900px}
+.g-row:hover{background:rgba(0,255,204,.02)}
+.g-name{font-size:11px;color:var(--text2);padding:4px 8px;border-right:1px solid var(--line);display:flex;align-items:center;white-space:nowrap;overflow:hidden}
+.g-cell{border-right:1px solid rgba(22,50,85,.4)}
+.g-cell.ws{border-right:1px solid var(--line2)}
+.g-bar{width:100%;height:100%;display:flex;align-items:center}
+.g-w1{background:rgba(0,204,255,.35)}.g-w2{background:rgba(0,255,136,.3)}.g-w3{background:rgba(255,170,0,.3)}.g-w4{background:rgba(255,51,51,.3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="head-title">// G-SAFE — WBS (Work Breakdown Structure)</div>
+      <div class="head-sub">TOTAL:36 TASKS · 4 WEEKS · 2026.06.16 – 07.13</div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="show('LIST',this)">작업 목록 (36)</button>
+      <button class="nav-btn" onclick="show('GANTT',this)">간트 차트</button>
+    </div>
+  </div>
+
+  <div id="LIST" class="scene active">
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-num" style="color:var(--accent)">36</div><div class="kpi-lbl">총 작업</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--info)">9</div><div class="kpi-lbl">W1 기획</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--safe)">11</div><div class="kpi-lbl">W2 구현</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--warn)">11</div><div class="kpi-lbl">W3 연동</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--danger)">5</div><div class="kpi-lbl">W4 마감</div></div>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th style="width:85px">ID</th><th style="width:60px">주차</th><th>작업명</th><th>상세 내용</th><th style="width:90px">담당자</th><th style="width:90px">기간</th></tr></thead>
+        <tbody>
+<tr><td class="id-c">WBS-001</td><td><span class="badge bw1">W1</span></td><td class="task-name">주제 확정 및 범위 정의</td><td>G-SAFE 프로젝트 범위, 목표, 제약사항 확정</td><td>전체</td><td>06.16~17</td></tr>
+<tr><td class="id-c">WBS-002</td><td><span class="badge bw1">W1</span></td><td class="task-name">요구사항 명세서 작성</td><td>기능(17) + 비기능(8) 요구사항 문서화</td><td>전체</td><td>06.17~19</td></tr>
+<tr><td class="id-c">WBS-003</td><td><span class="badge bw1">W1</span></td><td class="task-name">WBS 작성</td><td>36개 작업 분해 및 주차별 일정 수립</td><td>전체</td><td>06.17~19</td></tr>
+<tr><td class="id-c">WBS-004</td><td><span class="badge bw1">W1</span></td><td class="task-name">메뉴 트리 작성</td><td>G-SAFE 전체 메뉴 구조 정의</td><td>장영재</td><td>06.18~20</td></tr>
+<tr><td class="id-c">WBS-005</td><td><span class="badge bw1">W1</span></td><td class="task-name">사용자 시나리오 작성</td><td>4개 주요 시나리오 정의 (데모/정상/위험/결과)</td><td>안세웅</td><td>06.18~20</td></tr>
+<tr><td class="id-c">WBS-006</td><td><span class="badge bw1">W1</span></td><td class="task-name">테이블 정의서 작성</td><td>5개 테이블 스키마 및 관계 정의</td><td>장영재</td><td>06.18~20</td></tr>
+<tr><td class="id-c">WBS-007</td><td><span class="badge bw1">W1</span></td><td class="task-name">ERD 작성</td><td>테이블 관계도 작성 (gas_scenarios 중심)</td><td>장영재</td><td>06.20~22</td></tr>
+<tr><td class="id-c">WBS-008</td><td><span class="badge bw1">W1</span></td><td class="task-name">와이어프레임 작성</td><td>시뮬레이션/결과 화면 2종 와이어프레임</td><td>장영재</td><td>06.20~22</td></tr>
+<tr><td class="id-c">WBS-009</td><td><span class="badge bw1">W1</span></td><td class="task-name">스토리보드 작성</td><td>5개 씬 전환 스토리보드</td><td>안세웅</td><td>06.20~23</td></tr>
+<tr><td class="id-c">WBS-010</td><td><span class="badge bw2">W2</span></td><td class="task-name">UCI 데이터셋 수집 및 분석</td><td>UCI Gas Sensor Array 다운로드 및 구조 파악</td><td>김응석</td><td>06.23~25</td></tr>
+<tr><td class="id-c">WBS-011</td><td><span class="badge bw2">W2</span></td><td class="task-name">데이터 전처리</td><td>결측값 처리, 정규화, 시계열 정리</td><td>김응석</td><td>06.24~26</td></tr>
+<tr><td class="id-c">WBS-012</td><td><span class="badge bw2">W2</span></td><td class="task-name">위험률 라벨 생성</td><td>rule-based risk_score(0~100) 생성 함수 구현</td><td>김응석</td><td>06.25~27</td></tr>
+<tr><td class="id-c">WBS-013</td><td><span class="badge bw2">W2</span></td><td class="task-name">Unity 프로젝트 초기 설정</td><td>Unity 프로젝트 생성, 씬 구성, 기본 오브젝트 배치</td><td>안세웅</td><td>06.23~25</td></tr>
+<tr><td class="id-c">WBS-014</td><td><span class="badge bw2">W2</span></td><td class="task-name">연구소/개발실 3D 씬 구성</td><td>배관, 밸브, 가스 누출 지점, 환기팬 오브젝트 배치</td><td>안세웅</td><td>06.25~28</td></tr>
+<tr><td class="id-c">WBS-015</td><td><span class="badge bw2">W2</span></td><td class="task-name">가스 확산 Particle System</td><td>누출 시 파티클 효과, 확산 방향, 색상 설정</td><td>안세웅</td><td>06.26~28</td></tr>
+<tr><td class="id-c">WBS-016</td><td><span class="badge bw2">W2</span></td><td class="task-name">밸브/경보/환기팬 제어 구현</td><td>밸브 OPEN/CLOSED 애니메이션, 경보등 On/Off</td><td>안세웅</td><td>06.27~30</td></tr>
+<tr><td class="id-c">WBS-017</td><td><span class="badge bw2">W2</span></td><td class="task-name">HUD 기본 패널 구현</td><td>위험률 게이지, 상태 배지, 센서값 표시 UI</td><td>장영재</td><td>06.27~30</td></tr>
+<tr><td class="id-c">WBS-018</td><td><span class="badge bw2">W2</span></td><td class="task-name">DB 스키마 생성</td><td>SQLite/PostgreSQL 테이블 5개 CREATE</td><td>홍제규</td><td>06.25~27</td></tr>
+<tr><td class="id-c">WBS-019</td><td><span class="badge bw2">W2</span></td><td class="task-name">FastAPI 프로젝트 초기 설정</td><td>프로젝트 구조, 의존성, DB 연결 설정</td><td>홍제규</td><td>06.25~27</td></tr>
+<tr><td class="id-c">WBS-020</td><td><span class="badge bw2">W2</span></td><td class="task-name">CSV 재생 모듈 (Unity)</td><td>타임스텝별 센서값 CSV 로드 및 재생</td><td>안세웅</td><td>06.28~30</td></tr>
+<tr><td class="id-c">WBS-021</td><td><span class="badge bw3">W3</span></td><td class="task-name">회귀 모델 학습 (RandomForest)</td><td>RF 회귀 모델 학습, 하이퍼파라미터 튜닝</td><td>김응석</td><td>06.30~07.02</td></tr>
+<tr><td class="id-c">WBS-022</td><td><span class="badge bw3">W3</span></td><td class="task-name">회귀 모델 학습 (GBR)</td><td>GradientBoostingRegressor 학습 및 비교</td><td>김응석</td><td>07.01~03</td></tr>
+<tr><td class="id-c">WBS-023</td><td><span class="badge bw3">W3</span></td><td class="task-name">Threshold 탐색</td><td>60~95 범위 탐색, F2-score/Recall/오탐률 산출</td><td>김응석</td><td>07.02~04</td></tr>
+<tr><td class="id-c">WBS-024</td><td><span class="badge bw3">W3</span></td><td class="task-name">모델 성능 평가</td><td>검증 데이터 MAE/RMSE/R² 평가 및 성능 표 작성</td><td>김응석</td><td>07.03~05</td></tr>
+<tr><td class="id-c">WBS-025</td><td><span class="badge bw3">W3</span></td><td class="task-name">위험률 예측 API 구현</td><td>POST /api/predict-risk 엔드포인트</td><td>홍제규</td><td>06.30~07.02</td></tr>
+<tr><td class="id-c">WBS-026</td><td><span class="badge bw3">W3</span></td><td class="task-name">로그 저장 API 구현</td><td>센서값/위험률/차단 이벤트 저장 API</td><td>홍제규</td><td>07.01~03</td></tr>
+<tr><td class="id-c">WBS-027</td><td><span class="badge bw3">W3</span></td><td class="task-name">Unity-API 연동</td><td>UnityWebRequest 코루틴, 응답 파싱, HUD 반영</td><td>홍제규/안세웅</td><td>07.02~04</td></tr>
+<tr><td class="id-c">WBS-028</td><td><span class="badge bw3">W3</span></td><td class="task-name">자동차단 이벤트 처리</td><td>threshold 초과 감지 → cutoff_events 저장</td><td>안세웅/홍제규</td><td>07.03~05</td></tr>
+<tr><td class="id-c">WBS-029</td><td><span class="badge bw3">W3</span></td><td class="task-name">위험률 그래프 UI</td><td>시계열 그래프 + threshold 기준선 표시</td><td>장영재</td><td>07.02~04</td></tr>
+<tr><td class="id-c">WBS-030</td><td><span class="badge bw3">W3</span></td><td class="task-name">결과 요약 화면 구현</td><td>max_risk, cutoff_time, 최종 상태 표시</td><td>장영재</td><td>07.04~06</td></tr>
+<tr><td class="id-c">WBS-031</td><td><span class="badge bw3">W3</span></td><td class="task-name">데모 시나리오 데이터 준비</td><td>누출→차단 흐름 CSV 데이터 제작</td><td>김응석</td><td>07.04~06</td></tr>
+<tr><td class="id-c">WBS-032</td><td><span class="badge bw4">W4</span></td><td class="task-name">단위 테스트 수행</td><td>Data/ML/API/Unity 단위 테스트 (TC 15개)</td><td>이성룡</td><td>07.06~08</td></tr>
+<tr><td class="id-c">WBS-033</td><td><span class="badge bw4">W4</span></td><td class="task-name">통합 테스트 수행</td><td>전체 흐름 통합 시나리오 테스트</td><td>이성룡</td><td>07.08~10</td></tr>
+<tr><td class="id-c">WBS-034</td><td><span class="badge bw4">W4</span></td><td class="task-name">버그 수정 및 최종 디버깅</td><td>테스트 결과 이슈 처리</td><td>전체</td><td>07.10~12</td></tr>
+<tr><td class="id-c">WBS-035</td><td><span class="badge bw4">W4</span></td><td class="task-name">기획 산출물 최종 정리</td><td>HTML 문서 전체 검토 및 오타 수정</td><td>전체</td><td>07.11~12</td></tr>
+<tr><td class="id-c">WBS-036</td><td><span class="badge bw4">W4</span></td><td class="task-name">최종 발표</td><td>기획 발표 진행 (2026.07.13)</td><td>전체</td><td>07.13</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="GANTT" class="scene">
+    <div class="gantt-wrap" id="gantt-container">
+      <div class="gantt-head">
+        <div class="ghc" style="font-size:10px;padding:5px 8px;color:var(--text2);text-align:left">작업명</div>
+        <div class="ghc ws">W1</div><div class="ghc">17</div><div class="ghc">18</div><div class="ghc">19</div><div class="ghc">20</div><div class="ghc">21</div><div class="ghc">22</div><div class="ghc">23</div>
+        <div class="ghc ws">W2</div><div class="ghc">25</div><div class="ghc">26</div><div class="ghc">27</div><div class="ghc">28</div><div class="ghc">29</div><div class="ghc">30</div><div class="ghc">7/1</div>
+        <div class="ghc ws">W3</div><div class="ghc">3</div><div class="ghc">4</div><div class="ghc">5</div><div class="ghc">6</div><div class="ghc">7</div><div class="ghc">8</div><div class="ghc">9</div>
+        <div class="ghc ws">W4</div><div class="ghc">11</div><div class="ghc">12</div><div class="ghc">13</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const tasks=[
+  {n:"주제 확정·범위",s:0,e:1,w:1},{n:"요구사항 명세서",s:1,e:3,w:1},{n:"WBS 작성",s:1,e:3,w:1},
+  {n:"메뉴 트리",s:2,e:4,w:1},{n:"사용자 시나리오",s:2,e:4,w:1},{n:"테이블 정의서",s:2,e:4,w:1},
+  {n:"ERD 작성",s:4,e:6,w:1},{n:"와이어프레임",s:4,e:6,w:1},{n:"스토리보드",s:4,e:7,w:1},
+  {n:"UCI 데이터 수집",s:7,e:9,w:2},{n:"데이터 전처리",s:8,e:10,w:2},{n:"위험률 라벨 생성",s:9,e:11,w:2},
+  {n:"Unity 초기 설정",s:7,e:9,w:2},{n:"3D 씬 구성",s:9,e:12,w:2},{n:"Particle System",s:10,e:12,w:2},
+  {n:"밸브/경보/환기",s:11,e:14,w:2},{n:"HUD 기본 패널",s:11,e:14,w:2},
+  {n:"DB 스키마",s:9,e:11,w:2},{n:"FastAPI 초기설정",s:9,e:11,w:2},{n:"CSV 재생 모듈",s:12,e:14,w:2},
+  {n:"RF 회귀 학습",s:14,e:16,w:3},{n:"GBR 학습",s:15,e:17,w:3},{n:"Threshold 탐색",s:16,e:18,w:3},{n:"모델 성능 평가",s:17,e:19,w:3},
+  {n:"예측 API 구현",s:14,e:16,w:3},{n:"로그 저장 API",s:15,e:17,w:3},{n:"Unity-API 연동",s:16,e:18,w:3},
+  {n:"자동차단 이벤트",s:17,e:19,w:3},{n:"위험률 그래프 UI",s:16,e:18,w:3},{n:"결과 요약 화면",s:18,e:20,w:3},{n:"데모 데이터 준비",s:18,e:20,w:3},
+  {n:"단위 테스트",s:20,e:22,w:4},{n:"통합 테스트",s:22,e:24,w:4},{n:"버그 수정",s:24,e:26,w:4},{n:"산출물 정리",s:25,e:27,w:4},{n:"최종 발표 ◈",s:27,e:27,w:4}
+];
+const N=28;const wc={1:'g-w1',2:'g-w2',3:'g-w3',4:'g-w4'};
+const wsSet=new Set([0,7,14,20]);
+function show(id,btn){document.querySelectorAll('.scene').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active');if(id==='GANTT')buildGantt()}
+let built=false;
+function buildGantt(){
+  if(built)return;built=true;
+  const ct=document.getElementById('gantt-container');
+  tasks.forEach(t=>{
+    const row=document.createElement('div');row.className='g-row';
+    let h=`<div class="g-name">${t.n}</div>`;
+    for(let i=0;i<N;i++){
+      const isWs=wsSet.has(i);
+      const filled=i>=t.s&&i<=t.e;
+      h+=`<div class="g-cell${isWs?' ws':''}">${filled?`<div class="g-bar ${wc[t.w]}"></div>`:''}</div>`;
+    }
+    row.innerHTML=h;ct.appendChild(row);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE 메뉴 트리 & 사용자 시나리오</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:14px 20px;gap:10px}
+.head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-title{font-family:"Courier New",monospace;font-size:13px;font-weight:900;letter-spacing:1px}
+.head-sub{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.nav{display:flex;gap:0}
+.nav-btn{font-family:"Courier New",monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px 6px;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-1px}
+.nav-btn:hover{color:var(--text2);border-bottom-color:var(--line-hi)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.scene{display:none;flex:1;min-height:0;gap:16px}.scene.active{display:flex}
+/* Menu Tree */
+.menu-wrap{flex:0 0 340px;display:flex;flex-direction:column;gap:10px;overflow:auto}
+.menu-detail{flex:1;background:var(--panel);border:1px solid var(--line);padding:22px;display:flex;flex-direction:column;gap:12px;overflow:auto}
+.menu-detail::-webkit-scrollbar{width:3px}.menu-detail::-webkit-scrollbar-thumb{background:var(--line2)}
+.m1-group{display:flex;flex-direction:column;gap:4px}
+.m1{background:var(--panel);border:1px solid var(--line);padding:0;position:relative;cursor:pointer}
+.m1::before{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)}
+.m1-head{display:flex;align-items:center;gap:10px;padding:10px 12px}
+.m1-icon{font-size:18px;flex-shrink:0}
+.m1-label{font-size:14px;font-weight:900}
+.m1-sub{padding:0 12px 10px;display:flex;flex-direction:column;gap:3px}
+.m2{display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--panel2);font-size:12px;color:var(--text2);cursor:pointer;transition:background .12s}
+.m2:hover{background:rgba(0,255,204,.06)}
+.m2-dot{width:4px;height:4px;background:var(--muted);flex-shrink:0}
+.m1.active .m1-label,.m1:hover .m1-label{color:var(--accent)}
+.m1.active .m2-dot{background:var(--accent)}
+/* detail */
+.detail-label{font-family:"Courier New",monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);opacity:.7}
+.detail-title{font-size:20px;font-weight:900;margin:4px 0 6px}
+.detail-desc{font-size:14px;color:var(--text2);line-height:1.75}
+.detail-list{display:flex;flex-direction:column;gap:5px;margin-top:4px}
+.detail-list li{font-size:13px;color:var(--text2);list-style:none;display:flex;align-items:flex-start;gap:8px;line-height:1.6}
+.detail-list li::before{content:"─";color:var(--dim);flex-shrink:0}
+.detail-divider{height:1px;background:var(--line);margin:8px 0}
+/* Scenario */
+.sc-wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;flex:1}
+.sc-card{background:var(--panel);border:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+.sc-card::before{content:"";position:absolute;top:0;left:0;width:14px;height:14px;border-top:1px solid var(--line-hi);border-left:1px solid var(--line-hi)}
+.sc-card::after{content:"";position:absolute;bottom:0;right:0;width:14px;height:14px;border-bottom:1px solid var(--line-hi);border-right:1px solid var(--line-hi)}
+.sc-num{font-family:"Courier New",monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase}
+.sc-title{font-size:17px;font-weight:900;line-height:1.2}
+.sc-actor{font-size:12px;color:var(--muted);font-family:"Courier New",monospace;letter-spacing:.5px}
+.sc-steps{display:flex;flex-direction:column;gap:5px;flex:1}
+.sc-step{display:flex;align-items:flex-start;gap:10px;padding:7px 10px;background:var(--panel2);border-left:2px solid var(--line2);font-size:12px;color:var(--text2);line-height:1.5}
+.sc-step-num{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);flex-shrink:0;min-width:16px}
+.sc1 .sc-num{color:var(--info)}.sc1 .sc-title{color:var(--text)}.sc1 .sc-step{border-left-color:rgba(0,204,255,.3)}
+.sc2 .sc-num{color:var(--safe)}.sc2 .sc-title{color:var(--text)}.sc2 .sc-step{border-left-color:rgba(0,255,136,.25)}
+.sc3 .sc-num{color:var(--warn)}.sc3 .sc-title{color:var(--text)}.sc3 .sc-step{border-left-color:rgba(255,170,0,.25)}
+.sc4 .sc-num{color:var(--danger)}.sc4 .sc-title{color:var(--text)}.sc4 .sc-step{border-left-color:rgba(255,51,51,.3)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="head-title">// G-SAFE — 메뉴 트리 & 사용자 시나리오</div>
+      <div class="head-sub">MENU TREE · USER SCENARIO × 4</div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="show('MENU',this)">메뉴 트리</button>
+      <button class="nav-btn" onclick="show('SC',this)">사용자 시나리오 (4)</button>
+    </div>
+  </div>
+
+  <div id="MENU" class="scene active">
+    <div class="menu-wrap">
+      <div class="m1-group">
+        <div class="m1 active" onclick="setDetail(0)" id="m0">
+          <div class="m1-head"><div class="m1-icon">🎛️</div><div class="m1-label">대시보드</div></div>
+          <div class="m1-sub">
+            <div class="m2"><div class="m2-dot"></div>시스템 상태 요약</div>
+            <div class="m2"><div class="m2-dot"></div>최근 시뮬레이션 이력</div>
+            <div class="m2"><div class="m2-dot"></div>모델 성능 요약</div>
+          </div>
+        </div>
+        <div class="m1" onclick="setDetail(1)" id="m1">
+          <div class="m1-head"><div class="m1-icon">📋</div><div class="m1-label">시나리오 선택</div></div>
+          <div class="m1-sub">
+            <div class="m2"><div class="m2-dot"></div>연구소</div>
+            <div class="m2"><div class="m2-dot"></div>개발실</div>
+            <div class="m2"><div class="m2-dot"></div>배관실</div>
+          </div>
+        </div>
+        <div class="m1" onclick="setDetail(2)" id="m2">
+          <div class="m1-head"><div class="m1-icon">▶️</div><div class="m1-label">시뮬레이션</div></div>
+          <div class="m1-sub">
+            <div class="m2"><div class="m2-dot"></div>파라미터 설정</div>
+            <div class="m2"><div class="m2-dot"></div>데모 실행</div>
+            <div class="m2"><div class="m2-dot"></div>일시정지 / 재시작</div>
+          </div>
+        </div>
+        <div class="m1" onclick="setDetail(3)" id="m3">
+          <div class="m1-head"><div class="m1-icon">📊</div><div class="m1-label">분석</div></div>
+          <div class="m1-sub">
+            <div class="m2"><div class="m2-dot"></div>위험률 그래프</div>
+            <div class="m2"><div class="m2-dot"></div>Threshold 탐색 결과</div>
+            <div class="m2"><div class="m2-dot"></div>모델 성능 비교</div>
+            <div class="m2"><div class="m2-dot"></div>위험 요인 분석</div>
+          </div>
+        </div>
+        <div class="m1" onclick="setDetail(4)" id="m4">
+          <div class="m1-head"><div class="m1-icon">🗂️</div><div class="m1-label">이력</div></div>
+          <div class="m1-sub">
+            <div class="m2"><div class="m2-dot"></div>시뮬레이션 이력 목록</div>
+            <div class="m2"><div class="m2-dot"></div>결과 상세 보기</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="menu-detail" id="md">
+      <div class="detail-label">01 MAIN MENU</div>
+      <div class="detail-title">대시보드</div>
+      <div class="detail-desc">시스템 전체 상태를 한눈에 확인할 수 있는 홈 화면입니다. 최근 시뮬레이션 결과, 최대 위험률, 자동차단 횟수 등 핵심 지표를 제공합니다.</div>
+      <div class="detail-divider"></div>
+      <div class="detail-label">주요 기능</div>
+      <ul class="detail-list">
+        <li>현재 시스템 상태 (대기 / 실행 중 / 차단완료)</li>
+        <li>최근 5개 시뮬레이션 결과 요약</li>
+        <li>모델 성능 KPI (MAE, RMSE, R²) 요약</li>
+        <li>빠른 실행 — 마지막 시나리오로 바로 데모 진입</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="SC" class="scene">
+    <div class="sc-wrap">
+      <div class="sc-card sc1">
+        <div>
+          <div class="sc-num">SCENARIO 01 · 데모 시나리오</div>
+          <div class="sc-title">발표용 자동 데모 실행</div>
+          <div class="sc-actor">Actor: 발표자 / 강사</div>
+        </div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">01</div>시스템 실행 및 대시보드 확인</div>
+          <div class="sc-step"><div class="sc-step-num">02</div>연구소 시나리오 선택</div>
+          <div class="sc-step"><div class="sc-step-num">03</div>[데모 실행] 버튼 클릭 → 자동 진행 시작</div>
+          <div class="sc-step"><div class="sc-step-num">04</div>가스 누출 발생 → Particle System 활성화</div>
+          <div class="sc-step"><div class="sc-step-num">05</div>위험률 상승 → HUD 갱신 확인</div>
+          <div class="sc-step"><div class="sc-step-num">06</div>Threshold 초과 → 자동차단 발동</div>
+          <div class="sc-step"><div class="sc-step-num">07</div>결과 요약 화면 확인 후 발표 설명</div>
+        </div>
+      </div>
+      <div class="sc-card sc2">
+        <div>
+          <div class="sc-num">SCENARIO 02 · 정상 운영</div>
+          <div class="sc-title">위험률 낮음 — 자동차단 미발생</div>
+          <div class="sc-actor">Actor: 연구원 / 운영자</div>
+        </div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">01</div>시스템 실행 및 시나리오 선택</div>
+          <div class="sc-step"><div class="sc-step-num">02</div>낮은 농도 CSV 데이터 재생</div>
+          <div class="sc-step"><div class="sc-step-num">03</div>위험률이 threshold 미만으로 유지됨</div>
+          <div class="sc-step"><div class="sc-step-num">04</div>HUD 상태 = 정상(GREEN) 유지</div>
+          <div class="sc-step"><div class="sc-step-num">05</div>시뮬레이션 종료 → 결과에서 max_risk 낮음 확인</div>
+        </div>
+      </div>
+      <div class="sc-card sc3">
+        <div>
+          <div class="sc-num">SCENARIO 03 · 위험 감지</div>
+          <div class="sc-title">위험률 상승 → 자동차단 발동</div>
+          <div class="sc-actor">Actor: 연구원 / 시뮬레이션 테스터</div>
+        </div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">01</div>고농도 가스 누출 시나리오 선택</div>
+          <div class="sc-step"><div class="sc-step-num">02</div>누출 CSV 재생 → 위험률 급증</div>
+          <div class="sc-step"><div class="sc-step-num">03</div>HUD: 정상 → 주의 → 위험 상태 변화</div>
+          <div class="sc-step"><div class="sc-step-num">04</div>risk_score ≥ threshold → 자동차단 발동</div>
+          <div class="sc-step"><div class="sc-step-num">05</div>밸브 CLOSED, 경보 ON, 환기팬 ON</div>
+          <div class="sc-step"><div class="sc-step-num">06</div>차단 이벤트 DB 저장 확인</div>
+        </div>
+      </div>
+      <div class="sc-card sc4">
+        <div>
+          <div class="sc-num">SCENARIO 04 · 결과 분석</div>
+          <div class="sc-title">시뮬레이션 결과 상세 분석</div>
+          <div class="sc-actor">Actor: 강사 / 데이터 분석가</div>
+        </div>
+        <div class="sc-steps">
+          <div class="sc-step"><div class="sc-step-num">01</div>이력 화면에서 시뮬레이션 선택</div>
+          <div class="sc-step"><div class="sc-step-num">02</div>max_risk, cutoff_time 확인</div>
+          <div class="sc-step"><div class="sc-step-num">03</div>위험률 시계열 그래프 상세 보기</div>
+          <div class="sc-step"><div class="sc-step-num">04</div>위험 요인 (농도/속도/지속시간) 분석 패널 확인</div>
+          <div class="sc-step"><div class="sc-step-num">05</div>Threshold 탐색 결과 비교 화면 확인</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const details=[
+  {label:"01 MAIN MENU",title:"대시보드",desc:"시스템 전체 상태를 한눈에 확인할 수 있는 홈 화면. 최근 시뮬레이션 결과, 최대 위험률, 자동차단 횟수 등 핵심 지표를 제공합니다.",items:["현재 시스템 상태 (대기 / 실행 중 / 차단완료)","최근 5개 시뮬레이션 결과 요약","모델 성능 KPI (MAE, RMSE, R²) 요약","빠른 실행 — 마지막 시나리오로 바로 데모 진입"]},
+  {label:"02 MAIN MENU",title:"시나리오 선택",desc:"시뮬레이션을 진행할 공간 시나리오를 선택합니다. 각 시나리오마다 누출 위치, 가스 종류, threshold가 다르게 설정됩니다.",items:["연구소 — 수소/메탄 배관 누출 시나리오","개발실 — 밀폐 공간 가스 확산 시나리오","배관실 — 다중 누출 지점 시나리오","시나리오별 threshold 및 가스 종류 표시"]},
+  {label:"03 MAIN MENU",title:"시뮬레이션",desc:"선택한 시나리오에서 가스 누출 시뮬레이션을 실행합니다. 파라미터 조정 및 데모 모드 실행이 가능합니다.",items:["누출 속도, 환기율, threshold 파라미터 설정","데모 실행 — 자동 진행 (발표용)","일시정지 / 재시작 / 초기화 제어","실시간 위험률 HUD 및 3D 씬 표시"]},
+  {label:"04 MAIN MENU",title:"분석",desc:"시뮬레이션 결과와 ML 모델 성능을 분석하는 화면입니다.",items:["위험률 시계열 그래프 + threshold 기준선","Threshold 후보별 F2-score/Recall/오탐률 비교","모델 성능 비교 (RF vs GBR: MAE/RMSE/R²)","위험 요인 분석 — 농도/속도/지속시간 기여도"]},
+  {label:"05 MAIN MENU",title:"이력",desc:"과거 시뮬레이션 실행 기록을 조회하고 결과를 다시 확인하는 화면입니다.",items:["시뮬레이션 이력 목록 (날짜/시나리오/최대위험률)","결과 상세 — max_risk, cutoff_time, 이벤트 타임라인","차단 이벤트 DB 로그 확인"]}
+];
+function setDetail(i){
+  document.querySelectorAll('.m1').forEach((el,j)=>el.classList.toggle('active',j===i));
+  const d=details[i];
+  document.getElementById('md').innerHTML=`<div class="detail-label">${d.label}</div><div class="detail-title">${d.title}</div><div class="detail-desc">${d.desc}</div><div class="detail-divider"></div><div class="detail-label">주요 기능</div><ul class="detail-list">${d.items.map(it=>`<li>${it}</li>`).join('')}</ul>`;
+}
+function show(id,btn){document.querySelectorAll('.scene').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}
+</script>
+</body>
+</html>
