@@ -22,14 +22,14 @@
 
 ### ⬜ 미완료 (기획 단계 잔여)
 
-- [ ] **API 명세서 작성** (`presentation_v2/api_spec.html`) — 담당: 홍제규
-  - [ ] `GET /api/health` — 서버 상태 확인 (request/response/error 포함)
-  - [ ] `POST /api/predict-risk` — sensor_1~16 입력 → risk_score + risk_level 반환
-  - [ ] `GET /api/model-performance` — RF/GBR 모델별 MAE, RMSE, R², threshold 조회 (REQ-F-017)
-  - [ ] `GET /api/scenarios` — 시나리오 목록 (연구소/개발실/배관실) 반환
-  - [ ] `POST /api/logs/cutoff` — 자동차단 이벤트 cutoff_events 테이블에 저장 (REQ-F-015)
-  - [ ] 공통 에러 응답 형식 정의 (HTTP 422, 500 등)
-  - [ ] 응답 시간 목표 명시 (< 1s)
+- [x] **API 명세서 작성** (`presentation_v2/api_spec.html`) — 담당: 홍제규
+  - [x] `GET /api/health` — 서버 상태 확인 (request/response/error 포함)
+  - [x] `POST /api/predict-risk` — sensor_1~16 입력 → risk_score + risk_level 반환
+  - [x] `GET /api/model-performance` — RF/GBR 모델별 MAE, RMSE, R², threshold 조회 (REQ-F-017)
+  - [x] `GET /api/scenarios` — 시나리오 목록 (연구소/개발실/배관실) 반환
+  - [x] `POST /api/logs/cutoff` — 자동차단 이벤트 cutoff_events 테이블에 저장 (REQ-F-015)
+  - [x] 공통 에러 응답 형식 정의 (HTTP 422, 500, 503)
+  - [x] 응답 시간 목표 명시 (< 1s)
 
 - [ ] **요구사항 추적 매트릭스(RTM) 추가** (`presentation_v2/requirements.html` 탭 추가)
   - [ ] 요구사항 ID (REQ-F-001~017, REQ-NF-001~008) ↔ TC ID 매핑 표 작성

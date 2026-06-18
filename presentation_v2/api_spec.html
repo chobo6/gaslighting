@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE API 명세서</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:14px 20px;gap:10px}
+.head{display:flex;align-items:center;justify-content:space-between;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-title{font-family:"Courier New",monospace;font-size:13px;font-weight:900;letter-spacing:1px}
+.head-sub{font-family:"Courier New",monospace;font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.nav{display:flex;gap:0;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.nav-btn{font-family:"Courier New",monospace;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:7px 16px 5px;border:none;border-bottom:2px solid transparent;background:none;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-1px;white-space:nowrap}
+.nav-btn:hover{color:var(--text2);border-bottom-color:var(--line-hi)}
+.nav-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.scene{display:none;flex:1;min-height:0;flex-direction:column;gap:10px}.scene.active{display:flex}
+.scroll{flex:1;overflow:auto}.scroll::-webkit-scrollbar{width:3px}.scroll::-webkit-scrollbar-thumb{background:var(--line2);border-radius:0}
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;flex-shrink:0}
+.kpi{background:var(--panel);border:1px solid var(--line);padding:12px 16px;position:relative}
+.kpi::before{content:"";position:absolute;top:0;left:0;width:10px;height:10px;border-top:1px solid var(--accent);border-left:1px solid var(--accent)}
+.kpi-num{font-family:"Courier New",monospace;font-size:22px;font-weight:900;line-height:1}
+.kpi-lbl{font-family:"Courier New",monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+/* API card */
+.api-card{border:1px solid var(--line);background:var(--panel);position:relative;overflow:hidden;margin-bottom:10px}
+.api-card::before{content:"";position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid currentColor;border-left:1px solid currentColor;opacity:.35}
+.api-card.post{border-left:3px solid var(--warn)}.api-card.post::before{color:var(--warn)}
+.api-card.get{border-left:3px solid var(--safe)}.api-card.get::before{color:var(--safe)}
+.api-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none}
+.api-head:hover{background:rgba(0,255,204,.02)}
+.method{font-family:"Courier New",monospace;font-size:11px;font-weight:900;padding:3px 10px;border:1px solid currentColor;letter-spacing:1px;flex-shrink:0}
+.method.POST{color:var(--warn);border-color:rgba(255,170,0,.4);background:rgba(255,170,0,.06)}
+.method.GET{color:var(--safe);border-color:rgba(0,255,136,.35);background:rgba(0,255,136,.05)}
+.api-path{font-family:"Courier New",monospace;font-size:13px;font-weight:700;color:var(--text);letter-spacing:.5px}
+.api-desc{font-size:12px;color:var(--muted);margin-left:auto;text-align:right}
+.api-req-badge{font-family:"Courier New",monospace;font-size:9px;font-weight:700;padding:2px 8px;border:1px solid rgba(0,204,255,.25);background:rgba(0,204,255,.06);color:var(--info);letter-spacing:.5px;flex-shrink:0}
+.api-body{padding:18px;display:flex;flex-direction:column;gap:14px}
+.api-section-title{font-family:"Courier New",monospace;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+/* Code block */
+.code-block{background:var(--surf);border:1px solid var(--line);padding:14px 16px;font-family:"Courier New",monospace;font-size:12px;line-height:1.8;color:var(--text2);white-space:pre;overflow-x:auto}
+.code-block::-webkit-scrollbar{height:3px}.code-block::-webkit-scrollbar-thumb{background:var(--line2)}
+.ck{color:var(--info)}.cv{color:var(--accent)}.cs{color:var(--safe)}.cn{color:var(--warn)}.cm{color:var(--muted);font-style:italic}
+/* Field table */
+.field-table{width:100%;border-collapse:collapse;font-size:12px}
+.field-table th{padding:6px 10px;text-align:left;font-family:"Courier New",monospace;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:var(--panel2);border:1px solid var(--line2);opacity:.8;white-space:nowrap}
+.field-table td{padding:8px 10px;border:1px solid var(--line);color:var(--text2);font-size:12px;vertical-align:middle}
+.field-table tr:hover td{background:rgba(0,255,204,.02)}
+.fn{font-family:"Courier New",monospace;font-size:11px;font-weight:700;color:var(--info)}
+.ft{font-family:"Courier New",monospace;font-size:10px;color:var(--warn)}
+.fr{font-size:10px}
+.badge-r{display:inline-block;font-family:"Courier New",monospace;font-size:9px;font-weight:700;padding:2px 6px;background:rgba(255,51,51,.1);color:var(--danger);border:1px solid rgba(255,51,51,.25)}
+.badge-o{display:inline-block;font-family:"Courier New",monospace;font-size:9px;font-weight:700;padding:2px 6px;background:rgba(255,170,0,.08);color:var(--warn);border:1px solid rgba(255,170,0,.2)}
+/* Two-col layout */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+/* Error table */
+.err-row{display:grid;grid-template-columns:80px 120px 1fr;border-bottom:1px solid var(--line);padding:9px 12px;align-items:center;gap:12px}
+.err-row:first-child{background:var(--panel2);font-family:"Courier New",monospace;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent)}
+.err-code{font-family:"Courier New",monospace;font-size:13px;font-weight:700}
+/* Overview list */
+.ov-list{display:flex;flex-direction:column;gap:6px}
+.ov-item{display:grid;grid-template-columns:80px 200px 1fr 90px;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-left:2px solid var(--line-hi);cursor:pointer;transition:border-color .12s}
+.ov-item:hover{border-color:var(--line-hi)}
+.ov-item.post-item{border-left-color:rgba(255,170,0,.5)}
+.ov-item.get-item{border-left-color:rgba(0,255,136,.4)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div>
+      <div class="head-title">// G-SAFE — API 명세서</div>
+      <div class="head-sub">REST API SPECIFICATION · FastAPI · BASE URL: http://localhost:8000 · TOTAL: 5 ENDPOINTS</div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="show('OV',this)">개요</button>
+      <button class="nav-btn" onclick="show('E1',this)">POST /predict-risk</button>
+      <button class="nav-btn" onclick="show('E2',this)">GET /model-performance</button>
+      <button class="nav-btn" onclick="show('E3',this)">GET /scenarios</button>
+      <button class="nav-btn" onclick="show('E4',this)">POST /logs/cutoff</button>
+      <button class="nav-btn" onclick="show('E5',this)">GET /health</button>
+      <button class="nav-btn" onclick="show('ERR',this)">공통 에러</button>
+    </div>
+  </div>
+
+  <!-- 개요 -->
+  <div id="OV" class="scene active">
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-num" style="color:var(--info)">5</div><div class="kpi-lbl">총 엔드포인트</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--warn)">2</div><div class="kpi-lbl">POST</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--safe)">3</div><div class="kpi-lbl">GET</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--accent)">&lt; 1s</div><div class="kpi-lbl">응답 목표</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--text2)">JSON</div><div class="kpi-lbl">데이터 형식</div></div>
+    </div>
+    <div class="scroll">
+      <div style="background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,204,255,.4);padding:10px 16px;font-size:12.5px;color:var(--muted);line-height:1.7;margin-bottom:10px">
+        <span style="color:var(--info);font-family:'Courier New',monospace;font-weight:700">BASE URL</span> &nbsp;http://localhost:8000 &nbsp;·&nbsp;
+        <span style="color:var(--info);font-family:'Courier New',monospace;font-weight:700">Content-Type</span> &nbsp;application/json &nbsp;·&nbsp;
+        <span style="color:var(--info);font-family:'Courier New',monospace;font-weight:700">담당</span> &nbsp;홍제규 (Backend/API) &nbsp;·&nbsp;
+        <span style="color:var(--info);font-family:'Courier New',monospace;font-weight:700">관련 요구사항</span> &nbsp;REQ-F-005, REQ-F-015, REQ-F-017, REQ-NF-003, REQ-NF-006
+      </div>
+      <div class="ov-list">
+        <div class="ov-item post-item" onclick="show('E1',document.querySelectorAll('.nav-btn')[1])">
+          <span class="method POST">POST</span>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:var(--text)">/api/predict-risk</span>
+          <span style="font-size:12px;color:var(--text2)">센서값 16채널 입력 → 위험률(risk_score) 예측 반환</span>
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--info)">REQ-F-005</span>
+        </div>
+        <div class="ov-item get-item" onclick="show('E2',document.querySelectorAll('.nav-btn')[2])">
+          <span class="method GET">GET</span>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:var(--text)">/api/model-performance</span>
+          <span style="font-size:12px;color:var(--text2)">RF/GBR 모델 학습 성능 지표 및 threshold 탐색 결과 조회</span>
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--info)">REQ-F-017</span>
+        </div>
+        <div class="ov-item get-item" onclick="show('E3',document.querySelectorAll('.nav-btn')[3])">
+          <span class="method GET">GET</span>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:var(--text)">/api/scenarios</span>
+          <span style="font-size:12px;color:var(--text2)">시뮬레이션 시나리오 목록 및 설정값 반환</span>
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--info)">REQ-F-001</span>
+        </div>
+        <div class="ov-item post-item" onclick="show('E4',document.querySelectorAll('.nav-btn')[4])">
+          <span class="method POST">POST</span>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:var(--text)">/api/logs/cutoff</span>
+          <span style="font-size:12px;color:var(--text2)">자동차단 이벤트 발생 시 DB(cutoff_events)에 기록</span>
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--info)">REQ-F-015</span>
+        </div>
+        <div class="ov-item get-item" onclick="show('E5',document.querySelectorAll('.nav-btn')[5])">
+          <span class="method GET">GET</span>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:var(--text)">/api/health</span>
+          <span style="font-size:12px;color:var(--text2)">서버 및 모델 로드 상태 확인 — Unity 연동 전 사전 체크</span>
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--info)">REQ-NF-006</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POST /predict-risk -->
+  <div id="E1" class="scene">
+    <div class="scroll">
+      <div class="api-card post">
+        <div class="api-head" style="cursor:default">
+          <span class="method POST">POST</span>
+          <span class="api-path">/api/predict-risk</span>
+          <span class="api-req-badge">REQ-F-005 · TC-API-001</span>
+          <span class="api-desc">위험률 회귀 예측<br>담당: 홍제규</span>
+        </div>
+        <div class="api-body">
+          <div>
+            <div class="api-section-title">개요</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.75">
+              Unity C#에서 현재 타임스텝의 센서값 16채널을 전송하면, 로드된 ML 모델이 위험률(0~100)을 예측하여 반환합니다.
+              응답 지연 시 이전 risk_score를 유지하는 fallback 처리가 Unity 측에서 구현됩니다.
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="api-section-title">Request Body (application/json)</div>
+              <table class="field-table">
+                <thead><tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr></thead>
+                <tbody>
+                  <tr><td class="fn">sensor_1</td><td class="ft">float</td><td><span class="badge-r">Required</span></td><td>채널 1 센서값 (정규화 전)</td></tr>
+                  <tr><td class="fn">sensor_2</td><td class="ft">float</td><td><span class="badge-r">Required</span></td><td>채널 2 센서값</td></tr>
+                  <tr><td class="fn" style="color:var(--muted)">… (3~15)</td><td class="ft">float</td><td><span class="badge-r">Required</span></td><td>채널 3~15 센서값</td></tr>
+                  <tr><td class="fn">sensor_16</td><td class="ft">float</td><td><span class="badge-r">Required</span></td><td>채널 16 센서값</td></tr>
+                  <tr><td class="fn">scenario_id</td><td class="ft">int</td><td><span class="badge-o">Optional</span></td><td>시나리오 ID (로그 연동용, 기본값 1)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="api-section-title">Response 200 (application/json)</div>
+              <table class="field-table">
+                <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+                <tbody>
+                  <tr><td class="fn">risk_score</td><td class="ft">float</td><td>위험률 0.0 ~ 100.0</td></tr>
+                  <tr><td class="fn">risk_level</td><td class="ft">string</td><td>정상 / 주의 / 위험 / 차단</td></tr>
+                  <tr><td class="fn">threshold</td><td class="ft">float</td><td>현재 적용 중인 threshold 값</td></tr>
+                  <tr><td class="fn">response_ms</td><td class="ft">int</td><td>서버 처리 시간 (ms)</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:8px;font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">
+                risk_level 기준: &nbsp;정상 &lt; 40 &nbsp;·&nbsp; 주의 40~69 &nbsp;·&nbsp; 위험 70~threshold &nbsp;·&nbsp; 차단 ≥ threshold
+              </div>
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="api-section-title">Request 예시</div>
+              <div class="code-block"><span class="ck">"sensor_1"</span>: <span class="cn">0.42</span>,
+<span class="ck">"sensor_2"</span>: <span class="cn">0.87</span>,
+<span class="ck">"sensor_3"</span>: <span class="cn">0.31</span>,
+<span class="cm">// ... sensor_4 ~ sensor_15 ...</span>
+<span class="ck">"sensor_16"</span>: <span class="cn">0.55</span>,
+<span class="ck">"scenario_id"</span>: <span class="cn">1</span></div>
+            </div>
+            <div>
+              <div class="api-section-title">Response 예시</div>
+              <div class="code-block"><span class="ck">"risk_score"</span>: <span class="cn">73.4</span>,
+<span class="ck">"risk_level"</span>: <span class="cs">"위험"</span>,
+<span class="ck">"threshold"</span>: <span class="cn">78.0</span>,
+<span class="ck">"response_ms"</span>: <span class="cn">42</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GET /model-performance -->
+  <div id="E2" class="scene">
+    <div class="scroll">
+      <div class="api-card get">
+        <div class="api-head" style="cursor:default">
+          <span class="method GET">GET</span>
+          <span class="api-path">/api/model-performance</span>
+          <span class="api-req-badge">REQ-F-017</span>
+          <span class="api-desc">모델 성능 조회<br>담당: 홍제규 + 김응석</span>
+        </div>
+        <div class="api-body">
+          <div>
+            <div class="api-section-title">개요</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.75">
+              RandomForest / GBR 모델의 학습 성능 지표(MAE, RMSE, R²)와 threshold 탐색 결과를 반환합니다.
+              Unity 대시보드의 모델 성능 화면에서 사용됩니다.
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="api-section-title">Response 200 (application/json)</div>
+              <table class="field-table">
+                <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+                <tbody>
+                  <tr><td class="fn">models</td><td class="ft">array</td><td>모델 성능 객체 목록</td></tr>
+                  <tr><td class="fn">models[].name</td><td class="ft">string</td><td>RandomForest / GBR</td></tr>
+                  <tr><td class="fn">models[].mae</td><td class="ft">float</td><td>Mean Absolute Error</td></tr>
+                  <tr><td class="fn">models[].rmse</td><td class="ft">float</td><td>Root Mean Squared Error</td></tr>
+                  <tr><td class="fn">models[].r2</td><td class="ft">float</td><td>R² Score (목표: > 0.9)</td></tr>
+                  <tr><td class="fn">models[].selected</td><td class="ft">bool</td><td>현재 적용 중인 모델 여부</td></tr>
+                  <tr><td class="fn">threshold</td><td class="ft">object</td><td>threshold 탐색 결과 객체</td></tr>
+                  <tr><td class="fn">threshold.value</td><td class="ft">float</td><td>선정된 최적 threshold</td></tr>
+                  <tr><td class="fn">threshold.recall</td><td class="ft">float</td><td>해당 threshold의 Recall</td></tr>
+                  <tr><td class="fn">threshold.f2_score</td><td class="ft">float</td><td>F2-score</td></tr>
+                  <tr><td class="fn">threshold.false_positive_rate</td><td class="ft">float</td><td>오탐률 (목표: &lt; 0.1)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="api-section-title">Response 예시</div>
+              <div class="code-block"><span class="ck">"models"</span>: [
+  {
+    <span class="ck">"name"</span>: <span class="cs">"RandomForest"</span>,
+    <span class="ck">"mae"</span>: <span class="cn">3.21</span>,
+    <span class="ck">"rmse"</span>: <span class="cn">4.87</span>,
+    <span class="ck">"r2"</span>: <span class="cn">0.923</span>,
+    <span class="ck">"selected"</span>: <span class="cn">true</span>
+  },
+  {
+    <span class="ck">"name"</span>: <span class="cs">"GBR"</span>,
+    <span class="ck">"mae"</span>: <span class="cn">3.58</span>,
+    <span class="ck">"rmse"</span>: <span class="cn">5.12</span>,
+    <span class="ck">"r2"</span>: <span class="cn">0.908</span>,
+    <span class="ck">"selected"</span>: <span class="cn">false</span>
+  }
+],
+<span class="ck">"threshold"</span>: {
+  <span class="ck">"value"</span>: <span class="cn">78.0</span>,
+  <span class="ck">"recall"</span>: <span class="cn">0.94</span>,
+  <span class="ck">"f2_score"</span>: <span class="cn">0.91</span>,
+  <span class="ck">"false_positive_rate"</span>: <span class="cn">0.07</span>
+}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GET /scenarios -->
+  <div id="E3" class="scene">
+    <div class="scroll">
+      <div class="api-card get">
+        <div class="api-head" style="cursor:default">
+          <span class="method GET">GET</span>
+          <span class="api-path">/api/scenarios</span>
+          <span class="api-req-badge">REQ-F-001</span>
+          <span class="api-desc">시나리오 목록<br>담당: 홍제규</span>
+        </div>
+        <div class="api-body">
+          <div>
+            <div class="api-section-title">개요</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.75">
+              Unity 시나리오 선택 화면에서 호출합니다. 연구소 / 개발실 / 배관실 3개 시나리오의 설정값(누출 위치, 가스 종류, threshold)을 반환합니다.
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="api-section-title">Response 200 (application/json)</div>
+              <table class="field-table">
+                <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+                <tbody>
+                  <tr><td class="fn">scenarios</td><td class="ft">array</td><td>시나리오 객체 목록</td></tr>
+                  <tr><td class="fn">scenarios[].id</td><td class="ft">int</td><td>시나리오 고유 ID</td></tr>
+                  <tr><td class="fn">scenarios[].name</td><td class="ft">string</td><td>시나리오 이름</td></tr>
+                  <tr><td class="fn">scenarios[].location</td><td class="ft">string</td><td>누출 발생 위치</td></tr>
+                  <tr><td class="fn">scenarios[].gas_type</td><td class="ft">string</td><td>가스 종류</td></tr>
+                  <tr><td class="fn">scenarios[].threshold</td><td class="ft">float</td><td>해당 시나리오 기본 threshold</td></tr>
+                  <tr><td class="fn">scenarios[].description</td><td class="ft">string</td><td>시나리오 설명</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="api-section-title">Response 예시</div>
+              <div class="code-block"><span class="ck">"scenarios"</span>: [
+  {
+    <span class="ck">"id"</span>: <span class="cn">1</span>,
+    <span class="ck">"name"</span>: <span class="cs">"연구소"</span>,
+    <span class="ck">"location"</span>: <span class="cs">"배관 연결부 A"</span>,
+    <span class="ck">"gas_type"</span>: <span class="cs">"CH4"</span>,
+    <span class="ck">"threshold"</span>: <span class="cn">78.0</span>,
+    <span class="ck">"description"</span>: <span class="cs">"협소 공간 고위험"</span>
+  },
+  {
+    <span class="ck">"id"</span>: <span class="cn">2</span>,
+    <span class="ck">"name"</span>: <span class="cs">"개발실"</span>,
+    <span class="ck">"location"</span>: <span class="cs">"실험대 측면"</span>,
+    <span class="ck">"gas_type"</span>: <span class="cs">"CO"</span>,
+    <span class="ck">"threshold"</span>: <span class="cn">72.0</span>,
+    <span class="ck">"description"</span>: <span class="cs">"환기 가능, 중위험"</span>
+  },
+  {
+    <span class="ck">"id"</span>: <span class="cn">3</span>,
+    <span class="ck">"name"</span>: <span class="cs">"배관실"</span>,
+    <span class="ck">"location"</span>: <span class="cs">"주배관 밸브"</span>,
+    <span class="ck">"gas_type"</span>: <span class="cs">"LPG"</span>,
+    <span class="ck">"threshold"</span>: <span class="cn">65.0</span>,
+    <span class="ck">"description"</span>: <span class="cs">"광역 차단 시나리오"</span>
+  }
+]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POST /logs/cutoff -->
+  <div id="E4" class="scene">
+    <div class="scroll">
+      <div class="api-card post">
+        <div class="api-head" style="cursor:default">
+          <span class="method POST">POST</span>
+          <span class="api-path">/api/logs/cutoff</span>
+          <span class="api-req-badge">REQ-F-015 · TC-DB-002</span>
+          <span class="api-desc">자동차단 이벤트 저장<br>담당: 홍제규 + 장영재</span>
+        </div>
+        <div class="api-body">
+          <div>
+            <div class="api-section-title">개요</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.75">
+              Unity에서 risk_score ≥ threshold 조건이 충족되어 자동차단이 발생하면 즉시 호출합니다.
+              cutoff_events 테이블에 이벤트를 저장하며, 이후 결과 요약 화면에서 조회됩니다.
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="api-section-title">Request Body (application/json)</div>
+              <table class="field-table">
+                <thead><tr><th>필드</th><th>타입</th><th>필수</th><th>설명</th></tr></thead>
+                <tbody>
+                  <tr><td class="fn">scenario_id</td><td class="ft">int</td><td><span class="badge-r">Required</span></td><td>발생 시나리오 ID</td></tr>
+                  <tr><td class="fn">cutoff_time</td><td class="ft">string</td><td><span class="badge-r">Required</span></td><td>차단 발생 시각 (ISO 8601)</td></tr>
+                  <tr><td class="fn">risk_at_cutoff</td><td class="ft">float</td><td><span class="badge-r">Required</span></td><td>차단 시점의 risk_score</td></tr>
+                  <tr><td class="fn">threshold_used</td><td class="ft">float</td><td><span class="badge-r">Required</span></td><td>적용된 threshold 값</td></tr>
+                  <tr><td class="fn">sim_elapsed_sec</td><td class="ft">int</td><td><span class="badge-o">Optional</span></td><td>시뮬레이션 시작부터 경과 시간(초)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="api-section-title">Response 201 (application/json)</div>
+              <table class="field-table">
+                <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+                <tbody>
+                  <tr><td class="fn">event_id</td><td class="ft">int</td><td>생성된 cutoff_events PK</td></tr>
+                  <tr><td class="fn">status</td><td class="ft">string</td><td>"saved"</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:14px">
+                <div class="api-section-title">Request / Response 예시</div>
+                <div class="code-block"><span class="cm">// Request</span>
+<span class="ck">"scenario_id"</span>: <span class="cn">1</span>,
+<span class="ck">"cutoff_time"</span>: <span class="cs">"2026-07-13T14:32:05"</span>,
+<span class="ck">"risk_at_cutoff"</span>: <span class="cn">81.2</span>,
+<span class="ck">"threshold_used"</span>: <span class="cn">78.0</span>,
+<span class="ck">"sim_elapsed_sec"</span>: <span class="cn">47</span>
+
+<span class="cm">// Response 201</span>
+<span class="ck">"event_id"</span>: <span class="cn">12</span>,
+<span class="ck">"status"</span>: <span class="cs">"saved"</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GET /health -->
+  <div id="E5" class="scene">
+    <div class="scroll">
+      <div class="api-card get">
+        <div class="api-head" style="cursor:default">
+          <span class="method GET">GET</span>
+          <span class="api-path">/api/health</span>
+          <span class="api-req-badge">REQ-NF-006</span>
+          <span class="api-desc">서버 상태 확인<br>담당: 홍제규</span>
+        </div>
+        <div class="api-body">
+          <div>
+            <div class="api-section-title">개요</div>
+            <div style="font-size:12.5px;color:var(--text2);line-height:1.75">
+              Unity 시뮬레이션 시작 전 FastAPI 서버 및 ML 모델 로드 상태를 확인합니다.
+              model_loaded가 false이면 Unity에서 "서버 연결 실패" 안내를 표시하고 데모 모드(로컬 모델)로 전환합니다.
+            </div>
+          </div>
+          <div class="two-col">
+            <div>
+              <div class="api-section-title">Response 200 (application/json)</div>
+              <table class="field-table">
+                <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
+                <tbody>
+                  <tr><td class="fn">status</td><td class="ft">string</td><td>"ok" / "degraded"</td></tr>
+                  <tr><td class="fn">model_loaded</td><td class="ft">bool</td><td>ML 모델 로드 완료 여부</td></tr>
+                  <tr><td class="fn">model_name</td><td class="ft">string</td><td>현재 로드된 모델명</td></tr>
+                  <tr><td class="fn">db_connected</td><td class="ft">bool</td><td>DB 연결 상태</td></tr>
+                  <tr><td class="fn">uptime_sec</td><td class="ft">int</td><td>서버 가동 시간(초)</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <div class="api-section-title">Response 예시</div>
+              <div class="code-block"><span class="cm">// 정상</span>
+<span class="ck">"status"</span>: <span class="cs">"ok"</span>,
+<span class="ck">"model_loaded"</span>: <span class="cn">true</span>,
+<span class="ck">"model_name"</span>: <span class="cs">"RandomForest"</span>,
+<span class="ck">"db_connected"</span>: <span class="cn">true</span>,
+<span class="ck">"uptime_sec"</span>: <span class="cn">342</span>
+
+<span class="cm">// 모델 미로드 (degraded)</span>
+<span class="ck">"status"</span>: <span class="cs">"degraded"</span>,
+<span class="ck">"model_loaded"</span>: <span class="cn">false</span>,
+<span class="ck">"model_name"</span>: <span class="cn">null</span>,
+<span class="ck">"db_connected"</span>: <span class="cn">true</span>,
+<span class="ck">"uptime_sec"</span>: <span class="cn">5</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 공통 에러 -->
+  <div id="ERR" class="scene">
+    <div class="scroll">
+      <div style="background:var(--panel);border:1px solid var(--line);padding:0;margin-bottom:10px">
+        <div class="err-row">
+          <span>HTTP 코드</span><span>에러 타입</span><span>설명 및 발생 조건</span>
+        </div>
+        <div class="err-row">
+          <span class="err-code" style="color:var(--warn)">422</span>
+          <span style="font-family:'Courier New',monospace;font-size:11px;color:var(--warn)">Validation Error</span>
+          <span style="font-size:12px;color:var(--text2)">Request Body 필드 누락 또는 타입 불일치. Pydantic 자동 검증. <code style="font-family:'Courier New',monospace;color:var(--info)">detail</code> 배열에 필드별 오류 명시.</span>
+        </div>
+        <div class="err-row">
+          <span class="err-code" style="color:var(--danger)">500</span>
+          <span style="font-family:'Courier New',monospace;font-size:11px;color:var(--danger)">Internal Server Error</span>
+          <span style="font-size:12px;color:var(--text2)">모델 predict() 실패, DB 쿼리 오류 등 서버 내부 예외. 로그에 traceback 기록.</span>
+        </div>
+        <div class="err-row">
+          <span class="err-code" style="color:var(--muted)">503</span>
+          <span style="font-family:'Courier New',monospace;font-size:11px;color:var(--muted)">Service Unavailable</span>
+          <span style="font-size:12px;color:var(--text2)">모델 미로드 상태에서 /predict-risk 호출 시 반환. Unity는 fallback 처리(이전 risk_score 유지).</span>
+        </div>
+      </div>
+      <div>
+        <div class="api-section-title" style="margin-bottom:8px">공통 에러 Response 형식</div>
+        <div class="code-block"><span class="cm">// 422 Validation Error 예시</span>
+{
+  <span class="ck">"detail"</span>: [
+    {
+      <span class="ck">"loc"</span>: [<span class="cs">"body"</span>, <span class="cs">"sensor_1"</span>],
+      <span class="ck">"msg"</span>: <span class="cs">"field required"</span>,
+      <span class="ck">"type"</span>: <span class="cs">"value_error.missing"</span>
+    }
+  ]
+}
+
+<span class="cm">// 500 Internal Server Error 예시</span>
+{
+  <span class="ck">"detail"</span>: <span class="cs">"Model prediction failed"</span>
+}
+
+<span class="cm">// 503 Service Unavailable 예시</span>
+{
+  <span class="ck">"detail"</span>: <span class="cs">"ML model not loaded. Use fallback."</span>
+}</div>
+      </div>
+      <div style="margin-top:12px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,255,204,.3);padding:12px 16px;font-size:12.5px;color:var(--muted);line-height:1.75">
+        <span style="color:var(--accent);font-family:'Courier New',monospace;font-weight:700">Unity 에러 처리 원칙</span> — API 호출 실패(타임아웃, 503) 시 이전 risk_score를 그대로 유지하고 HUD에
+        <span style="color:var(--warn)">[API 연결 중]</span> 표시. 3회 연속 실패 시 로컬 데모 모드로 자동 전환. (REQ-NF-006)
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function show(id,btn){
+  document.querySelectorAll('.scene').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+</script>
+</body>
+</html>
