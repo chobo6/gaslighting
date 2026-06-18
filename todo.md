@@ -1,186 +1,221 @@
 # G-SAFE 프로젝트 TODO
 
 > 기준일: 2026-06-18 | 전체 일정: 2026.06.16 – 07.13 (4주)
+> 목표 지표: R² > 0.9 · 오탐률 < 10% · Recall > 0.9 · API 응답 < 1s · 30fps+
 
 ---
 
-## 기획 단계 (WEEK 01 | 06.16 – 06.23)
+## 기획 단계 (WEEK 01) ✅ 완료
 
-### ✅ 완료
+| 산출물 | 파일 | 비고 |
+|--------|------|------|
+| 요구사항 명세서 | `presentation_v2/requirements.html` | 기능 17 + 비기능 8 + RTM 탭 |
+| WBS | `presentation_v2/wbs.html` | 36 tasks, 4주 Gantt |
+| 메뉴 트리 & 시나리오 | `presentation_v2/menu_scenario.html` | 4단계 메뉴 + 4 시나리오 |
+| 와이어프레임 | `presentation_v2/wireframe.html` | 시뮬레이션 + 결과 상세 2화면 |
+| 스토리보드 | `presentation_v2/storyboard.html` | 5 Scene |
+| 테이블 정의서 / ERD | `presentation_v2/table_definition.html` | 5개 테이블 |
+| 테스트 케이스 | `presentation_v2/test_cases.html` | 15개 TC |
+| 트러블슈팅 & 회고 초안 | `presentation_v2/troubleshooting.html` | 예상 이슈 4건 |
+| 발표 슬라이드 | `presentation_v2/index.html` | 9슬라이드 |
+| API 명세서 | `presentation_v2/api_spec.html` | 5 엔드포인트, 에러 형식 |
+| RTM | `presentation_v2/requirements.html` RTM 탭 | 커버리지 84% (21/25) |
+| README | `README.md` | 프로젝트 개요 / 아키텍처 / 팀 |
+| GitHub 연결 & push | `https://github.com/chobo6/gaslighting.git` | main 브랜치 |
 
-- [x] 요구사항 명세서 작성 (`presentation_v2/requirements.html`) — 기능 17 + 비기능 8 = 25개
-- [x] WBS 작성 (`presentation_v2/wbs.html`) — 36 tasks, 4주 Gantt
-- [x] 메뉴 트리 & 사용자 시나리오 (`presentation_v2/menu_scenario.html`) — 4단계 메뉴 + 4 시나리오
-- [x] 와이어프레임 작성 (`presentation_v2/wireframe.html`) — 시뮬레이션 화면 + 결과 상세 2화면
-- [x] 스토리보드 작성 (`presentation_v2/storyboard.html`) — 5 Scene (정상→누출→주의→차단→결과)
-- [x] 테이블 정의서 / ERD (`presentation_v2/table_definition.html`) — 5개 테이블 정의
-- [x] 테스트 케이스 작성 (`presentation_v2/test_cases.html`) — 15개 TC (Data/ML/Backend/Unity/Integration)
-- [x] 트러블슈팅 & 회고 초안 (`presentation_v2/troubleshooting.html`) — 예상 이슈 4건, 팀원 회고 초안
-- [x] 발표 슬라이드 제작 (`presentation_v2/index.html`) — 9슬라이드 (표지 포함)
-- [x] GitHub 연결 & 초기 push (`https://github.com/chobo6/gaslighting.git`)
-- [x] README.md 작성 (`README.md`) — 프로젝트 개요 / 아키텍처 / API / 팀 / 일정
+### 기획 잔여 (선택사항)
 
-### ⬜ 미완료 (기획 단계 잔여)
-
-- [x] **API 명세서 작성** (`presentation_v2/api_spec.html`) — 담당: 홍제규
-  - [x] `GET /api/health` — 서버 상태 확인 (request/response/error 포함)
-  - [x] `POST /api/predict-risk` — sensor_1~16 입력 → risk_score + risk_level 반환
-  - [x] `GET /api/model-performance` — RF/GBR 모델별 MAE, RMSE, R², threshold 조회 (REQ-F-017)
-  - [x] `GET /api/scenarios` — 시나리오 목록 (연구소/개발실/배관실) 반환
-  - [x] `POST /api/logs/cutoff` — 자동차단 이벤트 cutoff_events 테이블에 저장 (REQ-F-015)
-  - [x] 공통 에러 응답 형식 정의 (HTTP 422, 500, 503)
-  - [x] 응답 시간 목표 명시 (< 1s)
-
-- [x] **요구사항 추적 매트릭스(RTM) 추가** (`presentation_v2/requirements.html` 탭 추가)
-  - [x] 요구사항 ID (REQ-F-001~017, REQ-NF-001~008) ↔ TC ID 매핑 표 작성
-  - [x] 커버리지 집계: 25개 중 TC 커버 21개 (84%), 미커버 4개, BY DOCS 1개
-  - [x] 미커버 요구사항 명시 — REQ-F-011(위험원인설명), REQ-F-013(수동파라미터), REQ-NF-005(확장성), REQ-NF-007(안전성)
-
-- [ ] **와이어프레임 화면 보완** (선택사항) (`presentation_v2/wireframe.html` 탭 추가)
-  - [ ] 대시보드 화면 (시스템 상태 요약 / 최근 이력 / 모델 성능)
-  - [ ] 시나리오 선택 화면 (연구소 / 개발실 / 배관실 카드)
+- [ ] **와이어프레임 화면 보완** (`presentation_v2/wireframe.html` 탭 추가)
+  - [ ] 대시보드 화면 — 시스템 상태 요약 / 최근 이력 / 모델 성능 카드
+  - [ ] 시나리오 선택 화면 — 연구소 / 개발실 / 배관실 카드 + 설정값
 
 ---
 
-## 개발 단계 (WEEK 02 | 06.23 – 06.30)
+## 개발 단계 — WEEK 02 (06.23 – 06.30)
 
 ### 데이터 / ML — 담당: 김응석
 
-- [ ] UCI Gas Sensor Array 데이터셋 다운로드 및 확인
-  - [ ] 컬럼 확인: time / sensor_1~16 / gas_concentration 누락 여부 (TC-DATA-001)
-  - [ ] 전체 행 수, 결측값, 이상치 분포 파악
-- [ ] 데이터 전처리 스크립트 작성 (`data/preprocess.py`)
-  - [ ] 결측값 처리 (보간 또는 제거)
-  - [ ] sensor_1~16 정규화 (MinMaxScaler 또는 StandardScaler)
-  - [ ] 시계열 슬라이딩 윈도우 적용
-- [ ] risk_score 라벨 생성 함수 작성 (`data/label_generator.py`)
-  - [ ] 1단계: 농도(ppm) 임계값 기반 기본 점수 산출
-  - [ ] 2단계: 증가 속도(slope) 가중치 부여
-  - [ ] 3단계: 지속 시간 패널티 적용
-  - [ ] 출력 범위 0~100 검증 (TC-DATA-002)
-- [ ] 학습/검증/테스트 데이터 분리 (8:1:1 또는 7:2:1)
+- [ ] **UCI 데이터셋 다운로드 및 검증**
+  - [ ] [UCI Gas Sensor Array Drift Dataset](https://archive.ics.uci.edu/ml/datasets/Gas+Sensor+Array+Drift+Dataset) 다운로드
+  - [ ] 컬럼 확인: `time`, `sensor_1~16`, `gas_concentration` 누락 없음 → TC-DATA-001
+  - [ ] 전체 행 수 · 결측값 · 이상치 분포 확인 후 `data/eda_report.txt` 저장
+
+- [ ] **전처리 스크립트** (`data/preprocess.py`)
+  - [ ] 결측값 선형 보간 (또는 행 제거 기준 명시)
+  - [ ] `MinMaxScaler`로 `sensor_1~16` 정규화, `scaler.pkl` 저장
+  - [ ] 슬라이딩 윈도우 (window=10, step=1) 적용해 시계열 피처 생성
+  - [ ] 전처리 결과 `data/processed.csv` 저장
+
+- [ ] **라벨 생성 함수** (`data/label_generator.py`)
+  - [ ] 1단계: `gas_concentration` 임계값(예: LEL 25%) 기준 기본 점수 산출
+  - [ ] 2단계: 1초 slope(`np.gradient`) 가중치 부여 (급등 시 +보정)
+  - [ ] 3단계: 위험 지속 시간(연속 초과 카운트) 패널티 적용
+  - [ ] 최종 `risk_score` 0~100 클리핑 → TC-DATA-002
+  - [ ] 라벨 분포 히스토그램 출력해 치우침 확인
+
+- [ ] **데이터 분리**
+  - [ ] Train 70% / Validation 15% / Test 15% 분리 (`random_state=42`)
+  - [ ] 분리 결과 행 수 출력 후 `data/splits/` 저장
 
 ### Unity / 시뮬레이션 — 담당: 안세웅
 
-- [ ] Unity 프로젝트 생성 및 GitHub 연동 (`.gitignore` Unity 설정)
-- [ ] 3D 연구소 씬 구성
-  - [ ] 배관, 밸브 오브젝트 배치
-  - [ ] 누출 지점 빈 오브젝트(Empty) 설정
-  - [ ] 카메라 배치 및 시점 조작 설정
-- [ ] Particle System 설정 (가스 확산 효과)
-  - [ ] 누출 지점에서 Emission 활성화/비활성화 제어
-  - [ ] 색상·속도·수명 파라미터 조정
-- [ ] 밸브/경보/환기팬 애니메이션
-  - [ ] 밸브 OPEN ↔ CLOSED 상태 전환 애니메이션
-  - [ ] 경보등 ON/OFF 깜빡임 이펙트
-  - [ ] 환기팬 회전 애니메이션
+- [ ] **Unity 프로젝트 초기 설정**
+  - [ ] Unity 6000.x 프로젝트 생성 (3D URP 템플릿)
+  - [ ] `.gitignore` Unity용 설정 (Library/, Temp/, Build/ 제외)
+  - [ ] GitHub 레포에 `unity/` 폴더로 push
+
+- [ ] **연구소 3D 씬 구성** (`Assets/Scenes/Lab.unity`)
+  - [ ] 바닥 · 벽 · 천장 Plane/Cube 배치
+  - [ ] 배관 (Cylinder) + 밸브 오브젝트 배치
+  - [ ] 누출 지점 `Empty (LeakPoint)` 생성 — Particle System 부모로 사용
+  - [ ] 카메라 위치 고정 (발표용 최적 앵글 1개)
+
+- [ ] **Particle System — 가스 확산** (`Assets/Prefabs/GasLeak.prefab`)
+  - [ ] `Emission Rate`: 0 (기본) → 50 (누출 시) 전환 스크립트
+  - [ ] 색상: 반투명 초록(정상) → 노랑 → 빨강(위험) 단계별 Color over Lifetime
+  - [ ] `Max Particles` 200 제한 (성능 보장 · REQ-NF 30fps+)
+
+- [ ] **상태 오브젝트 애니메이션** (`Assets/Scripts/SimObjects.cs`)
+  - [ ] 밸브: `localRotation.z` 0→90° (OPEN→CLOSED) `Lerp` 0.5s
+  - [ ] 경보등: `PointLight.intensity` 깜빡임 코루틴 (0.5s 주기)
+  - [ ] 환기팬: `localRotation.y` 지속 회전 (`rpm` 파라미터로 제어)
 
 ### HUD / UI — 담당: 장영재
 
-- [ ] Unity HUD 구성 (Canvas - Overlay)
-  - [ ] 위험률 게이지 바 (0~100%)
-  - [ ] threshold 기준선 표시
-  - [ ] 위험 등급 배지 (정상🟢 / 주의🟡 / 위험🔴 / 차단완료⚫)
-  - [ ] 밸브/경보/환기 상태 아이콘
-- [ ] 위험률 시계열 그래프 (최근 60초)
-  - [ ] LineRenderer 또는 UI Shader 기반 구현
-  - [ ] threshold 점선 표시
-  - [ ] 차단 이벤트 마커(◆) 표시
-- [ ] CSV 센서 데이터 재생 스크립트 (`SensorPlayer.cs`)
-  - [ ] 1초 단위 타임스텝 재생
-  - [ ] sensor_1~16 값 HUD에 갱신
+- [ ] **Canvas 구성** (`Assets/UI/HUD.canvas`, Screen Space - Overlay)
+  - [ ] 위험률 게이지 바: `Image.fillAmount` = `risk_score / 100`
+  - [ ] threshold 기준선: 게이지 바 위 `RectTransform.anchoredPositionY` 고정
+  - [ ] 위험 등급 배지 `Text`: 정상(#00ff88) / 주의(#ffaa00) / 위험(#ff3333) / 차단(#888888)
+  - [ ] 밸브 · 경보 · 환기 상태 아이콘 3개 (Sprite 교체 방식)
+
+- [ ] **위험률 시계열 그래프** (`Assets/Scripts/RiskGraph.cs`)
+  - [ ] 최근 60초 데이터 `Queue<float>` 유지
+  - [ ] `LineRenderer` 또는 UI `RawImage` + `Texture2D` 방식 구현
+  - [ ] threshold 점선: 별도 `LineRenderer` 고정 y값
+  - [ ] 차단 이벤트 발생 시 마커 `◆` Sprite spawn
+
+- [ ] **CSV 센서 재생 스크립트** (`Assets/Scripts/SensorPlayer.cs`)
+  - [ ] `Resources.Load<TextAsset>` 또는 `StreamingAssets` 경로로 CSV 로드
+  - [ ] `InvokeRepeating(1.0f)` 1초 주기 타임스텝 진행
+  - [ ] 각 행의 `sensor_1~16` 파싱 → `float[]` 로 `ApiClient.cs`에 전달
 
 ---
 
-## 개발 단계 (WEEK 03 | 06.30 – 07.06)
+## 개발 단계 — WEEK 03 (06.30 – 07.06)
 
 ### ML 모델 학습 — 담당: 김응석
 
-- [ ] RandomForest Regressor 학습 (`model/train_rf.py`)
-  - [ ] n_estimators, max_depth 하이퍼파라미터 설정
-  - [ ] MAE / RMSE / R² 평가 출력
-  - [ ] R² > 0.9 달성 여부 확인 (목표 지표)
-- [ ] Gradient Boosting Regressor 학습 (`model/train_gbr.py`)
-  - [ ] learning_rate, n_estimators 튜닝
-  - [ ] RF vs GBR 성능 비교 표 출력
-- [ ] Threshold 탐색 스크립트 (`model/threshold_search.py`)
-  - [ ] 후보 범위: 60~95 스캔
-  - [ ] 각 후보별 Recall, F2-score, 오탐률, 차단 시점 오차 산출
-  - [ ] 조건: 오탐률 < 10%, Recall > 0.9 만족 구간 필터링
-  - [ ] 최적 threshold 선정 및 결과 저장 (TC-ML-002)
-- [ ] 모델 저장 (`model/model.pkl`, `model/scaler.pkl`) — joblib
+- [ ] **RandomForest 학습** (`model/train_rf.py`)
+  - [ ] `n_estimators=200, max_depth=10, random_state=42` 기본값으로 시작
+  - [ ] `GridSearchCV` 또는 수동 튜닝으로 최적값 탐색
+  - [ ] MAE / RMSE / R² 출력 → R² > 0.9 목표 미달 시 파라미터 재조정
+
+- [ ] **GBR 학습** (`model/train_gbr.py`)
+  - [ ] `learning_rate=0.05, n_estimators=300, subsample=0.8`
+  - [ ] RF vs GBR 성능 비교 표 콘솔 출력
+  - [ ] 더 좋은 모델 `model/best_model.pkl` 로 저장 (joblib)
+
+- [ ] **Threshold 탐색** (`model/threshold_search.py`)
+  - [ ] 검증 데이터로 후보 범위 60~95 (step=1) 전체 스캔
+  - [ ] 각 후보별 `Recall`, `F2-score`, 오탐률(`FPR`), 차단 시점 오차(초) 산출
+  - [ ] 필터: 오탐률 < 0.10 AND Recall > 0.90 조건 만족 구간 추출
+  - [ ] 조건 만족 구간 중 차단 시점 오차 최소값 선택 → TC-ML-002
+  - [ ] 결과를 `model/threshold_report.csv` 저장
 
 ### FastAPI 서버 — 담당: 홍제규
 
-- [ ] FastAPI 프로젝트 구조 생성 (`backend/`)
-  - [ ] `main.py` — 앱 초기화, CORS 설정
-  - [ ] `routers/predict.py` — 예측 라우터
-  - [ ] `routers/logs.py` — 로그 저장 라우터
-  - [ ] `models/schemas.py` — Pydantic 스키마 정의
-  - [ ] `db/database.py` — SQLite 연결 설정
-- [ ] `POST /api/predict-risk` 구현 (TC-API-001)
-  - [ ] sensor_1~16 수신 → scaler 적용 → model.predict() 호출
-  - [ ] risk_score 0~100 반환, risk_level 문자열 변환
-  - [ ] 응답 시간 < 1s 확인
-- [ ] `GET /api/model-performance` 구현
-  - [ ] model_results 테이블에서 RF/GBR 성능 지표 반환
-- [ ] `GET /api/health` 구현 — 서버 상태 200 OK 반환
-- [ ] 입력 검증 (TC-API-002)
-  - [ ] 필수 필드 누락 시 HTTP 422 반환
-  - [ ] 범위 이탈 값 처리
-- [ ] DB 스키마 생성 스크립트 (`db/init_db.py`)
-  - [ ] gas_readings 테이블 생성
-  - [ ] cutoff_events 테이블 생성
-  - [ ] model_results 테이블 생성
+- [ ] **프로젝트 구조 생성** (`backend/`)
+  ```
+  backend/
+  ├── main.py              # 앱 초기화, CORS (origins=["*"])
+  ├── routers/
+  │   ├── predict.py       # POST /api/predict-risk
+  │   ├── logs.py          # POST /api/logs/cutoff
+  │   └── meta.py          # GET /api/health, /scenarios, /model-performance
+  ├── models/
+  │   └── schemas.py       # Pydantic 요청/응답 스키마
+  ├── db/
+  │   ├── database.py      # SQLite 연결 (SQLAlchemy)
+  │   └── init_db.py       # 테이블 생성 스크립트
+  └── ml/
+      └── predictor.py     # 모델 로드 & predict() 래퍼
+  ```
+- [ ] **`POST /api/predict-risk`** (TC-API-001)
+  - [ ] `schemas.py`에 `SensorInput` (sensor_1~16 float, scenario_id int) Pydantic 모델 정의
+  - [ ] `predictor.py`에서 `scaler.transform()` → `model.predict()` 순서 적용
+  - [ ] `risk_level` 변환: < 40 → 정상, 40~69 → 주의, 70~threshold → 위험, ≥ threshold → 차단
+  - [ ] 응답에 `response_ms` 포함 (시작~종료 `time.time()` 차이)
+- [ ] **입력 검증** (TC-API-002)
+  - [ ] Pydantic `Field(ge=0.0, le=1.0)` 범위 검증 (정규화 후 값 기준)
+  - [ ] 필수 필드 누락 시 FastAPI 자동 HTTP 422 반환 확인
+- [ ] **`GET /api/health`**
+  - [ ] 앱 시작 시 `predictor.py` 모델 로드 → `model_loaded` 플래그 설정
+  - [ ] `db_connected` SQLAlchemy `engine.connect()` 예외 여부로 판단
+- [ ] **`GET /api/scenarios`** — `scenarios` 테이블 전체 조회 반환
+- [ ] **`GET /api/model-performance`** — `model_results` 테이블에서 RF/GBR 지표 반환
+- [ ] **`POST /api/logs/cutoff`** (TC-DB-002) — `cutoff_events` INSERT 후 `event_id` 반환
+- [ ] **DB 초기화** (`db/init_db.py`)
+  - [ ] `gas_readings`, `cutoff_events`, `scenarios`, `sensor_configs`, `model_results` 5개 테이블 CREATE
+  - [ ] `scenarios` 초기 데이터 INSERT (연구소/개발실/배관실 3건)
+- [ ] **실행 테스트**: `uvicorn main:app --reload` 후 Swagger UI(`/docs`) 전 엔드포인트 수동 확인
 
 ### Unity-API 연동 — 담당: 홍제규 + 안세웅
 
-- [ ] `ApiClient.cs` 스크립트 작성
-  - [ ] `UnityWebRequest` 비동기 코루틴 구현
-  - [ ] POST JSON 전송 (sensor_1~16 payload)
-  - [ ] 응답 파싱 → risk_score HUD 갱신
-  - [ ] API 실패 시 이전 risk_score 유지 (fallback, REQ-NF-006)
-- [ ] 연동 테스트 (TC-INT-001)
-  - [ ] FastAPI 로컬 서버 실행 → Unity에서 API 호출
-  - [ ] risk_score HUD 즉시 반영 확인
+- [ ] **`ApiClient.cs`** (`Assets/Scripts/ApiClient.cs`)
+  - [ ] `UnityWebRequest.Post(url, jsonBody)` 비동기 코루틴 구현
+  - [ ] `SensorPlayer.cs`에서 1초마다 `StartCoroutine(RequestRisk(sensorValues))` 호출
+  - [ ] JSON 응답 파싱: `JsonUtility.FromJson<RiskResponse>()` → `RiskGraphManager` 전달
+  - [ ] 타임아웃 2초 설정, 실패 시 이전 `risk_score` 유지 (fallback · REQ-NF-006)
+  - [ ] 3회 연속 실패 시 로컬 데모 모드 자동 전환 (API 의존성 제거)
+- [ ] **연동 통합 테스트** (TC-INT-001)
+  - [ ] FastAPI 서버 로컬 실행 확인 (`GET /api/health` → 200)
+  - [ ] Unity Play Mode에서 API 호출 → risk_score HUD 반영 확인
+  - [ ] Network 탭(또는 Unity Console)에서 응답 시간 < 1s 확인
 
 ---
 
-## 테스트 단계 (WEEK 04 | 07.06 – 07.13)
+## 테스트 단계 — WEEK 04 (07.06 – 07.13)
 
 ### 단위 테스트 — 담당: 이성룡
 
-- [ ] TC-DATA-001: UCI 데이터 필수 컬럼 확인 (07-06)
-- [ ] TC-DATA-002: risk_score 범위 0~100 검증 (07-06)
-- [ ] TC-ML-001: RF/GBR 회귀 학습 성공 + 지표 출력 확인 (07-07)
-- [ ] TC-ML-002: Threshold 탐색 — F2 기준 최적값 선정 확인 (07-07)
-- [ ] TC-API-001: `POST /api/predict-risk` 정상 응답 확인 (07-08)
-- [ ] TC-API-002: 잘못된 입력 시 HTTP 422 반환 확인 (07-08)
-- [ ] TC-DB-001: 시뮬레이션 후 gas_readings 저장 확인 (07-08)
-- [ ] TC-DB-002: threshold 초과 시 cutoff_events 저장 확인 (07-08)
-- [ ] TC-UNITY-001: Particle System 누출 지점 활성화 확인 (07-09)
-- [ ] TC-UNITY-002: risk_score ≥ threshold 시 밸브/경보/환기팬 동작 확인 (07-09)
-- [ ] TC-UNITY-003: HUD 위험률 1초 이하 주기 갱신 확인 (07-09)
+| TC ID | 항목 | 수행일 | 담당 |
+|-------|------|--------|------|
+| TC-DATA-001 | UCI 데이터 필수 컬럼 확인 | 07-06 | 김응석 |
+| TC-DATA-002 | risk_score 0~100 범위 검증 | 07-06 | 김응석 |
+| TC-ML-001 | RF/GBR 학습 성공 + 지표 출력 | 07-07 | 김응석 |
+| TC-ML-002 | Threshold 탐색 최적값 선정 | 07-07 | 김응석 |
+| TC-API-001 | POST /predict-risk 정상 응답 | 07-08 | 홍제규 |
+| TC-API-002 | 잘못된 입력 → HTTP 422 반환 | 07-08 | 홍제규 |
+| TC-DB-001 | 시뮬레이션 후 gas_readings 저장 | 07-08 | 장영재 |
+| TC-DB-002 | threshold 초과 → cutoff_events 저장 | 07-08 | 장영재 |
+| TC-UNITY-001 | Particle System 누출 지점 활성화 | 07-09 | 안세웅 |
+| TC-UNITY-002 | risk_score ≥ threshold → 밸브/경보/환기팬 동작 | 07-09 | 안세웅 |
+| TC-UNITY-003 | HUD 위험률 1초 이하 주기 갱신 | 07-09 | 장영재 |
 
 ### 통합 테스트 — 담당: 이성룡
 
-- [ ] TC-INT-001: Unity → API → HUD 실시간 반영 확인 (07-10)
-- [ ] TC-INT-002: 정상 시나리오 (risk < threshold) — 차단 미발생 확인 (07-10)
-- [ ] TC-INT-003: 위험 시나리오 (risk ≥ threshold) — 자동차단 + DB 저장 확인 (07-10)
-- [ ] TC-PRES-001: 발표용 Demo 자동 흐름 (누출→차단) 중단 없이 완료 (07-13)
+| TC ID | 항목 | 수행일 |
+|-------|------|--------|
+| TC-INT-001 | Unity → API → HUD 실시간 반영 | 07-10 |
+| TC-INT-002 | 정상 시나리오 (risk < threshold) — 차단 미발생 | 07-10 |
+| TC-INT-003 | 위험 시나리오 (risk ≥ threshold) — 자동차단 + DB 저장 | 07-10 |
+| TC-PRES-001 | 발표용 Demo 자동 흐름 중단 없이 완료 | 07-13 |
 
 ### 발표 준비 — 담당: 전체
 
 - [ ] 트러블슈팅 문서 실제 이슈로 업데이트 (`presentation_v2/troubleshooting.html`)
-- [ ] 팀원 회고 최종 작성 (기획 발표 후)
-- [ ] 발표 슬라이드 내용 최종 확인 및 수정
-- [ ] 발표 환경 사전 테스트 (30fps 이상 유지 확인)
-- [ ] 최종 GitHub push 및 버전 태그 설정
+- [ ] 팀원 회고 최종 작성 — 기획 발표 후 각자 작성
+- [ ] 발표 슬라이드 최종 확인 (내용 변경 사항 반영)
+- [ ] 발표 환경 사전 테스트 — 30fps+ 유지, 해상도 1920×1080 확인
+- [ ] 최종 GitHub push + 버전 태그 (`git tag v1.0.0`)
 
 ---
 
-## 비고
+## RTM 미커버 요구사항 처리 계획
 
-- **목표 지표**: R² > 0.9 · 오탐률 < 10% · Recall > 0.9 · 응답 < 1s · 30fps+
-- **발표일**: 2026.07.13
-- **미완료 기획 항목**: API 명세서, RTM — 개발 착수 전 완료 권장
+| 요구사항 | 이유 | 처리 방법 |
+|----------|------|-----------|
+| REQ-F-011 위험 원인 설명 | TC 없음 | WEEK 04 결과 화면 구현 후 수동 확인 |
+| REQ-F-013 수동 파라미터 조정 | TC 없음 | WEEK 04 슬라이더 UI 구현 후 수동 확인 |
+| REQ-NF-005 확장성 | TC 없음 | 아키텍처 문서(시스템 아키텍처 슬라이드)로 검증 |
+| REQ-NF-007 안전성 | TC 없음 | UI 교육목적 문구 + README 명시로 대체 |
