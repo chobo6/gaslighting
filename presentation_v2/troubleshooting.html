@@ -76,13 +76,13 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
         </div>
         <div class="ts-card ts-d">
           <div class="ts-prob">
-            <div class="ts-label prob">예상 이슈 · ML</div>
-            <div class="ts-title">Threshold 탐색 시 오탐률과 차단 시점 오차 트레이드오프</div>
-            <div class="ts-desc">threshold를 낮추면 조기 차단(오탐 증가), 높이면 늦은 차단(위험 누락). 발표용 시연에서 설득력 있는 threshold를 선정해야 함.</div>
+            <div class="ts-label prob">예상 이슈 · 자동화 제어</div>
+            <div class="ts-title">차단↔복구 경계에서 상태 진동(채터링) 발생 가능</div>
+            <div class="ts-desc">위험률이 threshold(70) 근처에서 오르내리면 상태머신이 차단↔복구를 반복하며 밸브가 떨릴(chattering) 수 있음. 무인 자동화에서는 이런 진동이 시스템 신뢰도를 떨어뜨림.</div>
           </div>
           <div class="ts-sol">
             <div class="ts-label sol">대응 방향</div>
-            <div class="ts-desc">F2-score(Recall 가중) 기준으로 threshold 후보(60~95 범위) 스캔. 오탐률 &lt;10%, Recall &gt;0.9 조건을 만족하는 구간에서 차단 시점 오차 최소값 선택. 선정 근거를 모델 성능 화면에 시각화.</div>
+            <div class="ts-desc">히스테리시스 적용 — 차단은 ≥70, 복구는 &lt;30(농도 안전값)으로 경계를 분리. 복구 전 인터락 조건(환기 일정 시간 유지)을 검증해 즉시 재개방을 막음. 자동 복구 성공률을 자동화 지표로 측정.</div>
           </div>
         </div>
         <div class="ts-card ts-i">
@@ -120,7 +120,8 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
           <div class="ref-role">Data / ML</div>
         </div>
         <div class="ref-area-label">느낀점</div>
-        <div class="ref-area">기획 단계에서 데이터 라벨 설계와 모델 선택 방향을 먼저 정의하는 것이 이후 개발 효율성을 높이는 핵심임을 느꼈다.</div>
+        <div class="ref-area">가스 위험 판단이 본질적으로 규칙 기반임을 인식하고, ML을 얇게 두는 대신 규칙 로직을 상태머신 판단 기준으로 재사용하는 방향이 더 합리적임을 느꼈다.</div>
+
       </div>
       <div class="ref-card">
         <div>

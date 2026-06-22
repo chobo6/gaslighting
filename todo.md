@@ -136,7 +136,7 @@ ML의 실질 가치가 낮습니다. 따라서:
 ### 자동화 핵심 — 🔴 필수 (담당 명시)
 
 - [ ] **상태머신 자동 전이** (`Assets/Scripts/StateMachine.cs`) — 담당: 안세웅 + 김응석(규칙)
-  - [ ] 상태 정의: 정상(<40) → 주의(40~69) → 위험(70~threshold) → 차단(≥threshold) → 복구
+  - [ ] 상태 정의: 정상(<40) → 주의(40~59) → 위험(60~69) → 차단(≥70, threshold) → 복구
   - [ ] risk_score 입력마다 자동 등급 판정 + 상태 전이 이벤트 발행
   - [ ] 위험 단계 진입 시 차단 카운트다운 트리거
   - [ ] `label_generator.py`의 규칙(농도+slope+지속)을 판단 근거로 동기화
@@ -175,7 +175,7 @@ ML의 실질 가치가 낮습니다. 따라서:
   - [ ] `meta.py` — `GET /api/health`, `/scenarios`, `/model-performance`
 - [ ] **입력 검증** — Pydantic `Field(ge=0.0, le=1.0)`, 누락 시 HTTP 422 (TC-API-002)
 - [ ] **DB 초기화** (`db/init_db.py`)
-  - [ ] `gas_readings`, `cutoff_events`, `scenarios`, `sensor_configs`, `model_results` 5개 테이블
+  - [ ] `gas_readings`, `cutoff_events`, `scenarios`, `sensor_configs`, `automation_metrics` 5개 테이블
   - [ ] `scenarios` 초기 데이터 INSERT (연구소/개발실/배관실 3건)
 - [ ] **ApiClient.cs 강화**
   - [ ] 타임아웃 2초, 실패 시 이전 risk_score 유지 (fallback · REQ-NF-006)
@@ -236,8 +236,8 @@ ApiClient → FastAPI predict() 자동 호출 → risk_score 수신
         ↓
 StateMachine → 등급 자동 판단 + 상태 전이
         ├ < 40   정상  : 초록 게이지
-        ├ 40~69  주의  : 노랑 + HUD 경고
-        ├ 70~    위험  : 빨강 + 차단 카운트다운
+        ├ 40~59  주의  : 노랑 + HUD 경고
+        ├ 60~69  위험  : 빨강 + 차단 카운트다운
         └ ≥ 70   차단  : ▼ 차단 시퀀스 트리거
                               ↓
         CutoffSequence → 밸브 닫힘(0.5s) → 경보 ON → 환기팬 ON (순차)

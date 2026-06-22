@@ -40,6 +40,7 @@ tbody tr:hover td{background:rgba(0,255,204,.025)}
 .b-pres{background:rgba(255,170,0,.06);color:var(--warn);border:1px solid rgba(255,170,0,.15)}
 .b-ph{background:rgba(255,51,51,.1);color:var(--danger);border:1px solid rgba(255,51,51,.25)}
 .b-pm{background:rgba(255,170,0,.08);color:var(--warn);border:1px solid rgba(255,170,0,.2)}
+.b-auto{background:rgba(0,255,204,.08);color:var(--accent);border:1px solid rgba(0,255,204,.25)}
 </style>
 </head>
 <body>
@@ -47,23 +48,24 @@ tbody tr:hover td{background:rgba(0,255,204,.025)}
   <div class="head">
     <div>
       <div class="head-title">// G-SAFE — 테스트 케이스</div>
-      <div class="head-sub">TEST CASES · TOTAL:15 · Data / ML / Backend / Unity / Integration</div>
+      <div class="head-sub">TEST CASES · TOTAL:18 · Data / ML / Backend / Unity / Auto / Integration</div>
     </div>
     <div class="nav">
-      <button class="nav-btn active" onclick="show('ALL',this)">전체 (15)</button>
+      <button class="nav-btn active" onclick="show('ALL',this)">전체 (18)</button>
       <button class="nav-btn" onclick="show('DATA',this)">Data (2)</button>
       <button class="nav-btn" onclick="show('ML',this)">ML (2)</button>
       <button class="nav-btn" onclick="show('API',this)">Backend/DB (4)</button>
       <button class="nav-btn" onclick="show('UNITY',this)">Unity (3)</button>
-      <button class="nav-btn" onclick="show('INT',this)">Integration (4)</button>
+      <button class="nav-btn" onclick="show('AUTO',this)">Auto (2)</button>
+      <button class="nav-btn" onclick="show('INT',this)">Integration (5)</button>
     </div>
   </div>
 
   <div id="ALL" class="scene active">
     <div class="kpi-row">
-      <div class="kpi"><div class="kpi-num" style="color:var(--info)">15</div><div class="kpi-lbl">총 테스트</div></div>
-      <div class="kpi"><div class="kpi-num" style="color:var(--danger)">11</div><div class="kpi-lbl">우선순위 상</div></div>
-      <div class="kpi"><div class="kpi-num" style="color:var(--warn)">4</div><div class="kpi-lbl">우선순위 중</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--info)">18</div><div class="kpi-lbl">총 테스트</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--danger)">12</div><div class="kpi-lbl">우선순위 상</div></div>
+      <div class="kpi"><div class="kpi-num" style="color:var(--warn)">6</div><div class="kpi-lbl">우선순위 중</div></div>
       <div class="kpi"><div class="kpi-num" style="color:var(--safe)">07.06~13</div><div class="kpi-lbl">수행 기간</div></div>
       <div class="kpi"><div class="kpi-num" style="color:var(--muted)">이성룡</div><div class="kpi-lbl">테스트 담당</div></div>
     </div>
@@ -78,27 +80,31 @@ tbody tr:hover td{background:rgba(0,255,204,.025)}
   <div id="ML" class="scene"><div class="scroll"><table><thead><tr><th>TC ID</th><th>테스트 항목</th><th>절차 / 입력</th><th>기대 결과</th><th>우선</th></tr></thead><tbody id="ml-body"></tbody></table></div></div>
   <div id="API" class="scene"><div class="scroll"><table><thead><tr><th>TC ID</th><th>테스트 항목</th><th>절차 / 입력</th><th>기대 결과</th><th>우선</th></tr></thead><tbody id="api-body"></tbody></table></div></div>
   <div id="UNITY" class="scene"><div class="scroll"><table><thead><tr><th>TC ID</th><th>테스트 항목</th><th>절차 / 입력</th><th>기대 결과</th><th>우선</th></tr></thead><tbody id="unity-body"></tbody></table></div></div>
+  <div id="AUTO" class="scene"><div class="scroll"><table><thead><tr><th>TC ID</th><th>테스트 항목</th><th>절차 / 입력</th><th>기대 결과</th><th>우선</th></tr></thead><tbody id="auto-body"></tbody></table></div></div>
   <div id="INT" class="scene"><div class="scroll"><table><thead><tr><th>TC ID</th><th>테스트 항목</th><th>절차 / 입력</th><th>기대 결과</th><th>우선</th></tr></thead><tbody id="int-body"></tbody></table></div></div>
 </div>
 <script>
 const D=[
   {id:'TC-DATA-001',cat:'Data',name:'필수 컬럼 확인',proc:'UCI 원본 데이터 로드 후 컬럼 리스트 출력',expect:'time/sensor_1~16/gas_concentration 컬럼 누락 없음',person:'김응석',pri:'상',date:'07-06'},
   {id:'TC-DATA-002',cat:'Data',name:'위험률 범위 검증',proc:'risk_score 생성 후 전체 값 범위 검사',expect:'모든 risk_score가 0 이상 100 이하',person:'김응석',pri:'상',date:'07-06'},
-  {id:'TC-ML-001',cat:'ML',name:'회귀 모델 학습 성공',proc:'학습 데이터 입력 → RF/GBR 학습 실행',expect:'MAE/RMSE/R² 지표가 정상 출력됨',person:'김응석',pri:'상',date:'07-07'},
-  {id:'TC-ML-002',cat:'ML',name:'Threshold 탐색',proc:'검증 데이터 입력 → 60~95 후보 스캔',expect:'F2-score 기준 최적 threshold가 선정됨',person:'김응석',pri:'상',date:'07-07'},
+  {id:'TC-ML-001',cat:'ML',name:'RF 모델 학습 성공',proc:'학습 데이터 입력 → RandomForest 1회 학습 실행',expect:'학습 완료 후 model.pkl 파일이 생성됨',person:'김응석',pri:'상',date:'07-06'},
+  {id:'TC-ML-002',cat:'ML',name:'Threshold 고정값 선정',proc:'규칙 기반으로 threshold 고정값(70) 설정',expect:'LEL 기준 위험 등급 시작점 근거와 함께 70으로 고정됨',person:'김응석',pri:'상',date:'07-06'},
   {id:'TC-API-001',cat:'Backend',name:'위험률 예측 API',proc:'POST /api/predict-risk — 센서값 payload 전송',expect:'risk_score(float), risk_level(str) JSON 반환',person:'홍제규',pri:'상',date:'07-08'},
   {id:'TC-API-002',cat:'Backend',name:'잘못된 입력 처리',proc:'필수 payload 누락 상태로 POST 전송',expect:'HTTP 422 또는 validation error 반환',person:'홍제규',pri:'중',date:'07-08'},
   {id:'TC-DB-001',cat:'DB',name:'센서 로그 저장',proc:'시뮬레이션 실행 후 gas_readings 조회',expect:'매 타임스텝 reading 1건 이상 저장됨',person:'장영재',pri:'중',date:'07-08'},
   {id:'TC-DB-002',cat:'DB',name:'차단 이벤트 저장',proc:'threshold 초과 이벤트 발생 후 DB 조회',expect:'cutoff_events에 cutoff_time, risk_at_cutoff 저장됨',person:'장영재',pri:'상',date:'07-08'},
-  {id:'TC-UNITY-001',cat:'Unity',name:'가스 누출 효과',proc:'시뮬레이션 시작 → 누출 트리거',expect:'Particle System이 누출 지점에서 활성화됨',person:'안세웅',pri:'상',date:'07-09'},
-  {id:'TC-UNITY-002',cat:'Unity',name:'자동차단 동작',proc:'risk_score ≥ threshold 조건 충족',expect:'밸브 CLOSED 애니메이션, 경보 ON, 환기팬 ON',person:'안세웅',pri:'상',date:'07-09'},
-  {id:'TC-UNITY-003',cat:'Unity',name:'위험률 HUD 갱신',proc:'시계열 CSV 재생 진행',expect:'HUD 게이지와 상태 배지가 1초 이하 주기로 갱신됨',person:'장영재',pri:'상',date:'07-09'},
+  {id:'TC-UNITY-001',cat:'Unity',name:'가스 누출 효과',proc:'시뮬레이션 시작 → 누출 트리거',expect:'Particle System이 누출 지점에서 활성화됨',person:'안세웅',pri:'상',date:'07-08'},
+  {id:'TC-UNITY-002',cat:'Unity',name:'차단 시퀀스 완결성',proc:'risk_score ≥ threshold 조건 충족 → 차단 시퀀스 실행',expect:'밸브 CLOSED → 경보 ON → 환기팬 ON 순차 3단계 모두 실행됨',person:'안세웅',pri:'상',date:'07-08'},
+  {id:'TC-UNITY-003',cat:'Unity',name:'위험률 HUD 갱신',proc:'시계열 CSV 재생 진행',expect:'HUD 게이지와 상태 배지가 1초 이하 주기로 갱신됨',person:'장영재',pri:'상',date:'07-08'},
+  {id:'TC-AUTO-001',cat:'Auto',name:'차단 지연시간 측정',proc:'위험 감지 시각 ~ 밸브 닫힘 시각 차이 측정',expect:'감지부터 밸브 닫힘까지 차단 지연 < 1초',person:'이성룡',pri:'상',date:'07-09'},
+  {id:'TC-AUTO-002',cat:'Auto',name:'자동 복구 / 인터락',proc:'환기 가동 후 농도가 안전값(<30)으로 복귀',expect:'밸브 자동 재개방·경보 해제, 미충족 시 재개방이 차단됨',person:'안세웅',pri:'중',date:'07-09'},
   {id:'TC-INT-001',cat:'Integration',name:'Unity-API 연동',proc:'Unity에서 API 호출 → 응답 수신',expect:'risk_score 응답이 HUD에 즉시 반영됨',person:'홍제규',pri:'상',date:'07-10'},
   {id:'TC-INT-002',cat:'Integration',name:'정상 시나리오',proc:'낮은 농도 CSV 재생 (risk < threshold)',expect:'자동차단 미발생, 상태 = SAFE 유지',person:'이성룡',pri:'중',date:'07-10'},
-  {id:'TC-INT-003',cat:'Integration',name:'위험 시나리오',proc:'고농도 누출 CSV 재생 (risk ≥ threshold)',expect:'자동차단 발생, DB에 이벤트 저장됨',person:'이성룡',pri:'상',date:'07-10'},
-  {id:'TC-PRES-001',cat:'Presentation',name:'발표용 데모 흐름',proc:'Demo Scenario 자동 실행',expect:'누출→위험률 상승→차단 흐름이 중단 없이 완료됨',person:'이성룡',pri:'상',date:'07-13'},
+  {id:'TC-INT-003',cat:'Integration',name:'위험 시나리오',proc:'고농도 누출 CSV 재생 (risk ≥ threshold)',expect:'자동차단 + 순차 시퀀스 발생, DB에 이벤트 저장됨',person:'이성룡',pri:'상',date:'07-10'},
+  {id:'TC-INT-004',cat:'Integration',name:'다중 시나리오 자동 전환',proc:'데모 모드에서 시나리오 순차 진행',expect:'연구소→개발실→배관실 시나리오가 자동 전환됨',person:'이성룡',pri:'중',date:'07-10'},
+  {id:'TC-PRES-001',cat:'Presentation',name:'무인 자동 데모 흐름',proc:'무인 데모 모드 자동 실행 (사람 개입 0)',expect:'정상→누출→차단→복구 흐름이 중단·개입 없이 완료됨',person:'이성룡',pri:'상',date:'07-13'},
 ];
-const catClass={Data:'b-data',ML:'b-ml',Backend:'b-api',DB:'b-db',Unity:'b-unity',Integration:'b-int',Presentation:'b-pres'};
+const catClass={Data:'b-data',ML:'b-ml',Backend:'b-api',DB:'b-db',Unity:'b-unity',Auto:'b-auto',Integration:'b-int',Presentation:'b-pres'};
 function allRow(d){return`<tr><td class="tc-id">${d.id}</td><td><span class="badge ${catClass[d.cat]}">${d.cat}</span></td><td style="color:var(--text);font-weight:700">${d.name}</td><td style="font-size:11.5px">${d.proc}</td><td style="font-size:11.5px">${d.expect}</td><td style="font-size:11px;color:var(--muted)">${d.person}</td><td><span class="badge ${d.pri==='상'?'b-ph':'b-pm'}">${d.pri}</span></td><td style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">${d.date}</td></tr>`}
 function subRow(d){return`<tr><td class="tc-id">${d.id}</td><td style="color:var(--text);font-weight:700">${d.name}</td><td style="font-size:11.5px">${d.proc}</td><td style="font-size:11.5px">${d.expect}</td><td><span class="badge ${d.pri==='상'?'b-ph':'b-pm'}">${d.pri}</span></td></tr>`}
 document.getElementById('all-body').innerHTML=D.map(allRow).join('');
@@ -106,6 +112,7 @@ document.getElementById('data-body').innerHTML=D.filter(d=>d.cat==='Data').map(s
 document.getElementById('ml-body').innerHTML=D.filter(d=>d.cat==='ML').map(subRow).join('');
 document.getElementById('api-body').innerHTML=D.filter(d=>d.cat==='Backend'||d.cat==='DB').map(subRow).join('');
 document.getElementById('unity-body').innerHTML=D.filter(d=>d.cat==='Unity').map(subRow).join('');
+document.getElementById('auto-body').innerHTML=D.filter(d=>d.cat==='Auto').map(subRow).join('');
 document.getElementById('int-body').innerHTML=D.filter(d=>d.cat==='Integration'||d.cat==='Presentation').map(subRow).join('');
 function show(id,btn){document.querySelectorAll('.scene').forEach(e=>e.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));document.getElementById(id).classList.add('active');btn.classList.add('active')}
 </script>

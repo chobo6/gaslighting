@@ -286,7 +286,7 @@ b[data-c="i"]{color:var(--info)}
     <div class="cover-tag">// GAS SAFETY SIMULATION SYSTEM</div>
     <div class="cover-title">G-SAFE</div>
     <div class="cover-line"></div>
-    <div class="cover-sub">Unity 기반 가스 누출 위험률 예측 및 자동차단 시뮬레이션</div>
+    <div class="cover-sub">Unity 기반 가스 누출 감지 · 자동차단 · 자동복구 폐루프 자동화 시뮬레이션</div>
   </div>
   <div class="cover-info">
     <div><b>PROJECT</b> G-SAFE v1.0</div>
@@ -316,11 +316,11 @@ b[data-c="i"]{color:var(--info)}
       </div>
       <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,204,255,.4);padding:16px 22px">
         <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--info);opacity:.35;min-width:36px">03</div>
-        <div><div style="font-size:16px;font-weight:800">프로젝트 목표</div><div style="font-size:12px;color:var(--muted);margin-top:3px">위험률 예측 모델 · Unity 3D 시뮬레이션 · 통합 시스템 연동</div></div>
+        <div><div style="font-size:16px;font-weight:800">프로젝트 목표</div><div style="font-size:12px;color:var(--muted);margin-top:3px">Unity 자동화 폐루프 · 위험률 산출 · 통합 시스템 연동</div></div>
       </div>
       <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(255,170,0,.4);padding:16px 22px">
         <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--warn);opacity:.35;min-width:36px">04</div>
-        <div><div style="font-size:16px;font-weight:800">핵심 동작 흐름</div><div style="font-size:12px;color:var(--muted);margin-top:3px">가스 누출 → 센서 → 예측 → Threshold → 자동차단 5단계 파이프라인</div></div>
+        <div><div style="font-size:16px;font-weight:800">핵심 동작 흐름</div><div style="font-size:12px;color:var(--muted);margin-top:3px">누출 → 센서 → 판단 → 자동차단 → 자동복구 폐루프 파이프라인</div></div>
       </div>
       <div style="display:flex;align-items:center;gap:20px;background:var(--panel);border:1px solid var(--line);border-left:2px solid rgba(0,255,136,.4);padding:16px 22px">
         <div style="font-family:'Courier New',monospace;font-size:28px;font-weight:900;color:var(--safe);opacity:.35;min-width:36px">05</div>
@@ -422,8 +422,8 @@ b[data-c="i"]{color:var(--info)}
         <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;flex:1">
           <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>UCI 데이터 수집·분석</li>
           <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>risk_score 라벨 생성</li>
-          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>RF/GBR 모델 학습</li>
-          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>Threshold 탐색·평가</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>RF 모델 학습 (1회)</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe)">─</span>규칙 → 상태머신 판단 지원</li>
         </ul>
         <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:8px">scikit-learn · pandas</div>
       </div>
@@ -481,8 +481,8 @@ b[data-c="i"]{color:var(--info)}
         </div>
         <div style="flex:1;background:var(--panel2);padding:18px 22px;display:flex;flex-direction:column;gap:8px;border-right:3px solid rgba(0,255,136,.5)">
           <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--safe);opacity:.8">SOLUTION 02</div>
-          <div style="font-size:20px;font-weight:900;color:var(--safe);font-family:'Courier New',monospace">Threshold 자동차단</div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1">F2-score 기준으로 <b style="color:var(--safe)">최적 threshold</b>를 탐색해 수치 기반 차단 기준을 정의. 오탐률 &lt;10%, Recall &gt;0.9 목표.</div>
+          <div style="font-size:20px;font-weight:900;color:var(--safe);font-family:'Courier New',monospace">자동차단·자동복구</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7;flex:1">상태머신이 <b style="color:var(--safe)">고정 threshold(70)</b> 기준으로 자동 판단. 밸브→경보→환기 순차 차단 후, 안전 복귀 시 자동 복구까지 무인 처리.</div>
         </div>
       </div>
 
@@ -530,19 +530,19 @@ b[data-c="i"]{color:var(--info)}
         <div style="position:absolute;top:0;left:0;width:12px;height:12px;border-top:1px solid var(--info);border-left:1px solid var(--info)"></div>
         <div style="position:absolute;bottom:0;right:0;width:12px;height:12px;border-bottom:1px solid var(--info);border-right:1px solid var(--info)"></div>
         <div style="font-family:'Courier New',monospace;font-size:52px;font-weight:900;color:var(--info);opacity:.12;line-height:1;margin-bottom:8px">01</div>
-        <div style="font-size:18px;font-weight:900;color:var(--info);margin-bottom:4px">위험률 예측 모델</div>
-        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:16px">DATA / ML</div>
+        <div style="font-size:18px;font-weight:900;color:var(--info);margin-bottom:4px">위험률 산출 + 자동 판단</div>
+        <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:16px">DATA / 규칙 / ML</div>
         <div style="width:100%;height:1px;background:rgba(0,204,255,.2);margin-bottom:16px"></div>
         <div style="display:flex;flex-direction:column;gap:10px;flex:1">
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">UCI 16채널 센서 → <b style="color:var(--text)">risk_score 0~100</b> 회귀 예측</span></div>
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">RandomForest / GBR 두 모델 비교 학습</span></div>
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">MAE · RMSE · R² 기준 성능 평가</span></div>
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)"><b style="color:var(--info)">최적 threshold</b> 탐색 — F2-score 기준</span></div>
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">오탐률 &lt;10% · Recall &gt;0.9 달성 목표</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">UCI 16채널 센서 → <b style="color:var(--text)">risk_score 0~100</b> 산출</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">규칙(농도·증가율·지속시간) 기반 위험률 라벨</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">RandomForest <b style="color:var(--info)">1회 학습</b> → 얇은 위험률 API</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)"><b style="color:var(--info)">고정 threshold(70)</b> — LEL 기준 위험 시작점</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--info);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">규칙 로직 → 상태머신 자동 판단 기준 재사용</span></div>
         </div>
         <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
           <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">scikit-learn · pandas</span>
-          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--info)">R² &gt; 0.9</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--info)">threshold=70</span>
         </div>
       </div>
 
@@ -557,9 +557,9 @@ b[data-c="i"]{color:var(--info)}
         <div style="display:flex;flex-direction:column;gap:10px;flex:1">
           <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">연구소·개발실 <b style="color:var(--text)">3D 씬</b> 구현 (배관·밸브·환기팬)</span></div>
           <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">가스 확산 <b style="color:var(--safe)">Particle System</b> 시각화</span></div>
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">위험률 HUD 게이지 · 상태 배지 실시간 갱신</span></div>
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">threshold 초과 시 <b style="color:var(--safe)">밸브 자동차단</b> + 경보 ON</span></div>
-          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">발표용 데모 자동 진행 모드 구현</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)"><b style="color:var(--safe)">상태머신</b> 자동 전이 (정상→주의→위험→차단→복구)</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)">밸브→경보→환기 <b style="color:var(--safe)">순차 차단</b> + 자동 복구</span></div>
+          <div style="display:flex;gap:10px;align-items:flex-start"><span style="color:var(--safe);font-weight:900;flex-shrink:0">▸</span><span style="font-size:13px;color:var(--text2)"><b style="color:var(--safe)">무인 자동 데모</b> 모드 (사람 개입 0)</span></div>
         </div>
         <div style="margin-top:18px;border-top:1px solid var(--line);padding-top:12px;display:flex;justify-content:space-between;align-items:center">
           <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">Unity 3D · C#</span>
@@ -660,8 +660,8 @@ b[data-c="i"]{color:var(--info)}
       <div style="flex:1;background:var(--panel2);border:1px solid var(--line);border-left:2px solid rgba(255,51,51,.8);padding:20px 16px;display:flex;flex-direction:column;gap:10px">
         <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--danger);opacity:.8">STEP 05</div>
         <div style="font-size:28px;line-height:1">🔒</div>
-        <div style="font-size:14px;font-weight:900;color:var(--danger)">자동차단 완료</div>
-        <div style="font-size:12px;color:var(--text2);line-height:1.65">밸브 CLOSED 애니메이션<br>경보 ON · 환기팬 ON<br>cutoff_events DB 저장</div>
+        <div style="font-size:14px;font-weight:900;color:var(--danger)">자동차단·복구</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.65">밸브→경보→환기 순차 차단<br>안전 복귀 시 자동 복구<br>cutoff_events DB 저장</div>
       </div>
 
     </div>
@@ -683,26 +683,26 @@ b[data-c="i"]{color:var(--info)}
       </div>
 
       <div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(255,170,0,.5);padding:20px 22px;display:flex;flex-direction:column;gap:12px">
-        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warn);opacity:.8">MODEL — 회귀 예측</div>
-        <div style="font-size:16px;font-weight:900;color:var(--text)">RandomForest / GBR</div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--warn);opacity:.8">MODEL — 위험률 산출</div>
+        <div style="font-size:16px;font-weight:900;color:var(--text)">RandomForest (얇은 API)</div>
         <div style="width:32px;height:1px;background:rgba(255,170,0,.3)"></div>
         <div style="display:flex;flex-direction:column;gap:8px;flex:1">
-          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">분류(0/1) 아닌 <b style="color:var(--warn)">연속값</b> 예측</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">규칙(농도·증가율·지속) 기반 <b style="color:var(--warn)">위험률 라벨</b></span></div>
           <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">risk_score 0 ~ 100 출력</span></div>
-          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">MAE · RMSE · R² 성능 평가</span></div>
-          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">두 모델 비교 후 최적 선택</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">RF <b style="color:var(--warn)">1회 학습</b> (튜닝·비교 생략)</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--warn);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">위험률만 내려주는 얇은 API 역할</span></div>
         </div>
         <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px">scikit-learn · joblib 모델 저장</div>
       </div>
 
       <div style="background:var(--panel);border:1px solid var(--line);border-left:3px solid rgba(255,51,51,.5);padding:20px 22px;display:flex;flex-direction:column;gap:12px">
-        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--danger);opacity:.8">OUTPUT — 자동차단</div>
-        <div style="font-size:16px;font-weight:900;color:var(--text)">Threshold 기반 차단</div>
+        <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--danger);opacity:.8">OUTPUT — 자동차단·복구</div>
+        <div style="font-size:16px;font-weight:900;color:var(--text)">순차 차단 + 자동 복구</div>
         <div style="width:32px;height:1px;background:rgba(255,51,51,.3)"></div>
         <div style="display:flex;flex-direction:column;gap:8px;flex:1">
-          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">F2-score 기준 최적값 탐색</span></div>
-          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">오탐률 &lt;10% · Recall &gt;0.9 목표</span></div>
-          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">차단 시점 오차 최소화</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">고정 threshold(70) 초과 시 차단 트리거</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">밸브→경보→환기 순차 시퀀스 실행</span></div>
+          <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">안전 복귀 시 인터락 검증 후 자동 복구</span></div>
           <div style="display:flex;gap:8px"><span style="color:var(--danger);flex-shrink:0">▸</span><span style="font-size:12.5px;color:var(--text2)">cutoff_events 테이블 저장</span></div>
         </div>
         <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px">FastAPI → DB → Unity HUD 반영</div>
@@ -749,9 +749,9 @@ b[data-c="i"]{color:var(--info)}
         <ul style="list-style:none;display:flex;flex-direction:column;gap:5px">
           <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>UCI 데이터 전처리 · 정규화</li>
           <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>rule-based risk_score 라벨 생성</li>
-          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>RandomForest / GBR 회귀 학습</li>
-          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>Threshold 탐색 (F2/Recall 기준)</li>
-          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>모델 성능 평가 · 비교 표 작성</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>RandomForest 1회 학습 (얇은 API)</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>Threshold 고정 (LEL 기준 70)</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--safe);opacity:.5">▸</span>규칙 로직 → 상태머신 판단 지원</li>
         </ul>
       </div>
 
@@ -781,7 +781,7 @@ b[data-c="i"]{color:var(--info)}
           <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>시계열 그래프 + threshold 기준선</li>
           <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>정상/주의/위험/차단 상태 배지</li>
           <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>결과 요약 · 이벤트 타임라인</li>
-          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>모델 성능 비교 화면</li>
+          <li style="font-size:12px;color:var(--text2);display:flex;gap:6px"><span style="color:var(--danger);opacity:.5">▸</span>자동화 지표 화면 (차단 지연·완결성)</li>
         </ul>
       </div>
 
@@ -828,7 +828,7 @@ b[data-c="i"]{color:var(--info)}
         <!-- 노드: ML Model -->
         <div style="flex-shrink:0;background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.3);padding:10px 16px;display:flex;flex-direction:column;gap:4px;min-width:110px">
           <div style="font-family:'Courier New',monospace;font-size:9px;color:var(--safe);opacity:.8;letter-spacing:1px">ML MODEL</div>
-          <div style="font-size:13px;font-weight:900;color:var(--safe)">RF / GBR</div>
+          <div style="font-size:13px;font-weight:900;color:var(--safe)">RF (얇은 API)</div>
           <div style="font-size:10px;color:var(--muted)">risk_score 0~100</div>
         </div>
 
@@ -983,8 +983,8 @@ b[data-c="i"]{color:var(--info)}
         <!-- ML·DATA 내용 -->
         <div style="flex:1;background:rgba(0,255,136,.03);border:1px solid rgba(0,255,136,.18);padding:10px 16px;display:flex;gap:16px;align-items:center">
           <div style="flex:1;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--line);padding-right:16px">
-            <div style="font-size:13px;font-weight:900;color:var(--safe)">ML Model — RF / GBR</div>
-            <div style="font-size:11px;color:var(--muted)">회귀 예측 · risk_score 0~100 · R² &gt; 0.9 · model.pkl</div>
+            <div style="font-size:13px;font-weight:900;color:var(--safe)">ML Model — RF (얇은 API)</div>
+            <div style="font-size:11px;color:var(--muted)">규칙 기반 라벨 · risk_score 0~100 · model.pkl (1회 학습)</div>
           </div>
           <div style="flex:1;display:flex;flex-direction:column;gap:3px">
             <div style="font-size:13px;font-weight:900;color:var(--safe)">UCI 데이터 파이프라인</div>
@@ -1006,7 +1006,7 @@ b[data-c="i"]{color:var(--info)}
             <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid rgba(255,51,51,.2);padding:3px 8px;color:var(--danger)">cutoff_events</span>
             <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">scenarios</span>
             <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">sensor_configs</span>
-            <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">model_results</span>
+            <span style="font-family:'Courier New',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line);padding:3px 8px;color:var(--text2)">automation_metrics</span>
           </div>
           <div style="margin-left:auto;font-family:'Courier New',monospace;font-size:10px;color:var(--muted);white-space:nowrap">5개 테이블</div>
         </div>
@@ -1037,8 +1037,8 @@ b[data-c="i"]{color:var(--info)}
           </div>
           <div style="background:var(--panel2);border:1px solid var(--line);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px;position:relative">
             <div style="font-size:20px">🤖</div>
-            <div style="font-size:12px;font-weight:900;color:var(--text)">RF / GBR 학습</div>
-            <div style="font-size:11px;color:var(--muted);line-height:1.5">회귀 예측 학습<br>MAE · RMSE · R²<br>두 모델 비교</div>
+            <div style="font-size:12px;font-weight:900;color:var(--text)">RF 학습 (1회)</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.5">RF 기본 파라미터<br>튜닝·비교 생략<br>얇은 위험률 API</div>
             <div style="position:absolute;right:-8px;top:50%;transform:translateY(-50%);width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:8px solid rgba(255,255,255,.15);z-index:1"></div>
           </div>
           <div style="background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);border-left:none;padding:12px 10px;display:flex;flex-direction:column;gap:6px">
@@ -1135,13 +1135,13 @@ b[data-c="i"]{color:var(--info)}
         <div style="position:absolute;top:10px;right:10px;font-family:'Courier New',monospace;font-size:9px;color:var(--muted);background:var(--panel2);border:1px solid var(--line);padding:2px 7px">예정</div>
         <div style="font-family:'Courier New',monospace;font-size:9px;letter-spacing:2px;color:var(--warn);margin-bottom:4px">WEEK 03</div>
         <div style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">06.30 – 07.06</div>
-        <div style="font-size:13px;font-weight:900;color:var(--warn);margin-bottom:8px">모델 · API · 연동</div>
+        <div style="font-size:13px;font-weight:900;color:var(--warn);margin-bottom:8px">자동화 · API · 연동</div>
         <div style="display:flex;flex-direction:column;gap:3px">
-          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>RF / GBR 회귀 모델 학습</div>
-          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>Threshold 탐색 · 평가</div>
-          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>FastAPI 예측 API 구현</div>
-          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>DB 스키마 · 로그 저장</div>
-          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>Unity-API 연동 · 차단 처리</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>RF 1회 학습 · threshold 고정</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>상태머신 · 순차 차단 시퀀스</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>의사결정 근거 HUD · 무인 데모</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>FastAPI · DB 로그 저장</div>
+          <div style="font-size:11px;color:var(--muted);display:flex;gap:6px"><span style="opacity:.4">▸</span>Unity-API 연동 · 자동 복구</div>
         </div>
       </div>
 
@@ -1202,10 +1202,10 @@ b[data-c="i"]{color:var(--info)}
             <div style="width:100%;background:rgba(0,204,255,.12);border:1px dashed rgba(0,204,255,.3);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--info)">UCI 수집 · 전처리 · 라벨 생성</div>
           </div>
           <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
-            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">RF / GBR 학습 · Threshold 탐색</div>
+            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">RF 1회 학습 · 상태머신 규칙 지원</div>
           </div>
           <div style="padding:8px 12px;display:flex;align-items:center">
-            <div style="width:100%;background:rgba(255,51,51,.06);border:1px dashed rgba(255,51,51,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">TC 수행 · 모델 성능 검증</div>
+            <div style="width:100%;background:rgba(255,51,51,.06);border:1px dashed rgba(255,51,51,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">TC 수행 · 자동화 지표 검증</div>
           </div>
         </div>
 
@@ -1262,7 +1262,7 @@ b[data-c="i"]{color:var(--info)}
             <div style="width:100%;background:rgba(0,204,255,.12);border:1px dashed rgba(0,204,255,.3);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--info)">Unity 3D 씬 · Particle System</div>
           </div>
           <div style="padding:8px 12px;border-right:1px solid var(--line);display:flex;align-items:center">
-            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">밸브/경보/환기팬 · API 연동</div>
+            <div style="width:100%;background:rgba(255,170,0,.08);border:1px dashed rgba(255,170,0,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">상태머신 · 차단 시퀀스 · 자동복구</div>
           </div>
           <div style="padding:8px 12px;display:flex;align-items:center">
             <div style="width:100%;background:rgba(255,51,51,.06);border:1px dashed rgba(255,51,51,.2);border-radius:2px;padding:5px 8px;font-size:11px;color:var(--muted)">데모 시나리오 · 발표 준비</div>
@@ -1315,16 +1315,16 @@ b[data-c="i"]{color:var(--info)}
         <div style="font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;margin-bottom:6px">DECISION SUPPORT</div>
         <div style="font-size:18px;font-weight:900;color:var(--text);margin-bottom:4px">수치 기반 의사결정</div>
         <div style="width:28px;height:2px;background:var(--accent);opacity:.5;margin-bottom:14px"></div>
-        <div style="font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:14px">위험률 0~100%와 threshold를 수치로 제시해 <b style="color:var(--text)">"언제 차단할지"</b> 기준을 명확히 정의한다.</div>
+        <div style="font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:14px">감지부터 복구까지 <b style="color:var(--text)">사람 개입 없이</b> 자동 처리해 초기 대응 지연을 제거한다.</div>
         <div style="display:flex;flex-direction:column;gap:8px;flex:1">
-          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">F2-score 기준 최적 threshold 자동 탐색</span></div>
-          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">오탐률 &lt;10% · Recall &gt;0.9 균형점 시각화</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">규칙 기반 위험률 + 고정 threshold 자동 판단</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">상태머신 자동 전이로 무인 차단·복구</span></div>
           <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">경험 의존 없는 객관적 차단 기준 제공</span></div>
-          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">MAE · RMSE · R² 모델 성능 비교 화면</span></div>
+          <div style="display:flex;gap:8px;align-items:flex-start"><span style="color:var(--accent);flex-shrink:0;font-weight:900">▸</span><span style="font-size:12px;color:var(--text2)">차단 지연·시퀀스 완결성 자동화 지표 측정</span></div>
         </div>
         <div style="margin-top:16px;padding-top:12px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
-          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">scikit-learn · F2-score</span>
-          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--accent)">R² &gt; 0.9</span>
+          <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">상태머신 · 폐루프 제어</span>
+          <span style="font-family:'Courier New',monospace;font-size:13px;font-weight:900;color:var(--accent)">차단 &lt; 1s</span>
         </div>
       </div>
 

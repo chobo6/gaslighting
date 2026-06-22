@@ -80,7 +80,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
           <div class="m1-sub">
             <div class="m2"><div class="m2-dot"></div>시스템 상태 요약</div>
             <div class="m2"><div class="m2-dot"></div>최근 시뮬레이션 이력</div>
-            <div class="m2"><div class="m2-dot"></div>모델 성능 요약</div>
+            <div class="m2"><div class="m2-dot"></div>자동화 지표 요약</div>
           </div>
         </div>
         <div class="m1" onclick="setDetail(1)" id="m1">
@@ -103,8 +103,8 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
           <div class="m1-head"><div class="m1-icon">📊</div><div class="m1-label">분석</div></div>
           <div class="m1-sub">
             <div class="m2"><div class="m2-dot"></div>위험률 그래프</div>
-            <div class="m2"><div class="m2-dot"></div>Threshold 탐색 결과</div>
-            <div class="m2"><div class="m2-dot"></div>모델 성능 비교</div>
+            <div class="m2"><div class="m2-dot"></div>차단 지연·시퀀스 완결성</div>
+            <div class="m2"><div class="m2-dot"></div>자동 복구 성공률</div>
             <div class="m2"><div class="m2-dot"></div>위험 요인 분석</div>
           </div>
         </div>
@@ -126,7 +126,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
       <ul class="detail-list">
         <li>현재 시스템 상태 (대기 / 실행 중 / 차단완료)</li>
         <li>최근 5개 시뮬레이션 결과 요약</li>
-        <li>모델 성능 KPI (MAE, RMSE, R²) 요약</li>
+        <li>자동화 지표 KPI (차단 지연·시퀀스 완결성·복구 성공률) 요약</li>
         <li>빠른 실행 — 마지막 시나리오로 바로 데모 진입</li>
       </ul>
     </div>
@@ -190,7 +190,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
           <div class="sc-step"><div class="sc-step-num">02</div>max_risk, cutoff_time 확인</div>
           <div class="sc-step"><div class="sc-step-num">03</div>위험률 시계열 그래프 상세 보기</div>
           <div class="sc-step"><div class="sc-step-num">04</div>위험 요인 (농도/속도/지속시간) 분석 패널 확인</div>
-          <div class="sc-step"><div class="sc-step-num">05</div>Threshold 탐색 결과 비교 화면 확인</div>
+          <div class="sc-step"><div class="sc-step-num">05</div>자동화 지표 (차단 지연·복구 성공률) 화면 확인</div>
         </div>
       </div>
     </div>
@@ -198,10 +198,10 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
 </div>
 <script>
 const details=[
-  {label:"01 MAIN MENU",title:"대시보드",desc:"시스템 전체 상태를 한눈에 확인할 수 있는 홈 화면. 최근 시뮬레이션 결과, 최대 위험률, 자동차단 횟수 등 핵심 지표를 제공합니다.",items:["현재 시스템 상태 (대기 / 실행 중 / 차단완료)","최근 5개 시뮬레이션 결과 요약","모델 성능 KPI (MAE, RMSE, R²) 요약","빠른 실행 — 마지막 시나리오로 바로 데모 진입"]},
+  {label:"01 MAIN MENU",title:"대시보드",desc:"시스템 전체 상태를 한눈에 확인할 수 있는 홈 화면. 최근 시뮬레이션 결과, 최대 위험률, 자동차단 횟수 등 핵심 지표를 제공합니다.",items:["현재 시스템 상태 (대기 / 실행 중 / 차단완료)","최근 5개 시뮬레이션 결과 요약","자동화 지표 KPI (차단 지연·시퀀스 완결성·복구 성공률) 요약","빠른 실행 — 마지막 시나리오로 바로 데모 진입"]},
   {label:"02 MAIN MENU",title:"시나리오 선택",desc:"시뮬레이션을 진행할 공간 시나리오를 선택합니다. 각 시나리오마다 누출 위치, 가스 종류, threshold가 다르게 설정됩니다.",items:["연구소 — 수소/메탄 배관 누출 시나리오","개발실 — 밀폐 공간 가스 확산 시나리오","배관실 — 다중 누출 지점 시나리오","시나리오별 threshold 및 가스 종류 표시"]},
   {label:"03 MAIN MENU",title:"시뮬레이션",desc:"선택한 시나리오에서 가스 누출 시뮬레이션을 실행합니다. 파라미터 조정 및 데모 모드 실행이 가능합니다.",items:["누출 속도, 환기율, threshold 파라미터 설정","데모 실행 — 자동 진행 (발표용)","일시정지 / 재시작 / 초기화 제어","실시간 위험률 HUD 및 3D 씬 표시"]},
-  {label:"04 MAIN MENU",title:"분석",desc:"시뮬레이션 결과와 ML 모델 성능을 분석하는 화면입니다.",items:["위험률 시계열 그래프 + threshold 기준선","Threshold 후보별 F2-score/Recall/오탐률 비교","모델 성능 비교 (RF vs GBR: MAE/RMSE/R²)","위험 요인 분석 — 농도/속도/지속시간 기여도"]},
+  {label:"04 MAIN MENU",title:"분석",desc:"시뮬레이션 결과와 자동화 성능을 분석하는 화면입니다.",items:["위험률 시계열 그래프 + threshold(70) 기준선","차단 지연시간 · 시퀀스 완결성 측정","자동 복구 성공률 · 무인 데모 완주 여부","위험 요인 분석 — 농도/속도/지속시간 기여도"]},
   {label:"05 MAIN MENU",title:"이력",desc:"과거 시뮬레이션 실행 기록을 조회하고 결과를 다시 확인하는 화면입니다.",items:["시뮬레이션 이력 목록 (날짜/시나리오/최대위험률)","결과 상세 — max_risk, cutoff_time, 이벤트 타임라인","차단 이벤트 DB 로그 확인"]}
 ];
 function setDetail(i){

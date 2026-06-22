@@ -66,7 +66,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
   <div class="head">
     <div>
       <div class="head-title">// G-SAFE — 스토리보드</div>
-      <div class="head-sub">STORYBOARD · 5 SCENES · 정상 → 누출 → 주의 → 자동차단 → 결과</div>
+      <div class="head-sub">STORYBOARD · 5 SCENES · 정상 → 누출 → 주의 → 자동차단 → 자동복구·결과</div>
     </div>
   </div>
 
@@ -80,7 +80,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
     <div class="tf-arrow">▶</div>
     <div class="tf-step s3" onclick="showScene(3)"><div class="tf-icon">🔒</div><div class="tf-label">SCENE 4<br>자동차단</div></div>
     <div class="tf-arrow">▶</div>
-    <div class="tf-step s4" onclick="showScene(4)"><div class="tf-icon">📊</div><div class="tf-label">SCENE 5<br>결과 요약</div></div>
+    <div class="tf-step s4" onclick="showScene(4)"><div class="tf-icon">📊</div><div class="tf-label">SCENE 5<br>자동복구·결과</div></div>
   </div>
 
   <!-- Scene 1 -->
@@ -224,17 +224,17 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
     <div class="side-panel">
       <div class="info-block">
         <div class="ib-label">씬 설명</div>
-        <div class="ib-title">자동차단 발동 — 시스템 대응 완료</div>
-        <div class="ib-text">risk_score가 threshold를 초과하는 순간 밸브가 자동으로 닫힙니다. 경보등이 켜지고 환기팬이 작동합니다. 차단 이벤트가 DB에 저장됩니다.</div>
+        <div class="ib-title">자동차단 발동 — 순차 시퀀스 실행</div>
+        <div class="ib-text">risk_score가 threshold(70)를 초과하는 순간 상태머신이 차단 단계로 자동 전이합니다. 밸브 닫힘 → 경보 ON → 환기팬 ON 이 순차로 실행되고, 의사결정 근거 HUD가 "왜 지금 차단했는가"를 표시합니다. 차단 이벤트가 DB에 저장됩니다.</div>
       </div>
       <div class="info-block">
         <div class="ib-label">화면 구성</div>
         <ul class="ib-list">
-          <li>밸브 닫힘 애니메이션 재생</li>
-          <li>경보등 빨간색 점등, 사이렌 효과</li>
-          <li>환기팬 회전 시작</li>
-          <li>그래프에서 차단 마커(◆) 표시</li>
-          <li>HUD: CUTOFF 상태, cutoff_time 기록</li>
+          <li>① 밸브 닫힘 애니메이션 (0.5s)</li>
+          <li>② 경보등 점등 + 사이렌</li>
+          <li>③ 환기팬 회전 시작 (순차 실행)</li>
+          <li>의사결정 근거 HUD: "농도 82% · 증가율 급등 → 차단"</li>
+          <li>그래프 차단 마커(◆), 차단 지연시간 < 1s 측정</li>
         </ul>
       </div>
       <div class="info-block">
@@ -248,16 +248,16 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
   <div class="board" id="sc4">
     <div class="scene-box">
       <div class="scene-header">
-        <div class="scene-header-label" style="color:var(--accent)">SCENE 05 · 결과 요약</div>
-        <div class="scene-header-title">시뮬레이션 종료 — 결과 분석</div>
-        <div class="scene-header-time">T = 180s~ (결과 화면)</div>
+        <div class="scene-header-label" style="color:var(--accent)">SCENE 05 · 자동 복구 & 결과</div>
+        <div class="scene-header-title">자동 복구 → 시뮬레이션 종료</div>
+        <div class="scene-header-time">T = 180s~ (복구 후 결과 화면)</div>
       </div>
       <div class="scene-visual">
-        <div class="sv-area" style="border-color:rgba(0,255,204,.2)">📊<div class="sv-label">결과 요약 화면</div></div>
+        <div class="sv-area" style="border-color:rgba(0,255,204,.2)">🔓<div class="sv-label">농도 안전값 복귀 → 자동 복구 → 결과 요약</div></div>
         <div class="sv-hud">
           <div class="sv-hud-cell">MAX RISK<span style="color:var(--accent)">82%</span></div>
           <div class="sv-hud-cell">CUTOFF<span style="color:var(--accent)">T+150s</span></div>
-          <div class="sv-hud-cell">GAS<span style="color:var(--info)">Methane</span></div>
+          <div class="sv-hud-cell">VALVE<span style="color:var(--safe)">RE-OPEN</span></div>
           <div class="sv-hud-cell">RESULT<span style="color:var(--safe)">COMPLETE</span></div>
         </div>
       </div>
@@ -265,21 +265,22 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
     <div class="side-panel">
       <div class="info-block">
         <div class="ib-label">씬 설명</div>
-        <div class="ib-title">시뮬레이션 종료 — 결과 요약 화면</div>
-        <div class="ib-text">시뮬레이션이 완료되면 결과 요약 화면으로 전환됩니다. 최대 위험률, 자동차단 시점, 이벤트 타임라인, 위험 요인 분석 결과가 표시됩니다.</div>
+        <div class="ib-title">자동 복구 후 결과 요약 화면</div>
+        <div class="ib-text">환기팬 가동으로 농도가 안전값(&lt;30)으로 떨어지면 인터락 조건을 검증해 밸브를 자동 재개방하고 경보를 해제합니다(자동 복구). 이후 결과 요약 화면으로 전환되어 최대 위험률, 차단 시점, 복구 시점, 자동화 지표가 표시됩니다.</div>
       </div>
       <div class="info-block">
         <div class="ib-label">화면 구성</div>
         <ul class="ib-list">
-          <li>KPI 카드: max_risk, cutoff_time, 가스 종류, 결과</li>
-          <li>이벤트 타임라인 (정상→누출→주의→차단→완료)</li>
-          <li>위험 요인 분석 패널 (농도/속도/지속시간)</li>
+          <li>자동 복구: 밸브 재개방 + 경보 해제 애니메이션</li>
+          <li>KPI 카드: max_risk, cutoff_time, 차단 지연, 복구 시점</li>
+          <li>이벤트 타임라인 (정상→누출→주의→차단→복구→완료)</li>
+          <li>자동화 지표 패널 (시퀀스 완결성 / 무인 완주)</li>
           <li>[다시 실행] / [이력 보기] 버튼</li>
         </ul>
       </div>
       <div class="info-block">
         <div class="ib-label">시스템 상태</div>
-        <div class="state-chips"><span class="chip ch-a">COMPLETE</span><span class="chip ch-i">LOG SAVED</span><span class="chip ch-s">REVIEW READY</span></div>
+        <div class="state-chips"><span class="chip ch-s">RECOVERED</span><span class="chip ch-a">COMPLETE</span><span class="chip ch-i">LOG SAVED</span></div>
       </div>
     </div>
   </div>

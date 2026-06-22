@@ -78,7 +78,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
     <div class="nav">
       <button class="nav-btn active" onclick="show('OV',this)">개요</button>
       <button class="nav-btn" onclick="show('E1',this)">POST /predict-risk</button>
-      <button class="nav-btn" onclick="show('E2',this)">GET /model-performance</button>
+      <button class="nav-btn" onclick="show('E2',this)">GET /automation-metrics</button>
       <button class="nav-btn" onclick="show('E3',this)">GET /scenarios</button>
       <button class="nav-btn" onclick="show('E4',this)">POST /logs/cutoff</button>
       <button class="nav-btn" onclick="show('E5',this)">GET /health</button>
@@ -111,8 +111,8 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
         </div>
         <div class="ov-item get-item" onclick="show('E2',document.querySelectorAll('.nav-btn')[2])">
           <span class="method GET">GET</span>
-          <span style="font-family:'Courier New',monospace;font-size:12px;color:var(--text)">/api/model-performance</span>
-          <span style="font-size:12px;color:var(--text2)">RF/GBR 모델 학습 성능 지표 및 threshold 탐색 결과 조회</span>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:var(--text)">/api/automation-metrics</span>
+          <span style="font-size:12px;color:var(--text2)">차단 지연·시퀀스 완결성·자동 복구 성공률 등 자동화 지표 조회</span>
           <span style="font-family:'Courier New',monospace;font-size:10px;color:var(--info)">REQ-F-017</span>
         </div>
         <div class="ov-item get-item" onclick="show('E3',document.querySelectorAll('.nav-btn')[3])">
@@ -145,7 +145,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
           <span class="method POST">POST</span>
           <span class="api-path">/api/predict-risk</span>
           <span class="api-req-badge">REQ-F-005 · TC-API-001</span>
-          <span class="api-desc">위험률 회귀 예측<br>담당: 홍제규</span>
+          <span class="api-desc">위험률 산출<br>담당: 홍제규</span>
         </div>
         <div class="api-body">
           <div>
@@ -181,7 +181,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
                 </tbody>
               </table>
               <div style="margin-top:8px;font-family:'Courier New',monospace;font-size:10px;color:var(--muted)">
-                risk_level 기준: &nbsp;정상 &lt; 40 &nbsp;·&nbsp; 주의 40~69 &nbsp;·&nbsp; 위험 70~threshold &nbsp;·&nbsp; 차단 ≥ threshold
+                risk_level 기준: &nbsp;정상 &lt; 40 &nbsp;·&nbsp; 주의 40~59 &nbsp;·&nbsp; 위험 60~69 &nbsp;·&nbsp; 차단 ≥ 70 (threshold)
               </div>
             </div>
           </div>
@@ -197,9 +197,9 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
             </div>
             <div>
               <div class="api-section-title">Response 예시</div>
-              <div class="code-block"><span class="ck">"risk_score"</span>: <span class="cn">73.4</span>,
+              <div class="code-block"><span class="ck">"risk_score"</span>: <span class="cn">64.0</span>,
 <span class="ck">"risk_level"</span>: <span class="cs">"위험"</span>,
-<span class="ck">"threshold"</span>: <span class="cn">78.0</span>,
+<span class="ck">"threshold"</span>: <span class="cn">70.0</span>,
 <span class="ck">"response_ms"</span>: <span class="cn">42</span></div>
             </div>
           </div>
@@ -208,22 +208,22 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
     </div>
   </div>
 
-  <!-- GET /model-performance -->
+  <!-- GET /automation-metrics -->
   <div id="E2" class="scene">
     <div class="scroll">
       <div class="api-card get">
         <div class="api-head" style="cursor:default">
           <span class="method GET">GET</span>
-          <span class="api-path">/api/model-performance</span>
+          <span class="api-path">/api/automation-metrics</span>
           <span class="api-req-badge">REQ-F-017</span>
-          <span class="api-desc">모델 성능 조회<br>담당: 홍제규 + 김응석</span>
+          <span class="api-desc">자동화 지표 조회<br>담당: 홍제규 + 이성룡</span>
         </div>
         <div class="api-body">
           <div>
             <div class="api-section-title">개요</div>
             <div style="font-size:12.5px;color:var(--text2);line-height:1.75">
-              RandomForest / GBR 모델의 학습 성능 지표(MAE, RMSE, R²)와 threshold 탐색 결과를 반환합니다.
-              Unity 대시보드의 모델 성능 화면에서 사용됩니다.
+              차단 지연시간, 차단 시퀀스 완결성, 자동 복구 성공률, 무인 데모 완주 여부 등 자동화 성능 지표를 반환합니다.
+              Unity 대시보드의 자동화 지표 화면에서 사용됩니다.
             </div>
           </div>
           <div class="two-col">
@@ -232,43 +232,27 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
               <table class="field-table">
                 <thead><tr><th>필드</th><th>타입</th><th>설명</th></tr></thead>
                 <tbody>
-                  <tr><td class="fn">models</td><td class="ft">array</td><td>모델 성능 객체 목록</td></tr>
-                  <tr><td class="fn">models[].name</td><td class="ft">string</td><td>RandomForest / GBR</td></tr>
-                  <tr><td class="fn">models[].mae</td><td class="ft">float</td><td>Mean Absolute Error</td></tr>
-                  <tr><td class="fn">models[].rmse</td><td class="ft">float</td><td>Root Mean Squared Error</td></tr>
-                  <tr><td class="fn">models[].r2</td><td class="ft">float</td><td>R² Score (목표: > 0.9)</td></tr>
-                  <tr><td class="fn">models[].selected</td><td class="ft">bool</td><td>현재 적용 중인 모델 여부</td></tr>
-                  <tr><td class="fn">threshold</td><td class="ft">object</td><td>threshold 탐색 결과 객체</td></tr>
-                  <tr><td class="fn">threshold.value</td><td class="ft">float</td><td>선정된 최적 threshold</td></tr>
-                  <tr><td class="fn">threshold.recall</td><td class="ft">float</td><td>해당 threshold의 Recall</td></tr>
-                  <tr><td class="fn">threshold.f2_score</td><td class="ft">float</td><td>F2-score</td></tr>
-                  <tr><td class="fn">threshold.false_positive_rate</td><td class="ft">float</td><td>오탐률 (목표: &lt; 0.1)</td></tr>
+                  <tr><td class="fn">cutoff_latency_ms</td><td class="ft">int</td><td>위험 감지→밸브 닫힘 지연 (목표: &lt; 1000)</td></tr>
+                  <tr><td class="fn">sequence_complete</td><td class="ft">bool</td><td>밸브·경보·환기 3단계 모두 실행 여부</td></tr>
+                  <tr><td class="fn">recovery_success_rate</td><td class="ft">float</td><td>자동 복구 성공률 (0.0 ~ 1.0)</td></tr>
+                  <tr><td class="fn">unmanned_demo</td><td class="ft">bool</td><td>무인 데모 완주 (사람 개입 0) 여부</td></tr>
+                  <tr><td class="fn">threshold</td><td class="ft">float</td><td>적용 중인 고정 threshold (70)</td></tr>
+                  <tr><td class="fn">model</td><td class="ft">object</td><td>위험률 모델 정보 객체</td></tr>
+                  <tr><td class="fn">model.name</td><td class="ft">string</td><td>RandomForest (얇은 위험률 API)</td></tr>
+                  <tr><td class="fn">model.loaded</td><td class="ft">bool</td><td>model.pkl 로드 여부</td></tr>
                 </tbody>
               </table>
             </div>
             <div>
               <div class="api-section-title">Response 예시</div>
-              <div class="code-block"><span class="ck">"models"</span>: [
-  {
-    <span class="ck">"name"</span>: <span class="cs">"RandomForest"</span>,
-    <span class="ck">"mae"</span>: <span class="cn">3.21</span>,
-    <span class="ck">"rmse"</span>: <span class="cn">4.87</span>,
-    <span class="ck">"r2"</span>: <span class="cn">0.923</span>,
-    <span class="ck">"selected"</span>: <span class="cn">true</span>
-  },
-  {
-    <span class="ck">"name"</span>: <span class="cs">"GBR"</span>,
-    <span class="ck">"mae"</span>: <span class="cn">3.58</span>,
-    <span class="ck">"rmse"</span>: <span class="cn">5.12</span>,
-    <span class="ck">"r2"</span>: <span class="cn">0.908</span>,
-    <span class="ck">"selected"</span>: <span class="cn">false</span>
-  }
-],
-<span class="ck">"threshold"</span>: {
-  <span class="ck">"value"</span>: <span class="cn">78.0</span>,
-  <span class="ck">"recall"</span>: <span class="cn">0.94</span>,
-  <span class="ck">"f2_score"</span>: <span class="cn">0.91</span>,
-  <span class="ck">"false_positive_rate"</span>: <span class="cn">0.07</span>
+              <div class="code-block"><span class="ck">"cutoff_latency_ms"</span>: <span class="cn">420</span>,
+<span class="ck">"sequence_complete"</span>: <span class="cn">true</span>,
+<span class="ck">"recovery_success_rate"</span>: <span class="cn">1.0</span>,
+<span class="ck">"unmanned_demo"</span>: <span class="cn">true</span>,
+<span class="ck">"threshold"</span>: <span class="cn">70.0</span>,
+<span class="ck">"model"</span>: {
+  <span class="ck">"name"</span>: <span class="cs">"RandomForest"</span>,
+  <span class="ck">"loaded"</span>: <span class="cn">true</span>
 }</div>
             </div>
           </div>
@@ -318,7 +302,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
     <span class="ck">"name"</span>: <span class="cs">"연구소"</span>,
     <span class="ck">"location"</span>: <span class="cs">"배관 연결부 A"</span>,
     <span class="ck">"gas_type"</span>: <span class="cs">"CH4"</span>,
-    <span class="ck">"threshold"</span>: <span class="cn">78.0</span>,
+    <span class="ck">"threshold"</span>: <span class="cn">70.0</span>,
     <span class="ck">"description"</span>: <span class="cs">"협소 공간 고위험"</span>
   },
   {
@@ -392,7 +376,7 @@ body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color
 <span class="ck">"scenario_id"</span>: <span class="cn">1</span>,
 <span class="ck">"cutoff_time"</span>: <span class="cs">"2026-07-13T14:32:05"</span>,
 <span class="ck">"risk_at_cutoff"</span>: <span class="cn">81.2</span>,
-<span class="ck">"threshold_used"</span>: <span class="cn">78.0</span>,
+<span class="ck">"threshold_used"</span>: <span class="cn">70.0</span>,
 <span class="ck">"sim_elapsed_sec"</span>: <span class="cn">47</span>
 
 <span class="cm">// Response 201</span>

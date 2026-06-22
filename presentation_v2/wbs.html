@@ -94,17 +94,17 @@ tbody tr:hover td{background:rgba(0,255,204,.025)}
 <tr><td class="id-c">WBS-018</td><td><span class="badge bw2">W2</span></td><td class="task-name">DB 스키마 생성</td><td>SQLite/PostgreSQL 테이블 5개 CREATE</td><td>홍제규</td><td>06.25~27</td></tr>
 <tr><td class="id-c">WBS-019</td><td><span class="badge bw2">W2</span></td><td class="task-name">FastAPI 프로젝트 초기 설정</td><td>프로젝트 구조, 의존성, DB 연결 설정</td><td>홍제규</td><td>06.25~27</td></tr>
 <tr><td class="id-c">WBS-020</td><td><span class="badge bw2">W2</span></td><td class="task-name">CSV 재생 모듈 (Unity)</td><td>타임스텝별 센서값 CSV 로드 및 재생</td><td>안세웅</td><td>06.28~30</td></tr>
-<tr><td class="id-c">WBS-021</td><td><span class="badge bw3">W3</span></td><td class="task-name">회귀 모델 학습 (RandomForest)</td><td>RF 회귀 모델 학습, 하이퍼파라미터 튜닝</td><td>김응석</td><td>06.30~07.02</td></tr>
-<tr><td class="id-c">WBS-022</td><td><span class="badge bw3">W3</span></td><td class="task-name">회귀 모델 학습 (GBR)</td><td>GradientBoostingRegressor 학습 및 비교</td><td>김응석</td><td>07.01~03</td></tr>
-<tr><td class="id-c">WBS-023</td><td><span class="badge bw3">W3</span></td><td class="task-name">Threshold 탐색</td><td>60~95 범위 탐색, F2-score/Recall/오탐률 산출</td><td>김응석</td><td>07.02~04</td></tr>
-<tr><td class="id-c">WBS-024</td><td><span class="badge bw3">W3</span></td><td class="task-name">모델 성능 평가</td><td>검증 데이터 MAE/RMSE/R² 평가 및 성능 표 작성</td><td>김응석</td><td>07.03~05</td></tr>
+<tr><td class="id-c">WBS-021</td><td><span class="badge bw3">W3</span></td><td class="task-name">RandomForest 학습 (1회)</td><td>RF 기본 파라미터로 1회 학습 → model.pkl 저장 (튜닝·GBR 비교 생략)</td><td>김응석</td><td>06.30~07.01</td></tr>
+<tr><td class="id-c">WBS-022</td><td><span class="badge bw3">W3</span></td><td class="task-name">상태머신 자동 전이 구현</td><td>정상→주의→위험→차단→복구 자동 상태 전이 로직 (규칙 동기화)</td><td>안세웅/김응석</td><td>07.01~03</td></tr>
+<tr><td class="id-c">WBS-023</td><td><span class="badge bw3">W3</span></td><td class="task-name">순차 차단 시퀀스 구현</td><td>threshold 고정값(70) 적용, 밸브→경보→환기팬 순차 자동 실행</td><td>안세웅</td><td>07.02~04</td></tr>
+<tr><td class="id-c">WBS-024</td><td><span class="badge bw3">W3</span></td><td class="task-name">의사결정 근거 HUD 구현</td><td>차단 근거(농도·증가율·지속시간) 실시간 표시</td><td>장영재</td><td>07.03~05</td></tr>
 <tr><td class="id-c">WBS-025</td><td><span class="badge bw3">W3</span></td><td class="task-name">위험률 예측 API 구현</td><td>POST /api/predict-risk 엔드포인트</td><td>홍제규</td><td>06.30~07.02</td></tr>
 <tr><td class="id-c">WBS-026</td><td><span class="badge bw3">W3</span></td><td class="task-name">로그 저장 API 구현</td><td>센서값/위험률/차단 이벤트 저장 API</td><td>홍제규</td><td>07.01~03</td></tr>
 <tr><td class="id-c">WBS-027</td><td><span class="badge bw3">W3</span></td><td class="task-name">Unity-API 연동</td><td>UnityWebRequest 코루틴, 응답 파싱, HUD 반영</td><td>홍제규/안세웅</td><td>07.02~04</td></tr>
-<tr><td class="id-c">WBS-028</td><td><span class="badge bw3">W3</span></td><td class="task-name">자동차단 이벤트 처리</td><td>threshold 초과 감지 → cutoff_events 저장</td><td>안세웅/홍제규</td><td>07.03~05</td></tr>
+<tr><td class="id-c">WBS-028</td><td><span class="badge bw3">W3</span></td><td class="task-name">자동차단/복구 이벤트 처리</td><td>threshold 초과 시 차단, 안전 복귀 시 자동 복구/인터락 → cutoff_events 저장</td><td>안세웅/홍제규</td><td>07.03~05</td></tr>
 <tr><td class="id-c">WBS-029</td><td><span class="badge bw3">W3</span></td><td class="task-name">위험률 그래프 UI</td><td>시계열 그래프 + threshold 기준선 표시</td><td>장영재</td><td>07.02~04</td></tr>
 <tr><td class="id-c">WBS-030</td><td><span class="badge bw3">W3</span></td><td class="task-name">결과 요약 화면 구현</td><td>max_risk, cutoff_time, 최종 상태 표시</td><td>장영재</td><td>07.04~06</td></tr>
-<tr><td class="id-c">WBS-031</td><td><span class="badge bw3">W3</span></td><td class="task-name">데모 시나리오 데이터 준비</td><td>누출→차단 흐름 CSV 데이터 제작</td><td>김응석</td><td>07.04~06</td></tr>
+<tr><td class="id-c">WBS-031</td><td><span class="badge bw3">W3</span></td><td class="task-name">무인 자동 데모 모드 구현</td><td>정상→누출→차단→복구 무인 자동 진행 + 데모용 CSV 데이터 제작</td><td>안세웅/김응석</td><td>07.04~06</td></tr>
 <tr><td class="id-c">WBS-032</td><td><span class="badge bw4">W4</span></td><td class="task-name">단위 테스트 수행</td><td>Data/ML/API/Unity 단위 테스트 (TC 15개)</td><td>이성룡</td><td>07.06~08</td></tr>
 <tr><td class="id-c">WBS-033</td><td><span class="badge bw4">W4</span></td><td class="task-name">통합 테스트 수행</td><td>전체 흐름 통합 시나리오 테스트</td><td>이성룡</td><td>07.08~10</td></tr>
 <tr><td class="id-c">WBS-034</td><td><span class="badge bw4">W4</span></td><td class="task-name">버그 수정 및 최종 디버깅</td><td>테스트 결과 이슈 처리</td><td>전체</td><td>07.10~12</td></tr>
@@ -136,9 +136,9 @@ const tasks=[
   {n:"Unity 초기 설정",s:7,e:9,w:2},{n:"3D 씬 구성",s:9,e:12,w:2},{n:"Particle System",s:10,e:12,w:2},
   {n:"밸브/경보/환기",s:11,e:14,w:2},{n:"HUD 기본 패널",s:11,e:14,w:2},
   {n:"DB 스키마",s:9,e:11,w:2},{n:"FastAPI 초기설정",s:9,e:11,w:2},{n:"CSV 재생 모듈",s:12,e:14,w:2},
-  {n:"RF 회귀 학습",s:14,e:16,w:3},{n:"GBR 학습",s:15,e:17,w:3},{n:"Threshold 탐색",s:16,e:18,w:3},{n:"모델 성능 평가",s:17,e:19,w:3},
+  {n:"RF 학습(1회)",s:14,e:15,w:3},{n:"상태머신 전이",s:15,e:17,w:3},{n:"차단 시퀀스",s:16,e:18,w:3},{n:"근거 HUD",s:17,e:19,w:3},
   {n:"예측 API 구현",s:14,e:16,w:3},{n:"로그 저장 API",s:15,e:17,w:3},{n:"Unity-API 연동",s:16,e:18,w:3},
-  {n:"자동차단 이벤트",s:17,e:19,w:3},{n:"위험률 그래프 UI",s:16,e:18,w:3},{n:"결과 요약 화면",s:18,e:20,w:3},{n:"데모 데이터 준비",s:18,e:20,w:3},
+  {n:"자동차단/복구",s:17,e:19,w:3},{n:"위험률 그래프 UI",s:16,e:18,w:3},{n:"결과 요약 화면",s:18,e:20,w:3},{n:"무인 데모 모드",s:18,e:20,w:3},
   {n:"단위 테스트",s:20,e:22,w:4},{n:"통합 테스트",s:22,e:24,w:4},{n:"버그 수정",s:24,e:26,w:4},{n:"산출물 정리",s:25,e:27,w:4},{n:"최종 발표 ◈",s:27,e:27,w:4}
 ];
 const N=28;const wc={1:'g-w1',2:'g-w2',3:'g-w3',4:'g-w4'};

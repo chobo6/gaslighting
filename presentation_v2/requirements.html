@@ -47,6 +47,7 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
 .tc-unity{background:rgba(255,51,51,.08);color:var(--danger);border:1px solid rgba(255,51,51,.2)}
 .tc-int{background:rgba(0,204,255,.06);color:var(--info);border:1px solid rgba(0,204,255,.15)}
 .tc-pres{background:rgba(255,170,0,.06);color:var(--warn);border:1px solid rgba(255,170,0,.15)}
+.tc-auto{background:rgba(0,255,204,.08);color:var(--accent);border:1px solid rgba(0,255,204,.25)}
 .cov-ok{display:inline-block;font-family:"Courier New",monospace;font-size:10px;font-weight:700;padding:2px 8px;background:rgba(0,255,136,.08);color:var(--safe);border:1px solid rgba(0,255,136,.25)}
 .cov-no{display:inline-block;font-family:"Courier New",monospace;font-size:10px;font-weight:700;padding:2px 8px;background:rgba(255,51,51,.1);color:var(--danger);border:1px solid rgba(255,51,51,.25)}
 .cov-doc{display:inline-block;font-family:"Courier New",monospace;font-size:10px;font-weight:700;padding:2px 8px;background:rgba(255,170,0,.08);color:var(--warn);border:1px solid rgba(255,170,0,.25)}
@@ -87,9 +88,9 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
           <tr><td class="id-c">REQ-F-003</td><td class="name-c">시간 기반 농도 변화</td><td>시간 경과에 따라 가스 농도, 센서 반응값, 위험률이 갱신되어야 한다.</td><td><span class="badge b-h">상</span></td><td>1초 단위로 센서값과 위험률 HUD가 갱신된다.</td><td><span class="comp">Unity</span></td></tr>
           <tr><td class="id-c">REQ-F-004</td><td class="name-c">센서 데이터 재생</td><td>UCI 가스 센서 시계열 또는 가공 CSV를 Unity 시뮬레이션에 재생할 수 있어야 한다.</td><td><span class="badge b-h">상</span></td><td>CSV 타임스텝별 sensor_1~sensor_16 또는 농도값이 적용된다.</td><td><span class="comp">Data/Unity</span></td></tr>
           <tr><td class="id-c">REQ-F-005</td><td class="name-c">위험률 회귀 예측</td><td>Backend 또는 로컬 모델은 현재 센서값을 입력받아 위험률 0~100%를 예측해야 한다.</td><td><span class="badge b-h">상</span></td><td>risk_score가 0~100 범위로 반환된다.</td><td><span class="comp">ML</span></td></tr>
-          <tr><td class="id-c">REQ-F-006</td><td class="name-c">Threshold 탐색</td><td>검증 데이터 기준으로 자동차단 threshold를 탐색하고 선정해야 한다.</td><td><span class="badge b-h">상</span></td><td>threshold 후보별 Recall, F2, 오탐률, 차단 시점 오차가 산출된다.</td><td><span class="comp">ML</span></td></tr>
+          <tr><td class="id-c">REQ-F-006</td><td class="name-c">Threshold 고정 선정</td><td>자동차단 기준 threshold를 규칙 기반 고정값으로 선정해야 한다.</td><td><span class="badge b-h">상</span></td><td>LEL 기준 근거와 함께 threshold가 고정값(70)으로 설정된다.</td><td><span class="comp">ML/규칙</span></td></tr>
           <tr><td class="id-c">REQ-F-007</td><td class="name-c">위험률 그래프 표시</td><td>시간별 위험률 곡선과 threshold 기준선을 표시해야 한다.</td><td><span class="badge b-h">상</span></td><td>그래프에서 위험률 곡선이 기준선을 넘는 지점이 시각화된다.</td><td><span class="comp">Unity UI</span></td></tr>
-          <tr><td class="id-c">REQ-F-008</td><td class="name-c">자동차단 이벤트</td><td>위험률이 threshold 이상이면 밸브를 자동으로 차단해야 한다.</td><td><span class="badge b-h">상</span></td><td>risk_score ≥ threshold 순간 valve_status가 CLOSED로 변경된다.</td><td><span class="comp">Unity/Control</span></td></tr>
+          <tr><td class="id-c">REQ-F-008</td><td class="name-c">자동차단/복구 이벤트</td><td>위험률이 threshold 이상이면 자동 차단하고, 안전값 복귀 시 자동 복구해야 한다.</td><td><span class="badge b-h">상</span></td><td>risk ≥ threshold 시 valve CLOSED, 안전 복귀 시 인터락 조건 충족하면 자동 재개방된다.</td><td><span class="comp">Unity/Control</span></td></tr>
           <tr><td class="id-c">REQ-F-009</td><td class="name-c">경보/환기 작동</td><td>자동차단 시 경보등, 사이렌, 환기팬이 작동해야 한다.</td><td><span class="badge b-h">상</span></td><td>차단 이벤트 발생 시 alarm_status=ON, ventilation_status=ON으로 표시된다.</td><td><span class="comp">Unity</span></td></tr>
           <tr><td class="id-c">REQ-F-010</td><td class="name-c">위험 등급 표시</td><td>위험률에 따라 정상/주의/위험/차단완료 상태를 표시해야 한다.</td><td><span class="badge b-h">상</span></td><td>HUD에 위험 등급과 색상 상태가 표시된다.</td><td><span class="comp">Unity UI</span></td></tr>
           <tr><td class="id-c">REQ-F-011</td><td class="name-c">위험 원인 설명</td><td>위험률 상승 원인을 농도, 증가 속도, 지속시간 기준으로 설명해야 한다.</td><td><span class="badge b-m">중</span></td><td>위험 원인 패널에 주요 기여 요인이 표시된다.</td><td><span class="comp">ML/UI</span></td></tr>
@@ -98,7 +99,7 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
           <tr><td class="id-c">REQ-F-014</td><td class="name-c">예측 API 연동</td><td>Unity는 현재 센서값을 Backend로 전송하고 위험률 예측 결과를 받을 수 있어야 한다.</td><td><span class="badge b-m">중</span></td><td>POST /api/predict-risk 응답이 HUD에 반영된다.</td><td><span class="comp">Backend/Unity</span></td></tr>
           <tr><td class="id-c">REQ-F-015</td><td class="name-c">로그 저장</td><td>센서값, 위험률, 차단 이벤트를 DB 또는 파일에 저장해야 한다.</td><td><span class="badge b-m">중</span></td><td>gas_readings, risk_predictions, cutoff_events에 로그가 저장된다.</td><td><span class="comp">DB</span></td></tr>
           <tr><td class="id-c">REQ-F-016</td><td class="name-c">데모 모드</td><td>실제 센서 없이 준비된 데이터로 발표용 시뮬레이션을 재생할 수 있어야 한다.</td><td><span class="badge b-h">상</span></td><td>누출→위험률 상승→자동차단 흐름이 자동 진행된다.</td><td><span class="comp">Unity</span></td></tr>
-          <tr><td class="id-c">REQ-F-017</td><td class="name-c">모델 성능 조회</td><td>모델별 MAE, RMSE, R2, threshold 탐색 결과를 확인할 수 있어야 한다.</td><td><span class="badge b-m">중</span></td><td>모델 성능 화면에서 평가표가 표시된다.</td><td><span class="comp">Dashboard</span></td></tr>
+          <tr><td class="id-c">REQ-F-017</td><td class="name-c">자동화 지표 조회</td><td>차단 지연시간, 시퀀스 완결성, 무인 데모 완주 등 자동화 지표를 확인할 수 있어야 한다.</td><td><span class="badge b-m">중</span></td><td>지표 화면에 차단 지연·시퀀스 완결성·자동 복구 성공률이 표시된다.</td><td><span class="comp">Dashboard</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -159,7 +160,7 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
           <tr><td colspan="5" class="rtm-sep">기능 요구사항 (FUNC) — 15/17 커버</td></tr>
           <tr>
             <td class="id-c">REQ-F-001</td><td class="name-c">시나리오 선택</td><td><span class="badge b-h">상</span></td>
-            <td><span class="tc-chip tc-int">TC-INT-002</span><span class="tc-chip tc-int">TC-INT-003</span><span class="tc-chip tc-pres">TC-PRES-001</span></td>
+            <td><span class="tc-chip tc-int">TC-INT-002</span><span class="tc-chip tc-int">TC-INT-003</span><span class="tc-chip tc-int">TC-INT-004</span><span class="tc-chip tc-pres">TC-PRES-001</span></td>
             <td><span class="cov-ok">COVERED</span></td>
           </tr>
           <tr>
@@ -183,7 +184,7 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
             <td><span class="cov-ok">COVERED</span></td>
           </tr>
           <tr>
-            <td class="id-c">REQ-F-006</td><td class="name-c">Threshold 탐색</td><td><span class="badge b-h">상</span></td>
+            <td class="id-c">REQ-F-006</td><td class="name-c">Threshold 고정 선정</td><td><span class="badge b-h">상</span></td>
             <td><span class="tc-chip tc-ml">TC-ML-002</span></td>
             <td><span class="cov-ok">COVERED</span></td>
           </tr>
@@ -193,8 +194,8 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
             <td><span class="cov-ok">COVERED</span></td>
           </tr>
           <tr>
-            <td class="id-c">REQ-F-008</td><td class="name-c">자동차단 이벤트</td><td><span class="badge b-h">상</span></td>
-            <td><span class="tc-chip tc-unity">TC-UNITY-002</span><span class="tc-chip tc-int">TC-INT-003</span></td>
+            <td class="id-c">REQ-F-008</td><td class="name-c">자동차단/복구 이벤트</td><td><span class="badge b-h">상</span></td>
+            <td><span class="tc-chip tc-unity">TC-UNITY-002</span><span class="tc-chip tc-auto">TC-AUTO-001</span><span class="tc-chip tc-auto">TC-AUTO-002</span><span class="tc-chip tc-int">TC-INT-003</span></td>
             <td><span class="cov-ok">COVERED</span></td>
           </tr>
           <tr>
@@ -209,7 +210,7 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
           </tr>
           <tr style="background:rgba(255,51,51,.03)">
             <td class="id-c">REQ-F-011</td><td class="name-c">위험 원인 설명</td><td><span class="badge b-m">중</span></td>
-            <td style="color:var(--muted);font-size:11px">— TC 없음 · 개발 완료 후 수동 확인</td>
+            <td style="color:var(--muted);font-size:11px">— TC 없음 · 의사결정 근거 HUD 구현 후 수동 확인</td>
             <td><span class="cov-no">UNCOVERED</span></td>
           </tr>
           <tr>
@@ -238,8 +239,8 @@ tbody tr:hover td{background:rgba(0,255,204,.03)}
             <td><span class="cov-ok">COVERED</span></td>
           </tr>
           <tr>
-            <td class="id-c">REQ-F-017</td><td class="name-c">모델 성능 조회</td><td><span class="badge b-m">중</span></td>
-            <td><span class="tc-chip tc-ml">TC-ML-001</span></td>
+            <td class="id-c">REQ-F-017</td><td class="name-c">자동화 지표 조회</td><td><span class="badge b-m">중</span></td>
+            <td><span class="tc-chip tc-auto">TC-AUTO-001</span></td>
             <td><span class="cov-ok">COVERED</span></td>
           </tr>
 
