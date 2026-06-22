@@ -28,7 +28,7 @@ ML의 실질 가치가 낮습니다. 따라서:
 | 와이어프레임 | `presentation_v2/wireframe.html` | 시뮬레이션 + 결과 상세 2화면 |
 | 스토리보드 | `presentation_v2/storyboard.html` | 5 Scene |
 | 테이블 정의서 / ERD | `presentation_v2/table_definition.html` | 5개 테이블 |
-| 테스트 케이스 | `presentation_v2/test_cases.html` | 15개 TC |
+| 테스트 케이스 | `presentation_v2/test_cases.html` | 18개 TC (Data·ML·API·Unity·Auto·Int) |
 | 트러블슈팅 & 회고 초안 | `presentation_v2/troubleshooting.html` | 예상 이슈 4건 |
 | 발표 슬라이드 | `presentation_v2/index.html` | 9슬라이드 |
 | API 명세서 | `presentation_v2/api_spec.html` | 5 엔드포인트, 에러 형식 |
@@ -36,8 +36,8 @@ ML의 실질 가치가 낮습니다. 따라서:
 | README | `README.md` | 프로젝트 개요 / 아키텍처 / 팀 |
 | GitHub 연결 & push | `https://github.com/chobo6/gaslighting.git` | main 브랜치 |
 
-> ⚠️ **기획 문서 갱신 필요**: 방향 전환에 따라 아래 HTML 산출물도 추후 업데이트 대상
-> (requirements RTM, wbs, storyboard, test_cases). WEEK 02 착수 후 반영.
+> ✅ **방향 전환 반영 완료 (2026-06-22)**: HTML 산출물 9종(requirements·wbs·storyboard·test_cases·index·api_spec·menu_scenario·troubleshooting·table_definition) 모두 자동화 중심으로 갱신.
+> 추가 산출물: `presentation_v2/pivot_comparison.html`(전후 비교 슬라이드), `팀원_설명.md`(팀원 설명서).
 
 ### 기획 잔여 (선택사항)
 
@@ -172,7 +172,7 @@ ML의 실질 가치가 낮습니다. 따라서:
 - [ ] **라우터 확장** (`backend/routers/`)
   - [ ] `predict.py` — `risk_level` 변환, `response_ms` 포함 (TC-API-001)
   - [ ] `logs.py` — `POST /api/logs/cutoff` (`cutoff_events` INSERT, TC-DB-002)
-  - [ ] `meta.py` — `GET /api/health`, `/scenarios`, `/model-performance`
+  - [ ] `meta.py` — `GET /api/health`, `/scenarios`, `/automation-metrics`
 - [ ] **입력 검증** — Pydantic `Field(ge=0.0, le=1.0)`, 누락 시 HTTP 422 (TC-API-002)
 - [ ] **DB 초기화** (`db/init_db.py`)
   - [ ] `gas_readings`, `cutoff_events`, `scenarios`, `sensor_configs`, `automation_metrics` 5개 테이블
