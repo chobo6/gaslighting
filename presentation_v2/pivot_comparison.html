@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>G-SAFE 방향 전환 — ML 중심 → 자동화 중심</title>
+<style>
+:root{--bg:#060e1a;--surf:#09152a;--panel:#0d1e38;--panel2:#112545;--line:#163255;--line2:#1e4575;--line-hi:#2a6aaa;--text:#c2dfff;--text2:#8ab8e0;--muted:#3f6a90;--dim:#1a3558;--accent:#00ffcc;--safe:#00ff88;--warn:#ffaa00;--danger:#ff3333;--info:#00ccff}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Noto Sans KR","Segoe UI",sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;
+  background-image:repeating-linear-gradient(0deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(0,180,255,.04) 30px),repeating-linear-gradient(0deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px),repeating-linear-gradient(90deg,transparent,transparent 149px,rgba(0,200,255,.07) 150px)}
+.wrap{display:flex;flex-direction:column;height:100vh;padding:16px 24px;gap:12px}
+/* Head */
+.head{flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--line2)}
+.head-label{font-family:"Courier New",monospace;font-size:10px;letter-spacing:2px;color:var(--accent);opacity:.8}
+.head-title{font-size:22px;font-weight:900;margin-top:4px;letter-spacing:.5px}
+.head-sub{font-family:"Courier New",monospace;font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.5px}
+/* 왜 배너 */
+.why{flex-shrink:0;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--warn);padding:11px 18px;display:flex;align-items:center;gap:14px}
+.why-tag{font-family:"Courier New",monospace;font-size:10px;letter-spacing:2px;color:var(--warn);white-space:nowrap}
+.why-text{font-size:13.5px;color:var(--text2);line-height:1.6}
+.why-text b{color:var(--text)}
+/* 비교 2열 */
+.compare{flex:1;min-height:0;display:grid;grid-template-columns:1fr 60px 1fr;gap:0;align-items:stretch}
+.col{border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden;position:relative}
+.col-before{background:var(--panel);border-left:3px solid rgba(255,51,51,.5)}
+.col-after{background:var(--panel2);border-right:3px solid rgba(0,255,204,.6)}
+.col::before{content:"";position:absolute;top:0;left:0;width:13px;height:13px;border-top:1px solid var(--line-hi);border-left:1px solid var(--line-hi)}
+.col-head{padding:13px 18px 11px;border-bottom:1px solid var(--line)}
+.col-tag{font-family:"Courier New",monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase}
+.col-title{font-size:17px;font-weight:900;margin-top:4px}
+.col-desc{font-size:11px;color:var(--muted);margin-top:3px}
+.col-before .col-tag{color:var(--danger)}.col-before .col-title{color:var(--danger)}
+.col-after .col-tag{color:var(--accent)}.col-after .col-title{color:var(--accent)}
+.col-body{flex:1;padding:14px 18px;display:flex;flex-direction:column;gap:9px;min-height:0}
+.item{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.5}
+.item .mk{flex-shrink:0;font-weight:900}
+.col-before .mk{color:var(--danger);opacity:.7}
+.col-after .mk{color:var(--accent)}
+.item .t2{color:var(--text2)}
+.item .t2 b{color:var(--text)}
+.arrow{display:flex;align-items:center;justify-content:center}
+.arrow span{font-size:30px;color:var(--accent);opacity:.7}
+/* 변경 요약 표 */
+.tbl{flex-shrink:0;border:1px solid var(--line2);background:var(--panel)}
+.tbl-row{display:grid;grid-template-columns:130px 1fr 24px 1fr;border-bottom:1px solid var(--line)}
+.tbl-row:last-child{border-bottom:none}
+.tbl-row.h{background:var(--panel2)}
+.tc{padding:7px 14px;font-size:12px;display:flex;align-items:center;line-height:1.4}
+.tc.k{font-family:"Courier New",monospace;font-size:10px;letter-spacing:1px;color:var(--accent);border-right:1px solid var(--line)}
+.tc.b{color:var(--muted);text-decoration:line-through;text-decoration-color:rgba(255,51,51,.5)}
+.tc.mid{justify-content:center;color:var(--accent);opacity:.6;border-left:1px solid var(--line);border-right:1px solid var(--line)}
+.tc.a{color:var(--text);font-weight:700;border-left:none}
+.tbl-row.h .tc{color:var(--muted);font-family:"Courier New",monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;text-decoration:none}
+/* 결론 */
+.foot{flex-shrink:0;background:linear-gradient(90deg,rgba(0,255,204,.06),rgba(0,255,136,.04));border:1px solid rgba(0,255,204,.25);padding:11px 18px;display:flex;align-items:center;gap:14px}
+.foot-tag{font-family:"Courier New",monospace;font-size:10px;letter-spacing:2px;color:var(--accent);white-space:nowrap}
+.foot-text{font-size:14px;color:var(--text);font-weight:700}
+.foot-text span{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="head">
+    <div class="head-label">// G-SAFE · 중간 점검 — 모델 방향 전환</div>
+    <div class="head-title">머신러닝 중심 → 자동화 중심으로 전환</div>
+    <div class="head-sub">BEFORE → AFTER · 2026.06.22 업데이트</div>
+  </div>
+
+  <!-- 왜 바꿨나 -->
+  <div class="why">
+    <div class="why-tag">WHY 전환?</div>
+    <div class="why-text">가스 위험은 농도 기준(LEL)이 정해진 <b>결정론적 문제</b>입니다.
+      규칙으로 정답을 만들고 ML이 그 규칙을 다시 학습하는 <b>순환 학습</b> 구조라 ML의 실질 가치가 낮아,
+      진짜 가치인 <b>자동 대응(감지→차단→복구)</b>에 집중하기로 했습니다.</div>
+  </div>
+
+  <!-- 전후 비교 -->
+  <div class="compare">
+
+    <!-- BEFORE -->
+    <div class="col col-before">
+      <div class="col-head">
+        <div class="col-tag">Before · 데이터 분석 중심</div>
+        <div class="col-title">ML 모델이 주인공</div>
+        <div class="col-desc">"어떤 모델이 더 정확한가"에 집중</div>
+      </div>
+      <div class="col-body">
+        <div class="item"><span class="mk">✕</span><span class="t2">RandomForest <b>vs</b> GBR 두 모델 <b>비교 학습</b></span></div>
+        <div class="item"><span class="mk">✕</span><span class="t2">GridSearchCV로 <b>하이퍼파라미터 튜닝</b></span></div>
+        <div class="item"><span class="mk">✕</span><span class="t2">MAE · RMSE · <b>R² &gt; 0.9</b> 성능 평가</span></div>
+        <div class="item"><span class="mk">✕</span><span class="t2">threshold <b>60~95 전체 탐색</b> (F2-score)</span></div>
+        <div class="item"><span class="mk">✕</span><span class="t2">자동차단은 <b>마지막 단계</b>로 밀림</span></div>
+      </div>
+    </div>
+
+    <div class="arrow"><span>→</span></div>
+
+    <!-- AFTER -->
+    <div class="col col-after">
+      <div class="col-head">
+        <div class="col-tag">After · 자동화 중심</div>
+        <div class="col-title">자동 대응이 주인공</div>
+        <div class="col-desc">"사람 없이 알아서 도는가"에 집중</div>
+      </div>
+      <div class="col-body">
+        <div class="item"><span class="mk">✓</span><span class="t2">RandomForest <b>1개만, 1회 학습</b> (얇은 API)</span></div>
+        <div class="item"><span class="mk">✓</span><span class="t2">규칙(농도·증가율·지속) → <b>상태머신 판단</b></span></div>
+        <div class="item"><span class="mk">✓</span><span class="t2"><b>상태머신</b> 자동 전이 + <b>순차 차단 시퀀스</b></span></div>
+        <div class="item"><span class="mk">✓</span><span class="t2"><b>자동 복구</b>·인터락 + <b>무인 데모</b> 모드</span></div>
+        <div class="item"><span class="mk">✓</span><span class="t2">threshold <b>70 고정</b> (LEL 기준 위험 시작점)</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 변경 요약 표 -->
+  <div class="tbl">
+    <div class="tbl-row h">
+      <div class="tc">구분</div><div class="tc">Before (이전)</div><div class="tc mid"></div><div class="tc">After (현재)</div>
+    </div>
+    <div class="tbl-row">
+      <div class="tc k">ML 모델</div><div class="tc b">RF vs GBR 비교·튜닝</div><div class="tc mid">→</div><div class="tc a">RF 1회 학습 (얇은 위험률 API)</div>
+    </div>
+    <div class="tbl-row">
+      <div class="tc k">Threshold</div><div class="tc b">60~95 F2-score 탐색</div><div class="tc mid">→</div><div class="tc a">70 고정 (LEL 기준)</div>
+    </div>
+    <div class="tbl-row">
+      <div class="tc k">평가 지표</div><div class="tc b">R² · MAE · RMSE</div><div class="tc mid">→</div><div class="tc a">차단 지연 · 시퀀스 완결성 · 무인 완주</div>
+    </div>
+    <div class="tbl-row">
+      <div class="tc k">프로젝트 초점</div><div class="tc b">정확한 예측</div><div class="tc mid">→</div><div class="tc a">신뢰할 수 있는 자동 대응</div>
+    </div>
+  </div>
+
+  <!-- 결론 -->
+  <div class="foot">
+    <div class="foot-tag">핵심 메시지</div>
+    <div class="foot-text">ML은 <span>"위험률을 내려주는 얇은 API"</span>로 최소화하고, 역량을 <span>Unity 자동화(감지→차단→복구)</span>에 집중합니다.</div>
+  </div>
+
+</div>
+</body>
+</html>
